@@ -1,0 +1,27 @@
+@import "./base.scss";
+*{
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
+}
+p,span,small{
+    font-family:  $primary_font;
+}
+h1,h2,h3,h4,h5,h6{
+    font-family: $secondary_font;
+}
+h1{
+    font-size: $h1_size;
+}
+h2{
+    font-size: $h2_size;
+}
+h3{
+    font-size: $h3_size;
+}
+body{
+    font-family: $primary_font;
+    font-size: $base_font_size;
+    overflow-x: hidden;
+    background-color: rgb(240, 240, 240);
+}

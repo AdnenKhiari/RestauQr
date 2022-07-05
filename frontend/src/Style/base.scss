@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Gulzar&family=Lato:wght@400;900&display=swap');
+
+$primary_font: 'Lato', sans-serif;
+$secondary_font:'Gulzar', serif;
+
+$base_font_size: 16px;
+$h1_size: 5rem;
+$h2_size: 3rem;
+$h3_size: 1.5rem;
+
+@function light_gray($a : 1){
+    @return rgba(230,230,230,$a)
+}
