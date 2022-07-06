@@ -25,3 +25,34 @@ body{
     overflow-x: hidden;
     background-color: rgb(240, 240, 240);
 }
+input,button{
+    padding: 5px 15px;
+    outline: none;
+    border: none;
+}
+button{
+    cursor: pointer;
+    border: 1px solid black;
+    min-width: 100px;
+    font-family: $secondary_font;
+    font-size: $base_font_size * 1.2;
+    background-color: white;
+    transition: all 200ms ease-in-out;
+    margin: 10px 0px;
+}
+button:hover {
+    margin: 12px 0px;
+    background-color: black;
+    color:white;
+}
+a{
+    text-decoration: none;
+    color: gray;
+    font-style: italic;
+    z-index: 1;
+    transition: all 100ms ease;
+}
+a:hover{
+    transform: translateX(10px);
+    color: black;
+}
