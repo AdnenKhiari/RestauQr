@@ -5,6 +5,7 @@ import Cart from "../Components/Cart"
 import FoodDetails from "../Components/FoodDetails"
 import CartDetails from "../Components/CartDetails"
 const Home = ()=>{
+
     return <>
         <div className="hero">
             <h1>Restaurant Kdhe</h1>
@@ -16,6 +17,7 @@ const Home = ()=>{
         <Menu />
         </div>} />
         <Route path={ROUTES.FOOD_DETAILS} element={<FoodDetails />}/>
+        <Route path={ROUTES.FOOD_UPDATE} element={<FoodDetails  />}/>
         <Route path={ROUTES.CART_DETAILS} element={<CartDetails />}/>
         </Routes>
     </>

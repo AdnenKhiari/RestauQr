@@ -48,7 +48,7 @@
                 object-fit: cover;
                 border-right: 1px solid black;
             }
-            img:last-child{
+            .rm-item-cart{
                 position: absolute;
                 top: 10px;
                 right: 10px;
@@ -69,6 +69,7 @@
     }
 }
 
+
 .cart-details-container{
     width: 100vw;
     margin: 0px auto;
@@ -85,14 +86,24 @@
             margin: 10px;
             width: 100%;
             max-width: 500px;
+            position: relative;
 
             img{
                 object-fit: cover;
                 height: 500px;
                 width: 100%;
             }       
-
-
+            .rm-item-cart{
+                position: absolute;
+                top: 20px;
+                right: 10px;
+                width: 20px;
+                height: 20px;
+                cursor: pointer;
+            }
+            .rm-item-cart:hover{
+                transform: scale(0.9);
+            }
         }
         .cart-details-item > div{
             background-color: black;
