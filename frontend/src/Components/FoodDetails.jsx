@@ -61,7 +61,7 @@ const FoodDetails = ()=>{
                 <p className="description">{food.description}</p>
                 <p className="price">Price :{food.price}</p>
                 <div className="food-custom">
-                    <h2>Ajouter Des Options:</h2>
+                    {food && food.options && <h2>Ajouter Des Supplements:</h2>}
                     <Options food = {food} initfood={initfood} />
                 </div>
             </div>
@@ -119,7 +119,7 @@ const Options = ({food,initfood = null})=>{
  </div>}
     </div>)
     }
-    <button type="submit">Submit</button>
+    <button type="submit">Ajouter</button>
   </form>
 
 }

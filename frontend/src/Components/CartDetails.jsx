@@ -14,6 +14,14 @@ const CartDetails = ()=>{
     const [cart,setCart] = useContext(CartContext)
     console.log(cart)
     const usenav = useNavigate()
+    const processCart = ()=>{
+        return cart.map((item)=>{
+            return {
+                food_id: item.id,
+                options : item.options
+            }
+        })
+    }
     return <div className="cart-details-container">
     {(!cart || !cart.length) ? <h2>Veuillez commander au moins un article</h2> : (<>
     <div className="cart-details">

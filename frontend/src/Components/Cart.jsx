@@ -27,7 +27,7 @@ const Cart = ()=>{
                 <img src="/close.png" alt="remove" className="rm-item-cart" onClick={(e)=>removeFromCart(item.cartid)} />
             </div>)}
             </div>
-            <button onClick={(e)=>usenav(ROUTES.CART_DETAILS)} >Passer Commande</button>
+            <button onClick={(e)=>{usenav(ROUTES.CART_DETAILS);setActive(false)}} >Passer Commande</button>
         </div>
     </div>
 }
