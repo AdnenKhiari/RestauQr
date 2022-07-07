@@ -1,9 +1,11 @@
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import {useForm} from 'react-hook-form'
 import {Link} from "react-router-dom"
 import { useContext } from "react"
 import {CartContext} from "./Contexts"
 import hash from "object-hash"
+import GetFoodById from "../Lib/GetFoodById"
+/*
 const tempfood = {
     id: '24U249289',
     title: 'Pizza Neptune',
@@ -26,20 +28,27 @@ const tempfood = {
         choices:[{price: 0,msg: 'Mini'},{price: 2,msg: 'Moyenne'},{price: 4,msg: 'Large'},{price: 8,msg: 'XL'}]
     }]
 }
+*/
+
 const FoodDetails = ()=>{
     const [cart,setCart] = useContext(CartContext)
-
-    const {id,cartid} = useParams() 
-    // cart id exists get the food info from the id given by the initfood
-
-    var food = tempfood
+    var {id,cartid} = useParams() 
+    var food = null
     if(cartid){
         var initfood = cart.find(f=>f.cartid === cartid)
         if(!initfood)
-            console.log('Kdim')
-            // should throw an error cause of invalid id
+            return "Error , Item do not exist in Cart"
+        id = initfood.id
     }
-    
+    if(id){
+        var {data,error,loading} = GetFoodById(id)
+        if(error)
+            return "errro"
+        if(loading)
+            return "loading"
+        food = data
+        console.log("FD",food)
+    }
     return <div className="food-details-container">
         <div className="food-details">
             <div className="food-img">
@@ -62,29 +71,32 @@ const FoodDetails = ()=>{
 
 const Options = ({food,initfood = null})=>{
     const [cart,setCart] = useContext(CartContext)
+    const usenav = useNavigate()
     const addToCart = (data)=>{
         const cmd = {...food}
-        cmd.options = data
-        cmd.price += Object.keys(data).reduce((prev,key)=>{
-            const cur = data[key]
-            const fd = food.options.find(it=>it.msg === key)
-            if(fd.type === 'check' && cur){
-                return prev + fd.price
-            }else if(fd.type === 'select' && cur){
-                return prev + fd.choices.find(ch => ch.msg === cur).price
-            }else{
-                return 0
-            }
-        },0)
+        if(data)
+            cmd.options = data
+        if(food.options){
+            cmd.price += Object.keys(data).reduce((prev,key)=>{
+                const cur = data[key]
+                const fd = food.options.find(it=>it.msg === key)
+                if(fd.type === 'check' && cur){
+                    return prev + fd.price
+                }else if(fd.type === 'select' && cur){
+                    return prev + fd.choices.find(ch => ch.msg === cur).price
+                }else{
+                    return 0
+                }
+            },0)
+        }
         cmd.cartid = hash({options: cmd.options,id : cmd.id})
-        console.log(cmd,initfood)
         if(initfood){
             const idx = cart.findIndex(f => f.cartid === initfood.cartid)
-            console.log("replacing",idx)
             if(idx ===-1)
                 return;
             cart.splice(idx,1)
             setCart([...cart,cmd])
+            usenav("/")
         } else{
             setCart([...cart,cmd])
         }
@@ -95,7 +107,7 @@ const Options = ({food,initfood = null})=>{
     defaultValues: initfood ? initfood.options : {}
   });
   return <form onSubmit={handleSubmit(addToCart)}>
-    {food.options.map((opt,key)=><div className="form-input-container" key={key}> 
+    {food && food.options && food.options.map((opt,key)=><div className="form-input-container" key={key}> 
     <label htmlFor={opt.msg}>{opt.msg} {opt.price}$</label>
     <br />
     {opt.type === 'select' ? opt.choices.map((c)=><div className="form-input"  key={c.msg}>

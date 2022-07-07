@@ -40,7 +40,7 @@ const CartItem = ({item})=>{
             <img src={item.img} alt={item.title} onClick={(e)=>usenav(ROUTES.GET_FOOD_UPDATE(item.cartid))}/>
             <div className="item-info">
                 <div>
-                    {Object.keys(item.options).map(opt=> item.options[opt] ? <p>{opt} {item.options[opt]} </p> : <></>)}
+                    {item.options && Object.keys(item.options).map(opt=> item.options[opt] ? <p key={opt}>{opt} {item.options[opt]} </p> : <></>)}
                 </div>
                 <p className="item-price">{item.price}$</p>
             </div>

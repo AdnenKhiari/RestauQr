@@ -12,7 +12,6 @@ const MenuNav = ({selectedCats,setSelectedCats})=>{
             selectedCats.push(cat)
         }
         setSelectedCats([...selectedCats])
-        console.log(selectedCats)
     }
 
     return <div className="menunav-container">
