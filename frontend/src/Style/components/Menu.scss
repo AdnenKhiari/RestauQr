@@ -31,7 +31,7 @@
     }
     .menu-items-container{
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: repeat( auto-fit, minmax(500px, 1fr) );
         .food-item{
             transition: all 200ms ease-in;
             cursor: pointer;
@@ -73,6 +73,23 @@
             div:hover{
                 opacity: 1;
                 background-color: rgba(20,20,20,0.5);
+            }
+        }
+    }
+}
+
+@media screen and (max-width: $big_screen) {
+    .menu{
+        .menunav-container{
+            flex-wrap: wrap;
+        }
+        .menu-items-container{
+            grid-template-columns: 1fr;
+            .food-item{
+                min-width: min-content;
+                div{
+                    line-height: 4rem;
+                }
             }
         }
     }

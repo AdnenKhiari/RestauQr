@@ -8,6 +8,10 @@ $h1_size: 5rem;
 $h2_size: 3rem;
 $h3_size: 1.5rem;
 
+$big_screen: 1400px;
+$small_screen: 1000px;
+
 @function light_gray($a : 1){
     @return rgba(230,230,230,$a)
 }
+

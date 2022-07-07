@@ -16,6 +16,7 @@ const Cart = ()=>{
         <img className={"cart-img" + (active ? ' cart-img-active' : '')} src="/menu.png" alt="" onClick={(e)=>setActive(!active)} />
         <div className={"cart-content" + (active ? '' : ' cart-content-hide')}>
             <div>
+                <h2>Commandes</h2>
             {cart && getReducedCart(cart).map((item,index)=><div key={item.id} className="cart-item">
                 <img src={item.img} alt={item.title}  />
                 <div>

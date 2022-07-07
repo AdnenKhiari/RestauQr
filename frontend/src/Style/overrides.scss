@@ -56,3 +56,18 @@ a:hover{
     transform: translateX(10px);
     color: black;
 }
+
+@media screen and (max-width: 700px) {
+    body{
+        font-size: calc($base_font_size - 4px);
+    }
+    h1{
+        font-size: $h1_size / 1.2;
+    }
+    h2{
+        font-size: $h2_size / 1.2;
+    }
+    h3{
+        font-size: $h3_size/ 1.2;
+    }
+}
