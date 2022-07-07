@@ -17,7 +17,7 @@ const Home = ()=>{
         <div className="hero">
             <h1 onClick={(e)=>usenav("/")}>Restaurant Kdhe</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-            <button onClick={(e)=>populateMenu()}>Populate Data</button>
+            {/*<button onClick={(e)=>populateMenu()}>Populate Data</button> */}
         </div>
         <Cart />
         <Routes>
