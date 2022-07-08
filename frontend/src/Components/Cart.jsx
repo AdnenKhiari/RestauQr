@@ -1,11 +1,11 @@
 import { useContext,useState} from "react"
-import { CartContext } from "./Contexts"
+import { OrderContext } from "./Contexts"
 import { useNavigate} from "react-router-dom"
 import * as ROUTES from "../Routes/UI"
-import { getReducedCart, removeFromCart } from "../Lib/util"
+import { getReducedCart, RemoveFromCart } from "../Lib/util"
 
 const Cart = ()=>{
-    const [cart,setCart] = useContext(CartContext)
+    const [order,setOrder] = useContext(OrderContext)
     const [active,setActive] = useState(false)
 
 
@@ -17,17 +17,17 @@ const Cart = ()=>{
         <div className={"cart-content" + (active ? '' : ' cart-content-hide')}>
             <div>
                 <h2>Commandes</h2>
-            {cart && getReducedCart(cart).map((item,index)=><div key={item.id} className="cart-item">
+            {order.cart && getReducedCart(order.cart).map((item,index)=><div key={item.id} className="cart-item">
                 <img src={item.img} alt={item.title}  />
                 <div>
                     <p>{item.title}</p>
                     <p>Price: {item.price}</p>
                     <p>Q: {item.count}</p>
                 </div>
-                <img src="/close.png" alt="remove" className="rm-item-cart" onClick={(e)=>removeFromCart(item.cartid)} />
+                <img src="/close.png" alt="remove" className="rm-item-cart" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid)} />
             </div>)}
             </div>
-            <button onClick={(e)=>{usenav(ROUTES.CART_DETAILS);setActive(false)}} >Passer Commande</button>
+            <button onClick={(e)=>{usenav(ROUTES.CART_DETAILS);setActive(false)}} >Commandes</button>
         </div>
     </div>
 }

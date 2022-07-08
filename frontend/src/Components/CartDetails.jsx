@@ -1,37 +1,42 @@
 import { useContext } from "react"
-import { CartContext } from "./Contexts"
-import { Link, useNavigate } from "react-router-dom"
+import {  OrderContext } from "./Contexts"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
 import * as ROUTES from "../Routes/UI"
-import { getReducedCart, removeFromCart } from "../Lib/util"
+import { getReducedCart, RemoveFromCart } from "../Lib/util"
+import UpdateCart from "../Lib/UpdateCart"
+import RemoveOrder from "../Lib/RemoveOrder"
 
-/**
- * TODO
- * Add navigation between the ( pages )
- */
 
 const CartDetails = ()=>{
-    const [cart,setCart] = useContext(CartContext)
-    console.log(cart)
+    const [order,setOrder] = useContext(OrderContext)
+    console.log(order)
+    const {tableid} = useParams()
     const usenav = useNavigate()
+    const updateOrder = UpdateCart()
+    const removeOrder = RemoveOrder()
     const processCart = ()=>{
-        return cart.map((item)=>{
+        return getReducedCart(order.cart).map((item)=>{
             return {
-                food_id: item.id,
-                options : item.options
+                id: item.id,
+                options : item.options,
+                count : item.count
             }
         })
     }
     return <div className="cart-details-container">
-    {(!cart || !cart.length) ? <h2>Veuillez commander au moins un article</h2> : (<>
+    {(!order.cart || !order.cart.length) ? <h2>Veuillez commander au moins un article</h2> : (<>
     <div className="cart-details">
-    {(cart).map((item,index)=> <CartItem key={item.cartid + ""+index} item = {item} />)}
+    {getReducedCart(order.cart).map((item,index)=> <CartItem key={index} item = {item} />)}
     </div>
     <div>
-        <h2>Total: {(cart).reduce((prev,cur)=>prev + cur.price,0)}</h2>
+        <h2>Total: {(order.cart).reduce((prev,cur)=>prev + cur.price * cur.count,0)}</h2>
         <div>
-            <button onClick={(e)=>usenav("/")}>Menu</button>
-            <button>Commander !</button>
+            <button onClick={(e)=>usenav("/"+tableid)}>Menu</button>
+            <button onClick={(e)=> updateOrder(processCart()) }>
+                {!order.status ? "Commander !": "Update"}
+            </button>
+            {order.status && order.status === "waiting" && <button onClick={(e)=> removeOrder() }>Cancel Order</button>}
         </div>
     </div>
     </>
@@ -39,18 +44,19 @@ const CartDetails = ()=>{
     </div>
 }
 const CartItem = ({item})=>{
-    const [cart,setCart] = useContext(CartContext)
+    const [order,setOrder] = useContext(OrderContext)
+    const {tableid} = useParams()
     const usenav = useNavigate()
     return <div className="cart-details-item" >
-        <img src="/close.png" onClick={(e)=>removeFromCart(cart,setCart,item.cartid)} className="rm-item-cart" alt="" />
+        <img src="/close.png" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid)} className="rm-item-cart" alt="" />
         <h3>{item.title}</h3>
         <div>
-            <img src={item.img} alt={item.title} onClick={(e)=>usenav(ROUTES.GET_FOOD_UPDATE(item.cartid))}/>
+            <img src={item.img} alt={item.title} onClick={(e)=>usenav(ROUTES.GET_FOOD_UPDATE(tableid,item.cartid))}/>
             <div className="item-info">
                 <div>
                     {item.options && Object.keys(item.options).map(opt=> item.options[opt] ? <p key={opt}>{opt} {item.options[opt]} </p> : <></>)}
                 </div>
-                <p className="item-price">{item.price}$</p>
+                <p className="item-price">{item.count}x{item.price}$</p>
             </div>
         </div>
     </div>
