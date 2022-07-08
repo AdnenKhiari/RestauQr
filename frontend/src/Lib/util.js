@@ -1,11 +1,17 @@
 import { addDoc, collection, doc, getFirestore, writeBatch } from "firebase/firestore"
 
-export const removeFromCart = (cart,setCart,cartid)=>{
-    cart.splice(cart.findIndex(it => it.cartid === cartid),1)
-    setCart([...cart])
+export const RemoveFromCart = (order,setOrder,cartid)=>{
+    const idx = order.cart.findIndex(it => it.cartid === cartid)
+    if(idx === -1)
+        return
+    if(order.cart[idx].count >1)
+        order.cart[idx].count-=1
+    else
+        order.cart.splice(idx,1)
+    setOrder({...order})
 }
 export const getReducedCart = (ct)=>{
-    const prev = []
+    /*const prev = []
     ct.forEach((cur)=>{
         const idx = prev.findIndex(it => it.cartid === cur.cartid)
         if(idx === -1){
@@ -14,10 +20,23 @@ export const getReducedCart = (ct)=>{
             const el = prev[idx]
             el.count = el.count +1
         }
-    } ,[])
-    return prev
+    } ,[])*/
+    return ct
 }
 
+export const computePrice = (food,data)=>{
+    return food.price +  Object.keys(data).reduce((prev,key)=>{
+        const cur = data[key]
+        const fd = food.options.find(it=>it.msg === key)
+        if(fd.type === 'check' && cur){
+            return prev + fd.price
+        }else if(fd.type === 'select' && cur){
+            return prev + fd.choices.find(ch => ch.msg === cur).price
+        }else{
+            return 0
+        }
+    },0)
+}
 export const populateMenu = ()=>{
     const allitems = {
         "Pizza" : [        

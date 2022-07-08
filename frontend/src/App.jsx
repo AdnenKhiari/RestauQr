@@ -4,15 +4,18 @@ import "./Style/main.scss"
 
 import {initializeApp} from "firebase/app"
 import {getFirestore} from "firebase/firestore"
-
 import {firebaseConfig} from "./dev.conf"
 
 function App() {
   const app = initializeApp(firebaseConfig)
   const db = getFirestore(app)
+
   return (
     <BrowserRouter >
-      <Home />
+    <Routes>
+      <Route index path='/:tableid/*' element ={<Home />}   />
+      <Route path="*" element={<h1>Not Found</h1> }/>
+    </Routes>
     </BrowserRouter>
   );
 }

@@ -2,9 +2,10 @@ import { useNavigate, useParams } from "react-router"
 import {useForm} from 'react-hook-form'
 import {Link} from "react-router-dom"
 import { useContext } from "react"
-import {CartContext} from "./Contexts"
+import {OrderContext} from "./Contexts"
 import hash from "object-hash"
 import GetFoodById from "../Lib/GetFoodById"
+import { computePrice } from "../Lib/util"
 /*
 const tempfood = {
     id: '24U249289',
@@ -31,11 +32,11 @@ const tempfood = {
 */
 
 const FoodDetails = ()=>{
-    const [cart,setCart] = useContext(CartContext)
-    var {id,cartid} = useParams() 
+    const [order,setOrder] = useContext(OrderContext)
+    var {id,cartid,tableid} = useParams() 
     var food = null
     if(cartid){
-        var initfood = cart.find(f=>f.cartid === cartid)
+        var initfood = order.cart.find(f=>f.cartid === cartid)
         if(!initfood)
             return "Error , Item do not exist in Cart"
         id = initfood.id
@@ -55,13 +56,13 @@ const FoodDetails = ()=>{
                 <img src={food.img} alt={food.title}/>
             </div>
             <div className="food-info">
-            <Link to='/'>Main Menu</Link>
+            <Link to={'/'+tableid}>Main Menu</Link>
                 <h2>{food.title}</h2>
                 <p className="category">{food.category}</p>
                 <p className="description">{food.description}</p>
                 <p className="price">Price :{food.price}</p>
                 <div className="food-custom">
-                    {food && food.options && <h2>Ajouter Des Supplements:</h2>}
+                    {food && food.options && Object.keys(food.options).length > 0 && <h2>Ajouter Des Supplements:</h2>}
                     <Options food = {food} initfood={initfood} />
                 </div>
             </div>
@@ -70,37 +71,43 @@ const FoodDetails = ()=>{
 }
 
 const Options = ({food,initfood = null})=>{
-    const [cart,setCart] = useContext(CartContext)
+    const [order,setOrder] = useContext(OrderContext)
     const usenav = useNavigate()
+    const {tableid} = useParams()
     const addToCart = (data)=>{
         const cmd = {...food}
         if(data)
             cmd.options = data
         if(food.options){
-            cmd.price += Object.keys(data).reduce((prev,key)=>{
-                const cur = data[key]
-                const fd = food.options.find(it=>it.msg === key)
-                if(fd.type === 'check' && cur){
-                    return prev + fd.price
-                }else if(fd.type === 'select' && cur){
-                    return prev + fd.choices.find(ch => ch.msg === cur).price
-                }else{
-                    return 0
-                }
-            },0)
+            cmd.price =computePrice(food,data)
         }
+        if(!cmd.count)
+            cmd.count = 1
         cmd.cartid = hash({options: cmd.options,id : cmd.id})
         if(initfood){
-            const idx = cart.findIndex(f => f.cartid === initfood.cartid)
+        {
+            const idx = order.cart.findIndex(f => f.cartid === initfood.cartid)
             if(idx ===-1)
                 return;
-            cart.splice(idx,1)
-            setCart([...cart,cmd])
-            usenav("/")
-        } else{
-            setCart([...cart,cmd])
+            /*order.cart.splice(idx,1)
+            order.cart.push(cmd)*/
+            order.cart[idx].options = cmd.options
+            order.cart[idx].cartid = cmd.cartid
         }
-
+            setOrder({...order})
+            usenav("/"+tableid)
+        } else{
+            //try to find an order similar to upgrade the count 
+            const idx = order.cart.findIndex(f => f.cartid === cmd.cartid)
+            if(idx ===-1)
+                order.cart.push(cmd)
+            else{
+                order.cart[idx].count +=1
+                /*order.cart.push(order.cart[idx])
+                order.cart.splice(idx,1)*/
+            }
+            setOrder({...order})        
+        }
     }
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
@@ -119,7 +126,7 @@ const Options = ({food,initfood = null})=>{
  </div>}
     </div>)
     }
-    <button type="submit">Ajouter</button>
+    <button type="submit">{initfood ? "Update" : "Ajouter"}</button>
   </form>
 
 }
