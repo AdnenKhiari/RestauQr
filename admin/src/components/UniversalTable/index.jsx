@@ -3,7 +3,7 @@ import {useForm} from "react-hook-form"
 const max = (a,b)=>{
     return a > b ? a : b
 }
-const UniversalTable = ({title,head,body,colors})=>{
+const UniversalTable = ({title,head,body,colors,submit})=>{
      const { register, handleSubmit, watch,setValue } = useForm({
         defaultValues: {
             pagenum: 0
@@ -15,7 +15,7 @@ const UniversalTable = ({title,head,body,colors})=>{
         { title && <h1>{title}</h1>}
             <form className="table-options" onSubmit={handleSubmit((data)=>submit(data.pagenum))}>
                 <button onClick={(e)=>setValue('pagenum',max(0,parseInt(watch('pagenum'))-1))}><img src="/back.png" alt="prev" /></button>
-                {/*<input type="number" name="Number" id="Number" {...register("pagenum",{min: 0})} /> */ }
+                <input type="number" name="Number" id="Number" {...register("pagenum",{min: 0})} />
                 <button onClick={(e)=>setValue('pagenum',parseInt(watch('pagenum'))+1)}><img src="/next.png" alt="next" /></button>
                 <button type="submit">Find</button>
             </form>
