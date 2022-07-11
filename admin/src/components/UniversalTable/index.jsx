@@ -1,24 +1,17 @@
 import { useState } from "react"
 import {useForm} from "react-hook-form"
-const max = (a,b)=>{
-    return a > b ? a : b
-}
-const UniversalTable = ({title,head,body,colors,submit})=>{
-     const { register, handleSubmit, watch,setValue } = useForm({
-        defaultValues: {
-            pagenum: 0
-        }
-     });
-        
+
+const UniversalTable = ({title,head,body,colors,prev,next})=>{
+
     return  <div className="universal-table">
         <div className="table-header">
         { title && <h1>{title}</h1>}
-            <form className="table-options" onSubmit={handleSubmit((data)=>submit(data.pagenum))}>
-                <button onClick={(e)=>setValue('pagenum',max(0,parseInt(watch('pagenum'))-1))}><img src="/back.png" alt="prev" /></button>
-                <input type="number" name="Number" id="Number" {...register("pagenum",{min: 0})} />
-                <button onClick={(e)=>setValue('pagenum',parseInt(watch('pagenum'))+1)}><img src="/next.png" alt="next" /></button>
+            <div className="table-options" >
+                <button onClick={(e)=>prev()}><img src="/back.png" alt="prev" /></button>
+                <input type="number" name="Number" id="Number" min={0}/>
+                <button onClick={(e)=>next()}><img src="/next.png" alt="next" /></button>
                 <button type="submit">Find</button>
-            </form>
+            </div>
         </div>
         <table>
             <thead>
