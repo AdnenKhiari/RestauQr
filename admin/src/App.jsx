@@ -3,7 +3,7 @@ import "./style/main.scss"
 import {Routes,Route} from "react-router-dom"
 import Test from "./test"
 import Main from "./pages/Main"
-import firebaseConfig from "./dev.conf"
+import {firebaseConfig} from "./dev.conf"
 import {initializeApp} from "firebase/app"
 import {getFirestore} from "firebase/firestore"
 

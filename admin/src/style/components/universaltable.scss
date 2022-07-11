@@ -1,0 +1,118 @@
+.universal-table{
+    background-color: Bright(1);
+    padding: 15px;
+    width: 100%;
+    .table-header{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        align-content: center;
+        padding: 15px;
+        .table-options{
+            height: 40px;
+            display: flex;
+            > *{
+                margin: 5px 5px ;
+            }
+            button{
+                width: 50px;
+                padding: 10px;
+                img{
+                    width: 25px;
+                    max-height: 100%;
+                    object-fit: contain;
+                }
+            }
+            input{
+                height: 100%;
+                width: 80px;
+                font-size: $h3size;
+            }
+        }
+    }
+    table{
+        padding: 15px;
+        width: 100%;
+        border-spacing: 0 10px;
+        table-layout: fixed ;
+
+        thead{
+            text-align: left;
+            tr{
+                th{
+                    font-weight: 400;
+
+                    font-family: $secondary_font;
+                    font-size: $h2size;
+                    th{
+                        padding: 15px;
+                    }
+                }
+            }
+
+        }
+        $table_transparency : 0.1;
+        $table_hover_transparency : 1;
+
+        tbody{
+            tr{
+                font-weight: 200;
+                margin: 5px 0px;
+                font-family: $base_font;
+                background-color: Secondary($table_transparency);   
+                border-radius: 10px ;
+                cursor: pointer;
+                transition: all 100ms ease-in;
+                width: 100%;
+            }
+
+
+            tr.waiting{
+                font-weight: bold;
+                background-color: Secondary($table_transparency);   
+            }
+            tr.pending{
+                background-color: Warning($table_transparency);   
+            }
+            tr.canceled{
+                background-color: Error($table_transparency);   
+            }
+            tr.accomplished{
+                background-color: Green($table_transparency);   
+            }
+
+            tr:hover{
+                box-shadow: 0px 0px 10px 4px Secondary(0.2);
+                background: Secondary(0.7);
+            }
+
+            tr.waiting:hover{
+                background-color: Secondary($table_hover_transparency);   
+            }
+            tr.pending:hover{
+                background-color: Warning($table_hover_transparency);   
+            }
+            tr.canceled:hover{
+                background-color: Error($table_hover_transparency);   
+            }
+            tr.accomplished:hover{
+                background-color: Green($table_hover_transparency);   
+            }
+
+            td{
+                padding: 15px;
+            }
+
+            td:first-child,
+            th:first-child {
+            border-radius: 10px 0 0 10px;
+            }
+
+            td:last-child,
+            th:last-child {
+            border-radius: 0 10px 10px 0;
+            }
+        }
+    }
+}

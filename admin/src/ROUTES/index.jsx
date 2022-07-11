@@ -1,5 +1,5 @@
 export const ORDERS = {
-    ALL : "/orders/",
+    ALL : "/orders",
     ACCOMPLISHED : "/orders/accomplished",
     PENDING : "/orders/pending",
     WAITING : "/orders/waiting",
