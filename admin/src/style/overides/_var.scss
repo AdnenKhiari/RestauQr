@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,800;1,200&family=Open+Sans:ital,wght@0,300;0,800;1,400&display=swap');
+$base_font:  'Nunito', sans-serif;
+$secondary_font:  'Open Sans', sans-serif;
+
+$h1size:3rem;
+$h2size:1.8rem;
+$h3size:1.2rem;
+$h4size:0.9rem;
+
+@function Bright($alpha){
+    @return rgba(255,255,255,$alpha);
+};
+@function LightGray($alpha){
+    @return rgba(249,250,251,$alpha);
+};
+@function Green($alpha){
+    @return rgba(89,160,110,$alpha);
+};
+@function Blue($alpha){
+    @return rgba(63,131,248,$alpha);
+};
+@function Error($alpha){
+    @return rgba(255,113,113,$alpha);
+};
+@function Success($alpha){
+    @return rgba(20,162,138,$alpha);
+};
+@function Warning($alpha){
+    @return rgba(242,173,86,$alpha);
+};
+@function Secondary($alpha){
+    @return rgba(74,149,162,$alpha);
+};

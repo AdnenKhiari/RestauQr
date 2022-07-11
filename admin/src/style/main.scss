@@ -1,0 +1,24 @@
+//my overrides
+@import "./overides/overides";
+
+
+// my components styles
+@import "./components/include";
+
+
+
+.main-content{
+    width: 100vw;
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+}
+
+.main{
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+@include scrollify(".main",true);

@@ -1,0 +1,27 @@
+@mixin scrollify($item,$hide: false) {
+  #{$item}::-webkit-scrollbar-button {
+    height: if($hide,0px,65px) ;
+  }
+    /* width */
+  #{$item}::-webkit-scrollbar {   
+
+    width: if($hide,0px,10px) ;
+  }
+  
+  /* Track */
+  #{$item}::-webkit-scrollbar-track {
+    background: if($hide,transparent,transparent) ;
+  }
+
+  
+  /* Handle */
+  #{$item}::-webkit-scrollbar-thumb {
+    background: if($hide,transparent, Secondary(0.7)) ;
+    border-radius: 30px;
+  }
+  
+  /* Handle on hover */
+  #{$item}::-webkit-scrollbar-thumb:hover {
+    background: if($hide,transparent, Secondary(1)) ;
+  }
+}

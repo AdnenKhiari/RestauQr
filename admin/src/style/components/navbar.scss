@@ -1,0 +1,59 @@
+.main-content{
+    .nav-bar{
+        height: 100vh;
+        background-color: Bright(1);
+        width: 100%;
+
+        h1{
+            padding: 15px;
+        }
+        .main-nav{
+            width: 100%;
+            height: calc(100vh - 5rem - 30px);
+            margin: 0px 0px;
+            overflow-y: scroll;
+            ul{
+                > li {
+                    display: flex;
+                    padding: 10px;
+                    background-color: Green(1);
+                }
+                width: 100%;
+                padding-left: 0px;
+                list-style: none;
+                li h2{
+                    width: 100%;
+                    padding-left: 20px;
+                }
+                li img{
+                    object-fit: contain;
+                    width: 25px;
+                    display: inline;
+                    filter: invert(1) hue-rotate(200);
+                }
+                a:hover{
+                    border-left: 3px solid Green(1);
+                    background-color: Secondary(0.1);
+                }
+                a:hover li{
+                    color: Green(0.75);
+                    font-weight: bold;
+                }
+                a{
+                    width: 100%;
+                    display: block;
+                    padding-left: 20px;
+                    transition: all 200ms ease-in-out;
+                    li{
+                        padding: 15px;
+                    }   
+                }
+                li{
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
+
+@include scrollify(".main-nav");

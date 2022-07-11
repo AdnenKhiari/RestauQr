@@ -1,0 +1,134 @@
+
+@import "./var";
+@import "./mixins";
+
+*{
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+}
+body{
+    overflow-x: hidden;
+    background-color: LightGray(1);
+    font-family: $base_font;
+    color: Primary(1);
+}
+ul{
+    padding-left: 10px;
+}
+h1{
+    font-size: 3rem;
+}
+h2{
+    font-size: 1.8rem;
+}
+h3{
+    font-size: 1.2rem;
+}
+h4{
+    font-size: 0.9rem;
+}
+h1,h2,h3,h4,h5,h6,small,strong,label{
+    font-family: $secondary_font;
+    font-weight:400;
+}
+
+h1,h2,h3,h4,h5,h6{     
+    color: Accent(1);
+}
+small{
+    color: Secondary(0.6);
+}
+
+p,a,li,tr{
+    font-family: $base_font;
+    font-weight: 500;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input,textarea{
+    padding: 10px;
+    outline: none;
+    font-family: $secondary_font;
+    border: 1px solid Secondary(0.1);
+    border-radius: 5px;
+    background-color: Green(0.4);
+}
+
+input{
+    height: 40px;
+}
+
+input:hover,textarea:hover{
+    box-shadow: 0px 0px 15px 5px Green(0.1);
+    border-color:  Green(0.4);
+}
+input:active,input:focus,input:active,input:focus{
+    box-shadow: 0px 0px 15px 5px Green(0.1);
+    border-color:  Green(1);
+}
+
+.input-error,.input-error:hover,.input-error:active,.input-error:focus{ 
+    border-color: Error(1) !important;
+}
+
+input:disabled,.select-drop .select-drop-pre__control--is-disabled{
+    color: black;
+    background-color: Secondary(0.4);
+    border: 1px solid Secondary(0.4) !important;
+}
+
+button { 
+    background-color: Secondary(1);
+    min-height: 40px;
+    font-family: $secondary_font;
+    padding: 10px 20px;
+    letter-spacing: 0.06rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover,button:focus{
+    box-shadow: 0px 0px 15px 5px black(0.1);
+    background-color: Green(1);
+
+    color: Bright(1) ;
+
+}
+button:focus{
+    background-color: Accent(1);
+}
+
+input[type="checkbox"],input[type="radio"]{
+    accent-color: Green(1) !important;
+}
+
+a{
+    color: Blue(1);
+    font-weight: 500;
+    text-decoration: none;
+}
+a:hover{ 
+    color: Secondary(1) !important;
+}
+a:visited{ 
+    color: Secondary(1)
+}
+
+input,button,a,textarea{
+    transition: all 0.25s ease-in-out;
+}
+
+.danger-text{
+    color: Warning(1);
+}
