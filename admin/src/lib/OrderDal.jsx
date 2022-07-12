@@ -1,4 +1,4 @@
-import  { doc, getDoc, getFirestore} from "firebase/firestore"
+import  { doc, getDoc, getFirestore, updateDoc} from "firebase/firestore"
 import { useState } from "react"
 import { useEffect } from "react"
 export const GetOrderById = (id)=>{
@@ -38,3 +38,23 @@ export const GetOrderById = (id)=>{
     }
 }
 
+export const UpdateOrder = (id)=>{
+
+    const [error,setError] = useState(null)
+    const db = getFirestore()
+
+    const fetch = async (st)=>{
+        try{
+            const order = await updateDoc(doc(db,'orders',id),{
+                status: st
+            })
+        }catch(err){
+            setError(err)
+        }
+    }
+
+    return {
+        mutate: fetch,
+        error
+    }
+}

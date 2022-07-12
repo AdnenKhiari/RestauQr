@@ -117,7 +117,7 @@ const OrderTable = ({queryConstraints = []})=>{
                 })
                 
             if(new_table_data && new_table_data.length > 0)
-                new_table_data.forEach((data)=> data[3] = moment(data[3].toDate()).fromNow())
+                new_table_data.forEach((data)=> data[3] = moment(data[3].toDate()).format("YYYY-MM-DD - hh:mm:ss"))
 
             setErrorMsg(null)
             if(new_table_data.length > 0)
