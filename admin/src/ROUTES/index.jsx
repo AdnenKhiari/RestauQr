@@ -4,7 +4,8 @@ export const ORDERS = {
     PENDING : "/orders/pending",
     WAITING : "/orders/waiting",
     CANCELED : "/orders/canceled",
-    REVIEW: "/orders/:id"
+    REVIEW: "/orders/:orderid",
+    GET_REVIEW : (id)=>"/orders/"+id
 }
 
 export const FOOD = {

@@ -1,4 +1,5 @@
 import {Link} from "react-router-dom"
+import * as ROUTES from "../ROUTES"
 const Nav = ()=>{
     return <div className="nav-bar">
         <h1>Menu</h1>
@@ -9,14 +10,11 @@ const Nav = ()=>{
                     <h2>Orders</h2>
                 </li>
                 {/* Universal Table for the orders */}
-                <Link to="/"><li>All Orders</li></Link>
-                <Link to="/"><li>Waiting Orders</li></Link>
-                <Link to="/"><li>Pending Orders</li></Link>
-                <Link to="/"><li>Accomplished Orders</li></Link>
-                <Link to="/"><li>Canceled Orders</li></Link>
-                <Link to="/"><li>Review Orders</li></Link>
-                {/* Kind of a grid that shows the state and on click gives you the current order of that table */}
-                <Link to="/"><li>Get Table Orders</li></Link>
+                <Link to={ROUTES.ORDERS.ALL}><li>All Orders</li></Link>
+                <Link to={ROUTES.ORDERS.WAITING}><li>Waiting Orders</li></Link>
+                <Link to={ROUTES.ORDERS.PENDING}><li>Pending Orders</li></Link>
+                <Link to={ROUTES.ORDERS.ACCOMPLISHED}><li>Accomplished Orders</li></Link>
+                <Link to={ROUTES.ORDERS.CANCELED}><li>Canceled Orders</li></Link>
                 <li>
                     <img src="/restaurant.png" alt="food" />
                     <h2>Food</h2>
