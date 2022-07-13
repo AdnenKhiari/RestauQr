@@ -20,17 +20,17 @@ const Nav = ()=>{
                     <h2>Food</h2>
                 </li>
                 {/* Grid With food pictures and menu ( like in the main app ) on click gives you the corresponding correct page  */}
-                <Link to="/"><li>Review Food</li></Link>
-                <Link to="/"><li>Add Food</li></Link>
-                <Link to="/"><li>Update Food</li></Link>
+                <Link to={ROUTES.FOOD.REVIEW} ><li>Review Food</li></Link>
+                <Link to={ROUTES.FOOD.ADD}><li>Add Food</li></Link>
+                <Link to={ROUTES.FOOD.UPDATE}><li>Update Food</li></Link>
                 <li>
                     <img src="/utilisateur.png" alt="food" />
                     <h2>Users</h2>
                 </li>
                 {/* Simple Users Account List , on click tbadil el username wil pass wil roles li andou (admin , cuisinier ) */}
-                <Link to="/"><li>Review Food</li></Link>
-                <Link to="/"><li>Add Food</li></Link>
-                <Link to="/"><li>Update Food</li></Link>
+                <Link to={ROUTES.FOOD.REVIEW} ><li>Review Food</li></Link>
+                <Link to={ROUTES.FOOD.ADD}><li>Add Food</li></Link>
+                <Link to={ROUTES.FOOD.UPDATE}><li>Update Food</li></Link>
             </ul>
         </nav>
     </div>

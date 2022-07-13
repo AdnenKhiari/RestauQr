@@ -10,6 +10,9 @@ $h4size:0.9rem;
 @function Bright($alpha){
     @return rgba(255,255,255,$alpha);
 };
+@function Black($alpha){
+    @return rgba(0,0,0,$alpha);
+};
 @function LightGray($alpha){
     @return rgba(249,250,251,$alpha);
 };

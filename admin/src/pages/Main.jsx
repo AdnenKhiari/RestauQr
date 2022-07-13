@@ -2,6 +2,8 @@ import { Routes,Route } from "react-router-dom"
 import Nav from "../components/Nav"
 import * as ROUTES from "../ROUTES"
 import ORDERS from "./orders"
+import FOOD from "./food"
+
 const Main = ()=>{
     return <div className="main-content">
         <Nav />
@@ -13,6 +15,8 @@ const Main = ()=>{
                 <Route path={ROUTES.ORDERS.WAITING} element={<ORDERS.Waiting />} />
                 <Route path={ROUTES.ORDERS.PENDING} element={<ORDERS.Pending />} />
                 <Route path={ROUTES.ORDERS.REVIEW} element={<ORDERS.Review />} />
+
+                <Route path={ROUTES.FOOD.ADD} element={<FOOD.Add />} />
             </Routes>
         </div>
     </div>

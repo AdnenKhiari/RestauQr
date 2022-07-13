@@ -1,0 +1,117 @@
+.food-addupd{
+    h1{
+        margin: 15px;
+    }
+    form{
+        background-color: Bright(1);
+        padding: 15px;
+        label{
+            font-family: $base_font;
+        }
+        h2{
+            display: flex;
+            justify-content: flex-start;
+            align-items: center ;
+            align-content: center;
+        }
+        .food-img{
+            width: 100%;
+            height: 900px;
+            object-fit: cover;
+            border: 1px solid Secondary(1);
+            cursor: pointer;
+        }
+        .food-input,textarea{
+            font-size: $h2size ;
+            background-color: transparent;
+            border: none;
+            margin: 15px 5px; 
+            padding-bottom: 5px;
+            height: 50px;
+            border-radius: 0%;
+            border-bottom: 1px solid Secondary(1);
+            background-color: Secondary(0.025);
+
+        }
+        .food-input:hover,.food-input:focus,.food-input:active,textarea:hover,textarea:focus,textarea:active{
+            border: none;
+            box-shadow: none;
+            background-color: transparent;
+            border-bottom: 1px solid Secondary(0.3);
+
+            /*            text-decoration: underline;
+            text-underline-offset:6px;
+            text-decoration-color: rgba(0,0,0,0.2);
+            text-decoration-thickness: 1px;*/
+        }
+        textarea:hover,textarea:focus,textarea:active{
+            border: 1px solid Secondary(0.3)
+        }   
+        textarea{
+            height: 250px;
+            width: 100%;
+            border: 1px solid Secondary(1) ;
+            resize: vertical;
+        }
+        input[type=file]{
+            display: none;
+        }
+        .food-input[type=number]{
+            width: 150px;
+        }
+        .options-list-header,.validate{
+            display: flex;
+            button{
+                margin: 10px;
+                color: Bright(1);
+            }
+            button:hover{
+                color: Black(1);
+            }
+        }
+        .options-types{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            input{
+                font-size: $h3size;
+            }
+            img{
+                height: 30px;
+                object-fit: cover;
+                transform: translateY(30%);
+            }
+            img.remove-img,img.add-img{
+                cursor: pointer;
+                margin: 0px 10px;
+                transition: all 100ms ease;
+                
+            }
+            img.remove-img:hover,img.add-img:hover{
+                transform: scale(1.2) translateY(30%);
+
+            }
+            .check-item,.select-item .select-header,.choice-item{
+                padding-left: 30px;
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                align-content: flex-end;
+            }
+            .choices{
+                display: flex;
+                flex-direction: column;
+                padding-left: 60px;
+
+            }
+        }
+        .validate{
+            margin: 20px 0px;
+            button{
+                min-width: 150px;
+
+            }
+            justify-content: flex-end;
+        }
+    }
+}
