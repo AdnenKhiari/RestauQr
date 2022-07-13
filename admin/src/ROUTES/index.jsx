@@ -13,7 +13,7 @@ export const FOOD = {
     REVIEW : "/food/:id",
     ADD : "/food/add",
     //in update add remove button
-    UPDATE : "/food/update/:id",
+    UPDATE : "/food/update/:foodid",
     GET_UPDATE : (id)=> "/food/update/"+id,
     GET_REVIEW : (id)=> "/food/"+id
 

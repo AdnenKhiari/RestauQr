@@ -139,3 +139,39 @@ input,button,a,textarea{
 .danger-text{
     color: Warning(1);
 }
+
+.Dropdown-root{
+    min-width: 200px;
+    position: relative;
+    cursor: pointer ;
+    border: 1px solid Secondary(1);
+    img{
+        width: 20px;    
+        margin-left: 10px;
+        object-fit: cover;
+    }
+    .Dropdown-control{
+        padding: 15px;
+        background-color: Green(0.4);
+        position: relative;
+        display: flex ;
+        justify-content: space-between;
+    }
+    .Dropdown-menu{
+        border: 1px solid Secondary(1);
+
+        position: absolute;
+        max-height: 200px;
+        overflow-y: scroll;
+        background-color: Bright(1);
+        width: 100%;     
+        *{
+            padding: 15px;
+            transition: all 100ms ease;
+        }
+        *:hover{
+            background-color:Green(1);
+        }
+    }
+}
+@include scrollify(".Dropdown-menu",true)

@@ -1,4 +1,5 @@
 .food-addupd{
+
     h1{
         margin: 15px;
     }
@@ -8,11 +9,22 @@
         label{
             font-family: $base_font;
         }
-        h2{
+        .input-item{
             display: flex;
             justify-content: flex-start;
             align-items: center ;
             align-content: center;
+        }
+
+        .Dropdown-root{
+            
+            margin: 15px 10px;
+            border: none;
+
+            .Dropdown-control{
+                background-color: Secondary(1);
+                font-size: $h3size;
+            }
         }
         .food-img{
             width: 100%;
@@ -61,6 +73,7 @@
         }
         .options-list-header,.validate{
             display: flex;
+            align-items: center;
             button{
                 margin: 10px;
                 color: Bright(1);
