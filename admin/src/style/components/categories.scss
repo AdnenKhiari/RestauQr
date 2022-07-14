@@ -1,0 +1,56 @@
+.food-categories-container{
+    background-color: Bright(1);
+    padding: 15px;
+    button{
+        margin: 10px;
+    }
+    .food-categories-header{
+        display: flex;
+    }
+
+    .food-categories-body{
+        transition: all 100ms ease;
+        > :hover{
+            border-left: 7px solid Green(1);
+        }
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        p{
+            font-size: $h3size;
+            padding: 15px;
+            background-color: Secondary(0.1);
+            margin: 5px 5px;
+            display: flex;
+            justify-content: space-between;
+            transition: all 100ms ease;
+
+            img{
+                transition: all 100ms ease;
+                width: 30px;
+                object-fit: cover;
+                cursor: pointer;
+                margin: 0px 5px;
+                z-index: 10;
+            }
+            img:hover{
+                transform: scale(1.2);
+            }
+        }
+        p:hover input{
+            padding-left: 20px;
+        }
+        
+        input,input:hover,input:focus{
+            font-size: $h3size;
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            width: 100%;
+            height: 100%;
+        }
+    }
+    div:last-child{
+        display: flex;
+        justify-content: flex-end;
+    }
+}

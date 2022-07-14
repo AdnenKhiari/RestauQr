@@ -22,7 +22,7 @@ const Nav = ()=>{
                 {/* Grid With food pictures and menu ( like in the main app ) on click gives you the corresponding correct page  */}
                 <Link to={ROUTES.FOOD.REVIEW} ><li>Review Food</li></Link>
                 <Link to={ROUTES.FOOD.ADD}><li>Add Food</li></Link>
-                <Link to={ROUTES.FOOD.UPDATE}><li>Update Food</li></Link>
+                <Link to={ROUTES.FOOD.CATEGORIES} ><li>Categories</li></Link>
                 <li>
                     <img src="/utilisateur.png" alt="food" />
                     <h2>Users</h2>

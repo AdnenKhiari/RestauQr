@@ -11,6 +11,7 @@ export const ORDERS = {
 export const FOOD = {
     ALL : "/food/",
     REVIEW : "/food/:id",
+    CATEGORIES : "/food/categories",
     ADD : "/food/add",
     //in update add remove button
     UPDATE : "/food/update/:foodid",

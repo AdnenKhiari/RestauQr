@@ -18,6 +18,7 @@ const Main = ()=>{
 
                 <Route path={ROUTES.FOOD.ADD} element={<FOOD.Add />} />
                 <Route path={ROUTES.FOOD.UPDATE} element={<FOOD.Update />} />
+                <Route path={ROUTES.FOOD.CATEGORIES} element={<FOOD.Categories />} />
 
             </Routes>
         </div>
