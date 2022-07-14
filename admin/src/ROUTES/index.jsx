@@ -7,6 +7,10 @@ export const ORDERS = {
     REVIEW: "/orders/:orderid",
     GET_REVIEW : (id)=>"/orders/"+id
 }
+export const AUTH = {
+    SINGIN : "/signin",
+    SIGNUP : "/signup",
+}
 
 export const FOOD = {
     ALL : "/food/",
