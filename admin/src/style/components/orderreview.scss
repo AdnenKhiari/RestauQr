@@ -1,0 +1,126 @@
+.order-review{
+    width: 100%;
+    h1:first-child{
+        margin: 40px 15px;
+        display: flex;
+        justify-content: space-between;
+        button{
+            width: 150px;
+        }
+    }
+    .order-meta{
+        font-size: $h3size;
+        margin: 20px 5px;
+        font-family: $secondary_font;
+
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        span{
+            font-size: $h2size;
+        }
+        div:nth-child(1){
+            background-color: Secondary(1);
+        }
+        div:nth-child(2){
+            background-color: Green(1);
+        }
+        div:nth-child(3){
+            text-transform: capitalize;
+            cursor: pointer;
+        }
+        > div:hover{
+            transform: translateY(-10px);
+        }
+        div:nth-child(3).waiting{
+            background-color: Secondary(1);
+        }
+        div:nth-child(3).accomplished{
+            background-color: Green(1);
+        }        
+        div:nth-child(3).pending{
+            background-color: Warning(1);
+        }        
+        div:nth-child(3).canceled{
+            background-color: Error(1);
+        }
+        > div{
+            transition: all 100ms ease;
+            border: 1px solid black;
+            box-shadow: 0px 0px 40px 4px Secondary(0.1);
+            width: 450px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            img{
+                object-fit: contain;
+                width: 100%;
+                padding: 120px;
+            }
+            h2{
+                position: absolute ;
+                z-index: 10;
+                margin: 0 auto;
+                bottom: 50px;
+                text-align: center;
+                font-size: $h1size;
+                display: flex;
+                color: Bright(1);
+                justify-content: center;
+            }
+        }
+    }
+    .order-foods{
+        display: grid;
+        grid-template-columns: repeat(auto-fill,minmax(700px,1fr));
+        .order-food{
+            margin: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            align-content: center;
+            background-color: Bright(1);
+            border: 1px solid Secondary(1);
+            img{
+                width: 100%;
+                object-fit: cover;
+                height: 600px;
+            }
+            .food-details{
+                flex: 1 1 0;
+                width: 100%;
+                padding: 15px;
+                h2{
+                    font-weight: bold;
+                }
+                .food-options{
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    p{
+                        padding: 10px 10px;
+                        min-width: 100px;
+                        text-align: center;
+                        background-color: Secondary(0.2);
+                        border-radius: 50px;
+                        margin: 10px;
+                        cursor: pointer;
+                        transition: all 100ms ease;
+                    }
+                    p:first-child{
+                        margin-left: 0px;
+                    }
+                    p:hover{
+                        background-color: Secondary(1);
+                        transform: translateX(5px);
+                        color: Bright(1 );
+                    }
+                }
+            }
+        }
+    }
+
+}

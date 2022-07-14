@@ -1,0 +1,90 @@
+.menu-container{
+    padding: 15px;
+    background-color: Bright(1);
+    h1{
+
+    }
+    .menu-content{
+
+        .menu-header{
+            div:first-child{
+                display: flex;
+                justify-content: flex-start;
+                > *{
+                margin: 10px ;
+                
+                }
+            }
+            .category-items{
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                align-content: center;
+                margin: 10px 0px;
+                .category-item{
+                    background-color: Secondary(0.7);
+                    border: 1px solid Green(1) ;
+                    padding: 15px;
+                    margin: 10px;
+                    min-width: 150px;
+                    border-radius: 50px;
+                    color: Bright(1);
+                    cursor: pointer;
+                    transition: all 100ms ease-in-out;
+                }
+                .category-item:hover{
+                    transform: translateX(10px);
+                    background-color: Error(0.7);
+                    color: Black(1);
+                    border: 1px solid Black(1) ;
+                }
+            }
+        }
+
+        .menu-items{
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(400px,1fr));
+            column-gap: 10px;
+            row-gap: 10px;
+        
+            .menu-item{
+                transition: all 200ms ease;
+                height: 400px;
+                border: 1px solid Black(1);
+                position: relative;
+                z-index: 20;
+                cursor: pointer;
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                p{
+                    transition: all 100ms ease;
+                    display: flex;
+                    align-items: center;
+                    background-color: Secondary(1);
+                    color: LightGray(1);
+                    width: 100%;
+                    position: absolute;
+                    bottom: 0px;
+                    left: 0px;
+                    z-index: 10;
+                    border-top: 1px solid Black(1);
+                    font-size: $h3size;
+                    padding: 15px;
+                    height: 70px;
+                }
+            }
+            .menu-item:hover {
+                img{
+                    filter: brightness(0.6);
+                }
+                p{
+                    padding-left: 20px;
+                }
+            }
+
+        }
+    }
+}

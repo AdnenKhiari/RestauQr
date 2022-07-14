@@ -10,7 +10,7 @@ export const ORDERS = {
 
 export const FOOD = {
     ALL : "/food/",
-    REVIEW : "/food/:id",
+    REVIEW : "/food/:foodid",
     CATEGORIES : "/food/categories",
     ADD : "/food/add",
     //in update add remove button

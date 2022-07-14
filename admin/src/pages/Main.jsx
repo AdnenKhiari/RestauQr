@@ -17,6 +17,8 @@ const Main = ()=>{
                 <Route path={ROUTES.ORDERS.REVIEW} element={<ORDERS.Review />} />
 
                 <Route path={ROUTES.FOOD.ADD} element={<FOOD.Add />} />
+                <Route path={ROUTES.FOOD.ALL} element={<FOOD.All />} />
+                <Route path={ROUTES.FOOD.REVIEW} element={<FOOD.Review />} />
                 <Route path={ROUTES.FOOD.UPDATE} element={<FOOD.Update />} />
                 <Route path={ROUTES.FOOD.CATEGORIES} element={<FOOD.Categories />} />
 

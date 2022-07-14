@@ -141,6 +141,11 @@ input,button,a,textarea{
 }
 
 .Dropdown-root{
+    z-index: 100;
+
+    *{
+        z-index: 100;
+    }
     min-width: 200px;
     position: relative;
     cursor: pointer ;
@@ -173,5 +178,15 @@ input,button,a,textarea{
             background-color:Green(1);
         }
     }
+}
+.make-img-blue{
+    filter: invert(53%) sepia(75%) saturate(275%) hue-rotate(141deg) brightness(86%) contrast(90%);
+}
+.make-img-error{
+    filter: invert(50%) sepia(83%) saturate(692%) hue-rotate(314deg) brightness(97%) contrast(85%);
+}
+.make-img-green{
+    filter: invert(52%) sepia(37%) saturate(427%) hue-rotate(85deg) brightness(99%) contrast(94%);
+
 }
 @include scrollify(".Dropdown-menu",true)

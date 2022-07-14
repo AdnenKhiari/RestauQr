@@ -22,8 +22,14 @@
             border: none;
 
             .Dropdown-control{
-                background-color: Secondary(1);
+                background-color: Secondary(0.025);
                 font-size: $h3size;
+                border-bottom: 1px solid Secondary(1);
+                transition: all 100ms ease  ;
+            }
+            .Dropdown-control:hover{
+                border-bottom: 1px solid Secondary(0.3);
+
             }
         }
         .food-img{

@@ -6,6 +6,10 @@ import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
 import{joiResolver} from "@hookform/resolvers/joi"
 import joi from "joi"
+import GetCategories from "../lib/GetCategories"
+import Loading from "./Loading"
+import Error from "./Error"
+
 const check_schema = joi.object({
     msg: joi.string().required().label('Item Message'),
     type: joi.allow('check').required(),
@@ -31,7 +35,6 @@ const schema = joi.object({
 const FoodDetails = ({defaultVals = undefined})=>{
     const formOptions = useForm({
         defaultValues: defaultVals || {
-            id: null,
             title: '',
             img: null,
             description: '',
@@ -44,7 +47,10 @@ const FoodDetails = ({defaultVals = undefined})=>{
     const uploader = UploadFile()
     const food_uploader = AddUpdateFood()
     const usenav = useNavigate() 
+    const {result : categories,loading: categoriesLoading,error : errorCategories} = GetCategories()
+
     const SubmitForm = async (data)=>{
+        
         try{
             console.log(data)
         if( typeof(data.img) !== 'string'){
@@ -62,13 +68,16 @@ const FoodDetails = ({defaultVals = undefined})=>{
             throw food_uploader.error
 
         // normalement usenav to the new id
-        // usenav(ROUTES.FOOD.GET_REVIEW(food_id))
+        usenav(ROUTES.FOOD.GET_REVIEW(food_id))
         }catch(err){
             console.error(err)
         }
     }
     console.log(errors)
-
+    if(categoriesLoading)
+        return <Loading />
+    if(errorCategories)
+        return <Error error={errorCategories} msg={"Could Not Retrieve the categories"} />
     return <div className="food-addupd">
         <h1>{defaultVals ? "Update Food : " + defaultVals.id :"Add Food" } </h1>
         <FormProvider {...formOptions}>
@@ -89,7 +98,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
         </div>        
         <div className="input-item flex-start">
             <label htmlFor="category"><h2>Category  </h2></label>
-            <DropDown options={['Dessert','Pizza','Sandwich Chaud','Dessert','Pizza','Sandwich Chaud','Dessert','Pizza','Sandwich Chaud']} 
+            <DropDown options={categories} 
             name="category" 
             value={watch('category')} 
             onChange={(d)=>setValue('category',d.value)} 
@@ -138,10 +147,10 @@ const Options = ()=>{
         {watch("options") && watch("options").map((opt,index)=>{
             if(opt.type === 'check')
                 return <div key={index} className="check-item">
-                    <img src="/checkbox.png" alt="Option" />
+                    <img className="make-img-blue" src="/checkbox.png" alt="Option" />
                     <input placeholder="Message..." className="food-input" type="text" {...register(`options.${index}.msg`)} />
                     <input placeholder="0" className="food-input"  type="number" {...register(`options.${index}.price`)} />
-                    <img  className="remove-img" src="/trash.png" alt="Option" onClick={(e)=>{
+                    <img  className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                         remove(index)
                     }} />
                 </div>
@@ -159,22 +168,22 @@ const MultipleChoiceItem = ({idx,removeItem})=>{
 
     return <div className="select-item">
         <div className="select-header">
-            <img src="/radio-button.png" alt="Option" />
+            <img className="make-img-blue" src="/radio-button.png" alt="Option" />
                 <input  placeholder="Message..." className="food-input"  type="text" {...register(`options.${idx}.msg`)} />
-                <img className="add-img" src="/plus.png" alt="Add Choice" onClick={(e)=>{
+                <img className="add-img make-img-green" src="/plus.png" alt="Add Choice" onClick={(e)=>{
                 append({msg: '',price: ''})
                 }} />
-                <img className="remove-img" src="/trash.png" alt="Option" onClick={(e)=>{
+                <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                         removeItem(idx)
                 }} />
         </div>
 
         <div className="choices">
             {watch(`options.${idx}.choices`) && watch(`options.${idx}.choices`).map((choice,index)=><div className="choice-item"  key={index}>
-                <img src="/radio.png" alt="radio" />
+                <img className="make-img-blue" src="/radio.png" alt="radio" />
                 <input placeholder="Message..." className="food-input"  type="text" {...register(`options.${idx}.choices.${index}.msg`)} />
                 <input placeholder="0" className="food-input"  type="number" {...register(`options.${idx}.choices.${index}.price`)} />
-                <img className="remove-img" src="/trash.png" alt="Option" onClick={(e)=>{
+                <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                         remove(index)
                 }} />
             </div>)

@@ -6,7 +6,7 @@ import moment from "moment"
 import {map_status_to_priority} from "../lib/utils"
 import * as ROUTES from "../ROUTES"
 import { useNavigate } from "react-router-dom"
-const OrderTable = ({queryConstraints = []})=>{
+const OrderTable = ({queryConstraints = [],title})=>{
     const page_lim = 10
     const db = getFirestore()
     //for the table of orders
@@ -132,7 +132,7 @@ const OrderTable = ({queryConstraints = []})=>{
     },[db,Query])
 
     return <div className="orders-table">
-        <UniversalTable head={rows} body={table_data} colors={table_data[0].length > 0 && table_data.map((it)=>it[4].toLowerCase())} title="All Orders" oncl={(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row[0]))} prev={prev} next={next}  customOptions={customOptions}/>
+        <UniversalTable head={rows} body={table_data} colors={table_data[0].length > 0 && table_data.map((it)=>it[4].toLowerCase())} title={title} oncl={(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row[0]))} prev={prev} next={next}  customOptions={customOptions}/>
         <p className="error">{errormsg}</p>
     </div>
 }
