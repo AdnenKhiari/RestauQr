@@ -1,15 +1,15 @@
 .main-content{
     .nav-bar{
+        position: relative;
         height: 100vh;
         background-color: Bright(1);
         width: 100%;
-
         h1{
             padding: 15px;
         }
         .main-nav{
             width: 100%;
-            height: calc(100vh - 5rem - 30px);
+            height: calc(100vh - 5rem - 30px - 50px);
             margin: 0px 0px;
             overflow-y: scroll;
             ul{
@@ -53,7 +53,16 @@
                 }
             }
         }
+        .nav-button{
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            border-radius: 0px;
+            font-family: $base_font;
+        }
     }
+
 }
 
 @include scrollify(".main-nav");

@@ -10,6 +10,7 @@ export const ORDERS = {
 export const AUTH = {
     SINGIN : "/signin",
     SIGNUP : "/signup",
+    VALIDATE_EMAIL: "/validateemail"
 }
 
 export const FOOD = {

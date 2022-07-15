@@ -25,12 +25,14 @@
             font-size: $h1size * 1.5;
         }
         form{
+            max-width: 50%;
             div{
                 display: flex;
                 align-items: center;
                 align-content: center;
                 justify-content: space-between;
                 button{
+                    min-width: 160px;
                     margin: 10px 10px;
                     height: 50px;
                     font-size: $h3size;

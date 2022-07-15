@@ -1,6 +1,8 @@
 import {Link} from "react-router-dom"
 import * as ROUTES from "../ROUTES"
+import {LogOut} from "../lib/Auth"
 const Nav = ()=>{
+    const {error: logouterr,loading: loadingerr,logout} = LogOut()
     return <div className="nav-bar">
         <h1>Menu</h1>
         <nav className="main-nav">
@@ -33,7 +35,7 @@ const Nav = ()=>{
                 <Link to={ROUTES.FOOD.UPDATE}><li>Update Food</li></Link>
             </ul>
         </nav>
+        <button className="nav-button" onClick={(e)=>logout()}>Log Out !</button>
     </div>
-
 }
 export default Nav

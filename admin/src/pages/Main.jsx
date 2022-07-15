@@ -1,14 +1,22 @@
-import { Routes,Route } from "react-router-dom"
+import { Routes,Route, Navigate } from "react-router-dom"
 import Nav from "../components/Nav"
 import * as ROUTES from "../ROUTES"
 import ORDERS from "./orders"
 import FOOD from "./food"
+import { useContext } from "react"
+import { UserContext } from "../contexts"
 
 const Main = ()=>{
+    const user = useContext(UserContext)
+    if(!user)
+        return <Navigate to={ROUTES.AUTH.SINGIN} />
+    if(user && !user.emailVerified)
+        return <Navigate to={ROUTES.AUTH.VALIDATE_EMAIL} />
     return <div className="main-content">
         <Nav />
         <div className="main">
             <Routes>
+
                 <Route path={ROUTES.ORDERS.ALL} element={<ORDERS.AllOrders />} />
                 <Route path={ROUTES.ORDERS.ACCOMPLISHED} element={<ORDERS.Accomplished />} />
                 <Route path={ROUTES.ORDERS.CANCELED} element={<ORDERS.Canceled />} />
