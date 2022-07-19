@@ -9,6 +9,8 @@ import joi from "joi"
 import {GetCategories} from "../lib/Options"
 import Loading from "./Loading"
 import Error from "./Error"
+import { FadeIn } from "../animations"
+import {motion} from "framer-motion"
 
 const check_schema = joi.object({
     msg: joi.string().required().label('Item Message'),
@@ -78,7 +80,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
         return <Loading />
     if(errorCategories)
         return <Error error={errorCategories} msg={"Could Not Retrieve the categories"} />
-    return <div className="food-addupd">
+    return <motion.div variants={FadeIn()} className="food-addupd">
         <h1>{defaultVals ? "Update Food : " + defaultVals.id :"Add Food" } </h1>
         <FormProvider {...formOptions}>
         <form onReset={(e)=>reset()} onSubmit={handleSubmit(SubmitForm)}>
@@ -120,7 +122,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
         </div>
         </form>
         </FormProvider>
-    </div>
+    </motion.div>
 }
 const Options = ()=>{
 

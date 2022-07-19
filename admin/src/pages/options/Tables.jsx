@@ -6,6 +6,8 @@ import Error from "../../components/Error"
 import Loading from "../../components/Loading"
 import { useContext } from "react"
 import {UserContext} from "../../contexts"
+import {motion} from "framer-motion"
+import { FadeIn } from "../../animations"
 
 const schema  = joi.object({
     min: joi.number().min(0).required().label("Minimum"),
@@ -40,7 +42,7 @@ const TablesForm = ({tables})=>{
             console.log(err)
         }
     }
-    return <div className="table-container">
+    return <motion.div  variants={FadeIn()} className="table-container">
         <h1>Tables</h1>
         <form onSubmit={handleSubmit(submit)} onReset={(e)=>{e.preventDefault();reset()}}>
             <div >
@@ -69,6 +71,6 @@ const TablesForm = ({tables})=>{
             <button type="submit">Update</button>
             </div>} 
         </form>
-    </div>
+    </motion.div>
 }   
 export default Tables

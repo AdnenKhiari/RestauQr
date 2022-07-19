@@ -6,6 +6,8 @@ import { useState } from "react"
 import { useEffect } from "react"
 import { useContext } from "react"
 import { UserContext } from "../../contexts"
+import { FadeIn } from "../../animations"
+import {motion} from "framer-motion"
 
 const ReviewOrder = ()=>
 {
@@ -42,7 +44,7 @@ const ReviewOrder = ()=>
         return <Loading />
     if(error)
         return <Error error={error} msg={"Error ,Check the Id Or report the issue"} />
-    return <div className="order-review">
+    return <motion.div variants={FadeIn()} className="order-review">
         <h1>#{orderid} {user.profile.permissions.orders.manage &&  <button onClick={(e)=>orderUpdate(states[stateidx])}>Save</button>}</h1>
 
        <div className="order-meta">
@@ -63,6 +65,6 @@ const ReviewOrder = ()=>
         </div>)}
        </div>
 
-    </div>
+    </motion.div>
 }
 export default ReviewOrder

@@ -5,6 +5,8 @@ import * as ROUTES from "../../ROUTES"
 import {Navigate, useNavigate} from "react-router-dom"
 import { useContext } from "react"
 import { UserContext } from "../../contexts"
+import { FadeIn } from "../../animations"
+import {motion} from "framer-motion"
 
 const AllProfiles = ()=>{
 
@@ -19,11 +21,11 @@ const AllProfiles = ()=>{
         return <Loading />
     if(!user.profile.permissions.users.read)
         return <Navigate to={ROUTES.ORDERS.ALL} />    
-    return <div className="profiles">
+    return <motion.div variants={FadeIn()} className="profiles">
         <h1>Users : </h1>
         <div className="users">
         {result && result.map((item,key)=><div onClick={(e)=>usenav(ROUTES.USERS.GET_PROFILE(item.id))} key={key}>{item.name}</div>)}
         </div>
-    </div>
+    </motion.div >
 }
 export default AllProfiles

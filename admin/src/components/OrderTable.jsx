@@ -6,6 +6,8 @@ import moment from "moment"
 import {map_status_to_priority} from "../lib/utils"
 import * as ROUTES from "../ROUTES"
 import { useNavigate } from "react-router-dom"
+import { FadeIn } from "../animations"
+import { motion } from "framer-motion"
 const OrderTable = ({queryConstraints = [],title})=>{
     const page_lim = 10
     const db = getFirestore()
@@ -131,9 +133,9 @@ const OrderTable = ({queryConstraints = [],title})=>{
         return unsub
     },[db,Query])
 
-    return <div className="orders-table">
+    return <motion.div variants={FadeIn()}className="orders-table">
         <UniversalTable head={rows} body={table_data} colors={table_data[0].length > 0 && table_data.map((it)=>it[4].toLowerCase())} title={title} oncl={(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row[0]))} prev={prev} next={next}  customOptions={customOptions}/>
         <p className="error">{errormsg}</p>
-    </div>
+    </motion.div>
 }
 export default OrderTable

@@ -5,6 +5,8 @@ import Error from "../../components/Error"
 import * as ROUTES from "../../ROUTES"
 import { useContext } from "react"
 import { UserContext } from "../../contexts"
+import {motion} from "framer-motion"
+import { FadeIn } from "../../animations"
 
 const ReviewFood =()=>{
     const {foodid} = useParams()
@@ -18,7 +20,7 @@ const ReviewFood =()=>{
         return <Loading />
     return  <>
     <h1 className="food-review-id">#{foodid}</h1>
-    <div className="food-review">
+    <motion.div variants={FadeIn()} className="food-review">
         <div className="food-review-header">
             <h1>{food.title} : {food.price}$</h1>
             <div>
@@ -46,7 +48,7 @@ const ReviewFood =()=>{
                 {food.options && food.options.map((opt,key)=><Option key={key} opt={opt} />)}
             </div>
         </div>
-    </div>
+    </motion.div >
     </>
 }
 const Option = ({opt})=>{

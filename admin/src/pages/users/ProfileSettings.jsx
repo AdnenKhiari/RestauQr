@@ -7,6 +7,12 @@ import { RemoveAccount, UpdateEmail, UpdatePassword, UpdateProfile } from "../..
 
 import * as ROUTES from "../../ROUTES"
 import ConfirmLogin from "../auth/ConfirmLogin"
+
+
+import { FadeIn } from "../../animations"
+import {motion} from "framer-motion"
+
+
 const Permissions = ({permissions,disabled = false})=>{
     const {register,watch} = useFormContext() 
     return <div className="permissions-container">
@@ -133,7 +139,7 @@ const ProfileSettings = ({profile,me = false})=>{
     if(confirm)
         return <ConfirmLogin callback={(e)=>accepted()} cancel={(e)=>cancel()} />
     return <FormProvider {...ctx} >
-        <div className="profile-container">
+        <motion.div variants={FadeIn()} className="profile-container">
             
             {!me && <h1>{profile.name}</h1>}
             <form onReset={(e)=>{e.preventDefault();ctx.reset()}} onSubmit={ctx.handleSubmit(submit)}>
@@ -156,7 +162,7 @@ const ProfileSettings = ({profile,me = false})=>{
                 {accountRemove.error && <p className="error">{accountRemove.error}</p>}
 
             </form>
-        </div>
+        </motion.div>
     </FormProvider>
 }
 

@@ -6,7 +6,8 @@ import DropDown from "react-dropdown"
 import { useState } from "react"
 import {useNavigate} from "react-router-dom"
 import * as ROUTES from "../../ROUTES"
-
+import {motion} from "framer-motion"
+import {FadeIn,staggerChildren,TranslateIn} from "../../animations"
 const AllFood = ()=>{
     const [cats,setCats] = useState([])
     const [selectedCat,setSelectedCat] = useState('')
@@ -16,7 +17,7 @@ const AllFood = ()=>{
         return <Error msg={"Error while retrieving Categories information"} error={allcategories.error} />
     if(allcategories.loading )
         return <Loading />  
-    return <div className="menu-container">
+    return <motion.div variants={FadeIn()} className="menu-container" >
         <h1>Menu</h1>
         <div className="menu-content">
             <div className="menu-header">
@@ -39,7 +40,7 @@ const AllFood = ()=>{
             <Menu categories={cats} />
         </div>
 
-    </div> 
+    </motion.div> 
 }
 const Menu = ({categories})=>{
     const food_data = GetByCategories(categories)
@@ -50,16 +51,16 @@ const Menu = ({categories})=>{
         return <Error msg={"Error while retrieving Menu information"} error={food_data.error} />
     if( food_data.loading)
         return <Loading />
-    return <div className="menu-items">
+    return <motion.div className="menu-items" variants={staggerChildren()} animate="animate" initial="initial" exit="exit">
         {food_data && food_data.data.map((item,key)=><MenuItem key={key} food={item} />)}
-    </div>
+    </motion.div>
 }
 
 const MenuItem =({food})=>{
     const usenav = useNavigate()
-    return <div className="menu-item" onClick={(e)=>usenav(ROUTES.FOOD.GET_REVIEW(food.id))}>
+    return <motion.div variants={TranslateIn()} className="menu-item" onClick={(e)=>usenav(ROUTES.FOOD.GET_REVIEW(food.id))}>
             <img src={food.img} alt={food.title}/>
             <p>{food.title}</p>
-    </div>
+    </motion.div>
 }
 export default AllFood

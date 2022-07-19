@@ -9,6 +9,8 @@ import Loading from "../../components/Loading"
 import { useEffect } from "react"
 import { useContext } from "react"
 import { UserContext } from "../../contexts"
+import { FadeIn } from "../../animations"
+import {motion} from "framer-motion"
 
 const schema = joi.object({
     categories: joi.array().items(joi.string().trim())
@@ -45,7 +47,7 @@ const CategoriesForm = ({cats})=>{
         mutate(data.categories)
     }
 
-    return <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(submit)} className="food-categories-container">
+    return <motion.form variants={FadeIn()} onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(submit)} className="food-categories-container">
     <div className="food-categories-header">
         <h1>Categories</h1>
        {user.profile.permissions.categories.manage &&  <button onClick={(e)=>append('')}>New Category</button>}    
@@ -60,6 +62,6 @@ const CategoriesForm = ({cats})=>{
         <button type="reset" >Reset</button>
         <button type="submit">Update</button>
     </div>}
-</form>
+</motion.form>
 }
 export default FoodCategories

@@ -20,6 +20,7 @@ import Loading from "./components/Loading"
 import ResetPassword from "./pages/auth/ResetPassword"
 import ActionCodeResponse from "./pages/auth/ActionCodeResponse"
 import CreateProfile from "./pages/auth/CreateProfile"
+import { motion, AnimatePresence } from "framer-motion"
 
 function App() {
   const app = initializeApp(firebaseConfig)
@@ -34,7 +35,7 @@ function App() {
 
   return (
   <UserContext.Provider value={user}>
-    <Routes>
+    <Routes >
 
      <Route path="/test" element={<Test />} />
 
