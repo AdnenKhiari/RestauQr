@@ -3,12 +3,14 @@ import {GetFoodById,DeleteFoodById} from "../../lib/FoodDal"
 import Loading from "../../components/Loading"
 import Error from "../../components/Error"
 import * as ROUTES from "../../ROUTES"
+import { useContext } from "react"
+import { UserContext } from "../../contexts"
 
 const ReviewFood =()=>{
     const {foodid} = useParams()
     const {result : food,loading,error} = GetFoodById(foodid)
     const {deleteFood} = DeleteFoodById()
-
+    const user = useContext(UserContext)
     const usenav = useNavigate()
     if( error)
         return <Error msg={"Error while retrieving Food information " + foodid} error={error} />
@@ -20,7 +22,7 @@ const ReviewFood =()=>{
         <div className="food-review-header">
             <h1>{food.title} : {food.price}$</h1>
             <div>
-                <button onClick={(e)=>{
+                {user.profile.permissions.food.manage && <><button onClick={(e)=>{
                     usenav(ROUTES.FOOD.GET_UPDATE(food.id))
                 }}>Update</button>
                 <button onClick={(e)=>{
@@ -30,7 +32,7 @@ const ReviewFood =()=>{
                     }catch(err){
                         console.log(err)
                     }
-                }}>Delete</button>
+                }}>Delete</button></>}
             </div>
         </div>
         <div className="food-review-body">

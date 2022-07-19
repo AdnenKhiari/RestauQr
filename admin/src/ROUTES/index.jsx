@@ -8,9 +8,19 @@ export const ORDERS = {
     GET_REVIEW : (id)=>"/orders/"+id
 }
 export const AUTH = {
-    SINGIN : "/signin",
-    SIGNUP : "/signup",
-    VALIDATE_EMAIL: "/validateemail"
+    SINGIN : "/auth/signin",
+    SIGNUP : "/auth/signup",
+    VALIDATE_EMAIL: "/auth/validateemail",
+    RESET_PASSWORD: "/auth/resetpassword",
+    INIT_PROFILE: "/auth/profile/create",
+    ACTION_CODE_RESPONSE : "/auth/acr/*"
+}
+
+export const USERS = {
+    MY_PROFILE: "/users/profile",
+    ALL: "/users/",
+    PROFILE: "/users/profile/:userid",
+    GET_PROFILE : (id)=>"/users/profile/" + id
 }
 
 export const FOOD = {
@@ -23,4 +33,7 @@ export const FOOD = {
     GET_UPDATE : (id)=> "/food/update/"+id,
     GET_REVIEW : (id)=> "/food/"+id
 
+}
+export const OPTIONS = {
+    MENU : "/options"
 }

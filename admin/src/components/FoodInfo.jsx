@@ -6,7 +6,7 @@ import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
 import{joiResolver} from "@hookform/resolvers/joi"
 import joi from "joi"
-import GetCategories from "../lib/GetCategories"
+import {GetCategories} from "../lib/Options"
 import Loading from "./Loading"
 import Error from "./Error"
 

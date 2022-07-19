@@ -2,12 +2,13 @@ import { useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import joi from "joi"
 import {joiResolver} from "@hookform/resolvers/joi"
-import GetCategories from "../../lib/GetCategories"
-import UpdateCategories from "../../lib/UpdateCategories.jsx"
+import {UpdateCategories,GetCategories} from "../../lib/Options"
 
 import Error from "../../components/Error"
 import Loading from "../../components/Loading"
 import { useEffect } from "react"
+import { useContext } from "react"
+import { UserContext } from "../../contexts"
 
 const schema = joi.object({
     categories: joi.array().items(joi.string().trim())
@@ -32,7 +33,7 @@ const CategoriesForm = ({cats})=>{
         shouldUnregister: false,
         resolver: joiResolver(schema)
     })
-
+    const user = useContext(UserContext)
     const {watch,setValue,handleSubmit,reset,register,control,formState : {errors}} = formOptions
     const {append,remove} = useFieldArray({
         name: 'categories',
@@ -47,18 +48,18 @@ const CategoriesForm = ({cats})=>{
     return <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(submit)} className="food-categories-container">
     <div className="food-categories-header">
         <h1>Categories</h1>
-        <button onClick={(e)=>append('')}>New Category</button>
+       {user.profile.permissions.categories.manage &&  <button onClick={(e)=>append('')}>New Category</button>}    
     </div>
     <div className="food-categories-body">
         {watch('categories').map((item,index)=><p className={errors.categories && errors.categories[index] ?  "input-error": undefined} key={index}>
             <input placeholder="Category..."  type="text" {...register(`categories.${index}`)} />  
-            <img src="/trash.png" alt="trahs" onClick={(e)=>remove(index)}/> 
+           {user.profile.permissions.categories.manage && <img src="/trash.png" alt="trahs" onClick={(e)=>remove(index)}/>} 
             </p>)}
     </div>
-    <div>   
+    {user.profile.permissions.categories.manage && <div className="submit-container">   
         <button type="reset" >Reset</button>
         <button type="submit">Update</button>
-    </div>
+    </div>}
 </form>
 }
 export default FoodCategories

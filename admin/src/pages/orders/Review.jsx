@@ -4,6 +4,8 @@ import Loading from "../../components/Loading"
 import Error from "../../components/Error"
 import { useState } from "react"
 import { useEffect } from "react"
+import { useContext } from "react"
+import { UserContext } from "../../contexts"
 
 const ReviewOrder = ()=>
 {
@@ -11,7 +13,7 @@ const ReviewOrder = ()=>
     const [stateidx,setStateidx] = useState(0)
     const {result : order,error,loading} = GetOrderById(orderid)
     const {mutate : orderUpdate,error : errorUpdate} = UpdateOrder(orderid)
-
+    const user = useContext(UserContext)
     console.log(order,error,loading)
     const states = ['waiting','pending','accomplished','canceled']
 
@@ -41,12 +43,12 @@ const ReviewOrder = ()=>
     if(error)
         return <Error error={error} msg={"Error ,Check the Id Or report the issue"} />
     return <div className="order-review">
-        <h1>#{orderid} <button onClick={(e)=>orderUpdate(states[stateidx])}>Save</button></h1>
+        <h1>#{orderid} {user.profile.permissions.orders.manage &&  <button onClick={(e)=>orderUpdate(states[stateidx])}>Save</button>}</h1>
 
        <div className="order-meta">
             <div><img src="/table-ronde.png" alt="" /><h2>#{order.tableid}</h2></div> 
             <div><img src="/remise.png" alt="" /><h2>{order && order.food.reduce((prev,fd)=>prev+fd.price*fd.count,0)}$</h2></div>
-            <div onClick={(e)=>changeStatus()} className={states[stateidx].toLowerCase()}><img src={getImg(states[stateidx].toLowerCase())}
+            <div onClick={(e)=> user.profile.permissions.orders.manage && changeStatus() } className={states[stateidx].toLowerCase()}><img src={getImg(states[stateidx].toLowerCase())}
             alt="" /><h2>{states[stateidx].toLowerCase()}</h2></div>
        </div>
        <div className="order-foods">

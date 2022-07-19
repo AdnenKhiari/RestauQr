@@ -1,5 +1,5 @@
 import joi from "joi"
-import {SignInUser} from "../../lib/Auth"
+import {ConfirmIdentity, SignInUser} from "../../lib/Auth"
 import * as ROUTES from "../../ROUTES"
 import AuthForm from "../../components/AuthForm"
 import BackgroundAuth from "../../components/BackgroundAuth"
@@ -16,21 +16,27 @@ const formdata = [{label: "Email",name: "email",type: "email"},
 {label: "Password",name: "password",type: "password"}
 ]
 
-const SignIn = ()=>{
+const ConfirmLogin = ({callback ,cancel})=>{
     const user = useContext(UserContext)
 
-    const {result : signed_user,loading,error,signIn} = SignInUser()
+    const {result,loading,error,confirm} = ConfirmIdentity()
     const submit = async (data)=>{
         try{
             console.log(data)
-            await signIn(data.email,data.password)
+            await confirm(data.email,data.password)
+            callback()
         }catch(err){
             console.error(err)
         }
     }
+    console.log("Veify",error)
     
-    if(user)
-        return <Navigate to={ROUTES.ORDERS.ALL} />
-    return <BackgroundAuth element={<AuthForm title={"Sign In"} err={error ? error.msg : null} schema={schema} formdata={formdata} submit={submit} smalllink={[ROUTES.AUTH.SIGNUP,ROUTES.AUTH.RESET_PASSWORD]} smalltext={["Do Not Have an account ? Sign Up","Forgot password ? Reset It !"]}  />}   />
+    if(!user)
+        return <Navigate to={ROUTES.AUTH.SINGIN} />
+    return <div className="modal"><BackgroundAuth element={<>
+        <AuthForm title={"Confirm Login"} err={error ? error.msg : null} schema={schema} formdata={formdata} submit={submit} />
+        <button onClick={(e)=>cancel()} className="cancel-button">cancel</button>
+        </>}   />
+        </div>
 }
-export default SignIn
+export default ConfirmLogin

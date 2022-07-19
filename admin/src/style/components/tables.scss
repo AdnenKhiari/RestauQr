@@ -1,0 +1,77 @@
+.table-container{
+    padding: 15px;
+    background-color: Bright(1);
+    form{
+        font-size: $h3size;
+        img{
+            width: 30px;
+            object-fit: cover;
+            margin: 5px;
+            margin-left: 20px ;
+            cursor: pointer;
+        }
+        > div:first-child{
+            display: flex;
+    
+        }
+        .input-form{
+            height: 100px ;
+            display: flex;
+            flex-direction: column;
+            align-content: center;
+            margin: 10px 10px;
+            label{
+                display: flex;
+                flex-direction: flex;
+                align-items: center;
+                margin: 10px 0px;
+            }
+            input{
+                max-width: 150px;
+                background-color: Secondary(0.1);
+                border-color: transparent;
+                box-shadow: none;
+                border-radius: 0px;
+                height: 100%;
+            }
+            input:hover,input:active,input:focus{
+                border-color: Secondary(0.3);
+            }
+            .tables-excluded{
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: flex-end;
+                align-content: flex-end;
+                div {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+                    background-color: Secondary(0.1 );
+                    margin: 10px;
+                    border: 1px solid transparent;
+
+                    input{
+                        padding: 15px 10px;
+                        background-color: transparent   ;
+                    }
+                    input:hover,input:active,input:focus{
+                        border-color: transparent;
+                    }
+
+                }
+
+            }
+
+        }
+        > .submit-container{
+            display: flex;
+            justify-content: flex-end;
+            margin: 10px 0px;
+            button{
+                margin: 10px;
+            }
+        }
+    }
+}

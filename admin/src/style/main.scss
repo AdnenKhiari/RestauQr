@@ -11,6 +11,18 @@
     width: 100vw;
     display: grid;
     grid-template-columns: 1fr 6fr;
+    .logged-user{
+        padding: 15px;
+        background-color: Secondary(1);
+        font-weight: 200;
+        color: Bright(1 );
+        margin: 30px 0px;
+    }
+
+}
+.modal{
+    width: 100%;
+
 }
 
 .main{
@@ -19,6 +31,9 @@
     margin: 0 auto;
     height: 100vh;
     overflow-y: scroll;
+    > *{
+        margin: 30px 0px
+    }
 }
 
 @include scrollify(".main",true);

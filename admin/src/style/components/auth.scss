@@ -1,7 +1,7 @@
 .auth-container{
     display: grid;
     height: 100vh;
-    width: 100vw;
+    width: 100%;
     overflow-x: hidden;
     grid-template-columns: 1fr 1fr;
     background-color: Secondary(0.2);
@@ -23,6 +23,7 @@
         h1{
             margin: 15px;
             font-size: $h1size * 1.5;
+            text-align: center;
         }
         form{
             max-width: 50%;
@@ -38,7 +39,28 @@
                     font-size: $h3size;
                 }
             }
-         .form-input{
+        .name-input{
+            background: transparent;
+            border: none;
+            font-size: $h2size;
+
+        }
+        .name-input:hover,.name-input:focus,.name-input:valid,.name-input:active{
+            border: none;
+            box-shadow: none;
+            padding: 20px;
+            height: 70px;
+            width: 100%;
+            text-align: center;
+        }
+        .name-button{
+            display: flex;
+            justify-content: center;
+            button{
+
+            }
+        }
+        .form-input{
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -53,8 +75,6 @@
                 width: 100%;
                 margin: 5px 0px;
                 font-size: $h3size;
-
-
             }
             input:hover,input:focus,input:active{
                 border-color: Secondary(0.7);
@@ -63,11 +83,14 @@
             }   
 
         }
-        a{
+        .a-container{
             position: absolute;
             align-self: flex-end;
             bottom: 30px;
             right: 30px;
+            a{
+                display: block;
+            }
         }
     }
 }

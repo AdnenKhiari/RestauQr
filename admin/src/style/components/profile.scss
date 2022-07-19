@@ -1,0 +1,124 @@
+.profiles{
+    padding: 15px;
+    background-color: Bright(1);
+    width: 100%;
+    > h1{
+
+    }
+    .users{
+        display: flex;
+        flex-direction: row;
+        div{
+            width: 300px;
+            text-align: center;
+            padding: 20px;
+            background-color: Secondary(1);
+            margin: 10px;
+            color: Bright(1);
+            transition: all 100ms ease;
+            cursor: pointer;
+        }
+        div:hover{
+            background-color: Green(1);
+ 
+        }
+    }
+}
+.profile-container{
+    width: 100%;
+
+    > h1{
+        margin: 15px;
+    }   
+    form{
+        padding: 15px;
+        background-color: Bright(1);
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        align-content: center;
+        .content{
+
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            h1{
+
+            }
+            .input-form{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                align-content: center;
+                *{
+                    margin: 5px 5px    
+                }
+                font-size: $h2size;
+                input{
+                    min-width: 250px;
+                }
+            }
+            .profile-info{
+                
+            }
+            .credentials-container{
+                
+            }
+            ul{
+                list-style: none;
+            }
+            .permissions-container{ 
+                width: 100%;
+                .permissions-list{
+                    padding: 10px;
+                    width: 100%;
+
+                    .permission-name{
+                        width: 100%;
+                        text-transform: capitalize;
+    
+                        p{
+                            font-size: $h3size;
+                            border-left: 4px solid Secondary(1);
+                            padding: 10px;
+                            margin: 5px 0px;
+                        }
+    
+                        .permissions{
+                            padding-left: 20px;
+ 
+                            li{
+                                margin: 10px 0px;
+                                display: flex;
+                                align-items: center;
+                                label{
+                                    display: flex;
+                                    align-items: center;
+                                    cursor: pointer;
+                                }
+                                img{
+                                    width: 30px;
+                                    object-fit: cover;
+                                    margin: 0px 10px;
+                                }
+                                input{
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .submit-container{
+            button{
+                margin: 10px;
+            }
+            align-self: flex-end    ;
+        }
+    }
+}

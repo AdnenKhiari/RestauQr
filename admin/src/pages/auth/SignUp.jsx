@@ -25,6 +25,6 @@ const SignUp = ()=>{
     }
     if(user)
         return <Navigate to={ROUTES.ORDERS.ALL} />
-    return <BackgroundAuth element={<AuthForm title={"Sign Up"} err={error ? error.msg : null}  schema={schema} formdata={formdata} submit={submit} smalllink={ROUTES.AUTH.SINGIN} smalltext="Have an account ? Sign In" />} />
+    return <BackgroundAuth element={<AuthForm title={"Sign Up"} err={error ? error.msg : null}  schema={schema} formdata={formdata} submit={submit} smalllink={[ROUTES.AUTH.SINGIN,ROUTES.AUTH.RESET_PASSWORD]} smalltext={["Have an account ? Sign In","Forgot password ? Reset It !"]} />} />
 }
 export default SignUp

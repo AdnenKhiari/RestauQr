@@ -19,7 +19,9 @@ const AuthForm = ({err,title,formdata,schema,submit,btntitle,smalllink,smalltext
         </div>
         {err && <p className="error">{err}</p>}
     </form>
-    {(smalllink && smalltext) && <Link to={smalllink} >{smalltext}</Link>}
+    <div className="a-container">
+    {(smalllink && smalltext) && smalllink.map((lk,key)=><Link key={key} to={smalllink[key]} >{smalltext[key]}</Link>)}
+    </div>
     </>
 }
 export default AuthForm

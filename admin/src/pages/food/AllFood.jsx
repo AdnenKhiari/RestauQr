@@ -1,5 +1,5 @@
 import {GetByCategories} from "../../lib/FoodDal"
-import GetAllCategories from "../../lib/GetCategories"
+import {GetCategories} from "../../lib/Options"
 import Error from "../../components/Error"
 import Loading from "../../components/Loading"
 import DropDown from "react-dropdown"
@@ -10,7 +10,7 @@ import * as ROUTES from "../../ROUTES"
 const AllFood = ()=>{
     const [cats,setCats] = useState([])
     const [selectedCat,setSelectedCat] = useState('')
-    const allcategories = GetAllCategories()
+    const allcategories = GetCategories()
 
     if(allcategories.error )
         return <Error msg={"Error while retrieving Categories information"} error={allcategories.error} />

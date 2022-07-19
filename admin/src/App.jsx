@@ -19,6 +19,8 @@ import {GetAuthState} from "./lib/Auth"
 import Loading from "./components/Loading"
 import ResetPassword from "./pages/auth/ResetPassword"
 import ActionCodeResponse from "./pages/auth/ActionCodeResponse"
+import CreateProfile from "./pages/auth/CreateProfile"
+
 function App() {
   const app = initializeApp(firebaseConfig)
   const storage = getStorage(app)
@@ -33,15 +35,18 @@ function App() {
   return (
   <UserContext.Provider value={user}>
     <Routes>
+
      <Route path="/test" element={<Test />} />
-     <Route path="/signin" element={<SignIn />} />
-     <Route path="/signup" element={<SignUp />} />
-     <Route path="/validateemail" element={<ValidateEmail />} />
-     <Route path="/resetpassword" element={<ResetPassword />} />
-  
-     <Route path="/acr/*" element={<ActionCodeResponse />} />
+
+     <Route path={ROUTES.AUTH.SINGIN} element={<SignIn />} />
+     <Route path={ROUTES.AUTH.SIGNUP} element={<SignUp />} />
+     <Route path={ROUTES.AUTH.VALIDATE_EMAIL} element={<ValidateEmail />} />
+     <Route path={ROUTES.AUTH.RESET_PASSWORD} element={<ResetPassword />} />
+     <Route path={ROUTES.AUTH.ACTION_CODE_RESPONSE} element={<ActionCodeResponse />} />
+     <Route path={ROUTES.AUTH.INIT_PROFILE} element={<CreateProfile />} />
 
      <Route path="/*" element={<Main />}  />
+
     </Routes>
     </UserContext.Provider>
   );

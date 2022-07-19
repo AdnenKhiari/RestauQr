@@ -84,6 +84,12 @@ input:active,input:focus,input:active,input:focus{
     padding: 10px;
 }
 
+.error-btn{
+    background-color: Error(1);
+    color: white;
+}
+
+
 .input-error,.input-error:hover,.input-error:active,.input-error:focus{ 
     border-color: Error(1) !important;
 }
