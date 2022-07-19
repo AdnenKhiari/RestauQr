@@ -2,7 +2,7 @@ import React from "react"
 
 const categories =['Pizza','Pasta','Gratin','Plat','Sandiwch Chaud','Sandwich Froid','Dessert']
 
-const MenuNav = ({selectedCats,setSelectedCats})=>{
+const MenuNav = ({cats,selectedCats,setSelectedCats})=>{
 
     const SelectCategory = (cat)=>{
         const exists = selectedCats.indexOf(cat)
@@ -15,7 +15,7 @@ const MenuNav = ({selectedCats,setSelectedCats})=>{
     }
 
     return <div className="menunav-container">
-        {categories.map( (cat,index) => <div key={index} onClick={(e)=>SelectCategory(cat)} className={"menunav-item" + (selectedCats.indexOf(cat)!== -1 ? ' selected' : '') }>
+        {cats.map( (cat,index) => <div key={index} onClick={(e)=>SelectCategory(cat)} className={"menunav-item" + (selectedCats.indexOf(cat)!== -1 ? ' selected' : '') }>
             <p>{cat}</p>
         </div>)}
     </div>

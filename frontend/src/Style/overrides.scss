@@ -27,7 +27,7 @@ body{
     background-color: rgb(240, 240, 240);
 }
 input,button{
-    padding: 5px 15px;
+    padding: 5px 10px;
     outline: none;
     border: none;
 }
@@ -36,19 +36,18 @@ button{
     border: 1px solid black;
     min-width: 100px;
     font-family: $secondary_font;
-    font-size: $base_font_size * 1.2;
+    font-size: $h3_size;
     background-color: white;
     transition: all 200ms ease-in-out;
     margin: 10px 0px;
 }
 button:hover {
-    margin: 12px 0px;
     background-color: black;
     color:white;
 }
 a{
     text-decoration: none;
-    color: gray;
+    color: light_blue(1);
     font-style: italic;
     z-index: 1;
     transition: all 100ms ease;
@@ -60,7 +59,7 @@ a:hover{
 
 @media screen and (max-width: 700px) {
     body{
-        font-size: calc($base_font_size - 4px);
+        font-size: calc($base_font_size - 0px);
     }
     h1{
         font-size: $h1_size / 1.2;

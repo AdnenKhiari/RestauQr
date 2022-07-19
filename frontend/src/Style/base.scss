@@ -15,3 +15,13 @@ $small_screen: 1000px;
     @return rgba(230,230,230,$a)
 }
 
+@function primary($a : 1){
+    @return rgba(252, 200, 15,$a)
+}
+@function blue($a : 1){
+    @return rgba(44, 154, 210,$a)
+}
+@function light_blue($a : 1){
+    @return rgba(109, 138, 150,$a)
+}
+

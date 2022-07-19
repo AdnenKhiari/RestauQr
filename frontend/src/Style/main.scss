@@ -2,6 +2,7 @@
 @import "./components/includes.scss";
 
 .hero{
+    background-color: primary(1);
     width: 100vw;
     height: 300px;
     display: flex;
@@ -13,5 +14,8 @@
         cursor: pointer;
         line-height: 4rem;
         text-align: center;
+    }
+    p{
+        padding: 10px;
     }
 }
