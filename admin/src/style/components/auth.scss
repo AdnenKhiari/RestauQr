@@ -1,0 +1,96 @@
+.auth-container{
+    display: grid;
+    height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    grid-template-columns: 1fr 1fr;
+    background-color: Secondary(0.2);
+    .auth-left{
+        width: 100%;
+        height: 100vh;
+        img{
+            width: 100%;
+            object-fit: cover;
+            height: 100%;
+        }
+    }
+    .auth-right{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        h1{
+            margin: 15px;
+            font-size: $h1size * 1.5;
+            text-align: center;
+        }
+        form{
+            max-width: 50%;
+            div{
+                display: flex;
+                align-items: center;
+                align-content: center;
+                justify-content: space-between;
+                button{
+                    min-width: 160px;
+                    margin: 10px 10px;
+                    height: 50px;
+                    font-size: $h3size;
+                }
+            }
+        .name-input{
+            background: transparent;
+            border: none;
+            font-size: $h2size;
+
+        }
+        .name-input:hover,.name-input:focus,.name-input:valid,.name-input:active{
+            border: none;
+            box-shadow: none;
+            padding: 20px;
+            height: 70px;
+            width: 100%;
+            text-align: center;
+        }
+        .name-button{
+            display: flex;
+            justify-content: center;
+            button{
+
+            }
+        }
+        .form-input{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            align-content: center;
+            margin: 10px 0px;
+            width: 100%;
+            label{
+                font-size: $h2size;
+            }
+            input{
+                background-color: Bright(0.8);
+                width: 100%;
+                margin: 5px 0px;
+                font-size: $h3size;
+            }
+            input:hover,input:focus,input:active{
+                border-color: Secondary(0.7);
+            }
+
+            }   
+
+        }
+        .a-container{
+            position: absolute;
+            align-self: flex-end;
+            bottom: 30px;
+            right: 30px;
+            a{
+                display: block;
+            }
+        }
+    }
+}

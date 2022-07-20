@@ -1,0 +1,14 @@
+.loader{
+    width: 100%;
+    min-height: 200px;
+    position: relative;
+    .loader-item{
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        border-radius: 50%;
+        background-color: Success(1);
+    }
+}

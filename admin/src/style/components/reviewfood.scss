@@ -1,0 +1,52 @@
+.food-review-id{
+    margin: 15px;
+}
+.food-review{
+    padding: 15px;
+    background-color: Bright(1);
+    .food-review-header{
+        display: flex;
+        justify-content: space-between;
+        button{
+            margin: 10px;
+            color: Bright(1);
+        }
+        button:last-child{
+            background-color: Error(1);
+        }
+        button:last-child:hover{
+            transform: translateX(10px);
+        }
+    }
+    .food-review-body{
+        > *{
+            margin: 10px 0px;
+        }
+        > img{
+            width: 100%;
+            height: 700px;
+            object-fit: cover;
+            border: 1px solid Secondary(1);
+        }
+        > p {
+
+        }
+        div:last-child{
+            .option-item{
+                font-size: $h3size  ;
+                margin: 20px 10px;
+                display: flex;
+                align-items: center;
+                align-content: center;
+                img{
+                    width: 25px;
+                    object-fit: cover;
+                    margin: 0px 5px;
+                }
+            }
+            .select-options{
+                padding-left: 20px;
+            }
+        }
+    }
+}

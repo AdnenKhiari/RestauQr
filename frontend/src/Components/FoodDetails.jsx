@@ -52,8 +52,8 @@ const FoodDetails = ()=>{
     }
     return <div className="food-details-container">
         <div className="food-details">
-            <div className="food-img">
-                <img src={food.img} alt={food.title}/>
+            <div className="food-img" style={{backgroundImage: "url("+food.img+")"}}>
+                {/*<img src={food.img} alt={food.title}/>*/}
             </div>
             <div className="food-info">
             <Link to={'/'+tableid}>Main Menu</Link>
@@ -115,14 +115,14 @@ const Options = ({food,initfood = null})=>{
   });
   return <form onSubmit={handleSubmit(addToCart)}>
     {food && food.options && food.options.map((opt,key)=><div className="form-input-container" key={key}> 
-    <label htmlFor={opt.msg}>{opt.msg} {opt.price}$</label>
+    <label className={watch(opt.msg) ? 'selected' : undefined} htmlFor={opt.msg}>{opt.msg} {opt.price}{opt.price && "$"}</label>
     <br />
     {opt.type === 'select' ? opt.choices.map((c)=><div className="form-input"  key={c.msg}>
-        <label htmlFor={c.msg}>{c.msg} {c.price}$</label>
-        <input type="radio" value={c.msg} name={opt.msg} id={c.msg} {...register(opt.msg,{required:true})} />
+        <label className={watch(opt.msg) === c.msg ? 'selected' : undefined} htmlFor={c.msg}>{c.msg} {c.price}$</label>
+        <input   type="radio" value={c.msg} name={opt.msg} id={c.msg} {...register(opt.msg,{required:true})} />
     </div>
     ) :  <div className="form-input">
-    <input type="checkbox" id={opt.msg} {...register(opt.msg)}/>
+    <input  type="checkbox" id={opt.msg} {...register(opt.msg)}/>
  </div>}
     </div>)
     }

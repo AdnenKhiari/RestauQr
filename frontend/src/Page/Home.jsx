@@ -10,12 +10,17 @@ import { populateMenu } from "../Lib/util"
 import GetOrder from "../Lib/GetOrder"
 import { useEffect } from "react"
 import { useCallback } from "react"
+import ValidateTableId from "../Lib/ValidateTableId"
 
 const Home = ()=>{
     const usenav = useNavigate()
     const {tableid} = useParams()
     const {order,setOrder,loading,error} = GetOrder()
-    if(isNaN(parseInt(tableid)))
+    const tvalid = ValidateTableId(parseInt(tableid))
+
+    if(tvalid.loading)
+        return <h1>Loading ...</h1>
+    if(tvalid.error)
         return <h1>Invalid Table Number</h1>
     if(loading)
         return <h1>Loading ...</h1>
@@ -36,7 +41,7 @@ const Home = ()=>{
         <Routes>
             <Route path='/'> 
                 <Route path='/' index element={<div className="menu-container">
-                <Menu />
+                <Menu cats={tvalid.data} />
                 </div>} />
                 <Route path={ROUTES.FOOD_DETAILS} element={<FoodDetails />}/>
                 <Route path={ROUTES.CART_DETAILS} >
