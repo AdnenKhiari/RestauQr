@@ -233,11 +233,11 @@ export const CreateProfile = ()=>{
             if(!user)
                 throw Error("No User Is Logged In")
             const profile = {name: data.name,permissions: {
-                food: {manage:true},
-                orders: {manage: true},
-                tables: {manage:true},
-                categories: {manage:true},
-                users: {read:true,manage:true}
+                food: {manage:false},
+                orders: {manage: false},
+                tables: {manage:false},
+                categories: {manage:false},
+                users: {read:false,manage:false}
             }}
             await setDoc(doc(collection(db,'users'),user.uid),profile)
             setResult(profile)
