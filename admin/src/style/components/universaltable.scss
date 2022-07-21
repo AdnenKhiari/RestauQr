@@ -2,6 +2,7 @@
     background-color: Bright(1);
     padding: 15px;
     width: 100%;
+
     .table-header{
         display: flex;
         flex-direction: row;
@@ -16,18 +17,31 @@
             display: flex;
             align-items: flex-end;
             flex-direction: row;
+            align-content: flex-start;
             flex-wrap: wrap;
             > *{
                 margin: 5px 5px ;
+            }
+            img{
+                display: none;
+                cursor: pointer;
             }
             button{
                 width: 50px;
                 padding: 10px;
                 img{
+                    display: inline-block;
                     width: 25px;
                     max-height: 100%;
                     object-fit: contain;
                 }
+            }
+            .selected-box{
+                display: block;
+                width: 40px;
+                margin: 5px 0px;
+                height: 100%;
+                object-fit: contain;    
             }
 
             .option-item{

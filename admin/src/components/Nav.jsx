@@ -31,6 +31,13 @@ const Nav = ()=>{
                 </li>
                 <Link to={ROUTES.OPTIONS.MENU} ><li>Options</li></Link>
                 <li>
+                    <img src="/options.png" alt="options" />
+                    <h2>Restaurant</h2>
+                </li>
+                <Link to={ROUTES.TABLES.ALL} ><li>All Tables</li></Link>
+                <Link to={ROUTES.TABLES.ADD} ><li>Add Table</li></Link>
+
+                <li>
                     <img src="/utilisateur.png" alt="users" />
                     <h2>Users</h2>
                 </li>

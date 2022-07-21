@@ -1,3 +1,5 @@
+import moment from "moment"
+
 export const map_status_to_priority = (status)=>{
     status = status.toLowerCase()
     if(status === 'accomplished')
@@ -9,4 +11,7 @@ export const map_status_to_priority = (status)=>{
     else if( status === 'waiting')
         return 1
     return 0
+}
+export const formatFbDate = (dt)=>{
+    return moment(dt.toDate()).format("YYYY-MM-DD / hh:mm:ss")
 }

@@ -3,18 +3,24 @@ import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,
 import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import moment from "moment"
-import {map_status_to_priority} from "../lib/utils"
+import {formatFbDate, map_status_to_priority} from "../lib/utils"
 import * as ROUTES from "../ROUTES"
 import { useNavigate } from "react-router-dom"
 import { FadeIn } from "../animations"
 import { motion } from "framer-motion"
 import PaginatedUniversalTable from "./UniversalTable/PaginatedUniversalTable"
+import joi from "joi"
+
+const schema  = joi.object({
+    tableid: joi.number().allow('').required().label("Table Id"),
+    id: joi.string().allow('').required().label("Id"),
+    startDate: joi.date().allow('').required().label('Start Order Date'),
+    endDate: joi.date().allow('').required().label('End Order Date')
+})
 
 const OrderTable = ({queryConstraints,title})=>{
 
     const page_lim = 10
-    const pagname = 'time'
-    const colname ='orders'
 
     const rows = ['Order ID','Table ID','Count','Time','Status']
     const customOptions = {
@@ -62,13 +68,12 @@ const OrderTable = ({queryConstraints,title})=>{
             })
             
         if(new_table_data && new_table_data.length > 0)
-            new_table_data.forEach((data)=> data[3] = moment(data[3].toDate()).format("YYYY-MM-DD - hh:mm:ss"))
+            new_table_data.forEach((data)=> data[3] = formatFbDate(data[3]))
         return new_table_data
     }
 
-    const filterData = (searchdata)=>{
+    const filterData = (searchdata,cst)=>{
 
-        const cst = []
         if(searchdata.id)
             return ([where(documentId(),'==', searchdata.id)])
         if(searchdata.tableid)
@@ -77,8 +82,9 @@ const OrderTable = ({queryConstraints,title})=>{
             cst.push(where('time','>=',(moment(searchdata.startDate).toDate())))
         if(searchdata.endDate)
             cst.push(where('time','<=',(moment(searchdata.endDate).toDate())))
-        return cst
+        return null
     }
+    const usenav = useNavigate()
     return <PaginatedUniversalTable colname={'orders'} pagname="time" 
     rows={rows}  
     title={title} 
@@ -87,6 +93,10 @@ const OrderTable = ({queryConstraints,title})=>{
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   
     subscribe={true} 
-    queryConstraints={queryConstraints}        />
+    schema={schema}
+    queryConstraints={queryConstraints}
+    oncl = {(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row[0]))}
+    colors={(table_data)=> table_data[0].length > 0 && table_data.map((it)=>it[4].toLowerCase())}
+    page_lim= {page_lim}        />
 }
 export default OrderTable

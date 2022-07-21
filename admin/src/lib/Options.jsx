@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore"
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 
 export const UpdateCategories = ()=>{
@@ -97,10 +97,10 @@ export const GetTables = ()=>{
 
     const fetch = async ()=>{
         try{
-            const menu = await getDoc(doc(db,'utils','menu'))
-            if(menu.exists()){
-                const menu_data = menu.data()
-                setResult(menu_data.tables)
+            const menu = await getDocs(collection(db,'tables'))
+            if(menu.docs.length > 0){
+                const tables = menu.docs.map((table)=>{return {...table.data(),id: table.id}})
+                setResult(tables)
             }else{
                 throw new Error('tables Information not found')
             }

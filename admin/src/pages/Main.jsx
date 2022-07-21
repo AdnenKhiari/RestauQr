@@ -4,6 +4,7 @@ import * as ROUTES from "../ROUTES"
 import ORDERS from "./orders"
 import FOOD from "./food"
 import USERS from "./users"
+import TABLES from "./Tables"
 
 import { useContext } from "react"
 import { UserContext } from "../contexts"
@@ -44,6 +45,11 @@ const Main = ()=>{
                 <Route path={ROUTES.USERS.MY_PROFILE} element={<USERS.MyProfile />} />
                 <Route path={ROUTES.USERS.PROFILE} element={<USERS.Profile />} />
                 <Route path={ROUTES.USERS.ALL} element={<USERS.AllProfiles />} />
+
+                <Route path={ROUTES.TABLES.ALL} element={<TABLES.AllTables />} />
+                <Route path={ROUTES.TABLES.REVIEW} element={<TABLES.ReviewTable />} />
+                <Route path={ROUTES.TABLES.UPDATE} element={<TABLES.UpdateTable />} />
+                <Route path={ROUTES.TABLES.ADD} element={<TABLES.AddTable />} />
 
             </Routes>
             </AnimatePresence >

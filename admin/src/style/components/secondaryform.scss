@@ -1,4 +1,4 @@
-.food-addupd{
+.secondary-form{
 
     h1{
         margin: 15px;
@@ -32,14 +32,14 @@
 
             }
         }
-        .food-img{
+        .secondary-img{
             width: 100%;
             height: 900px;
             object-fit: cover;
             border: 1px solid Secondary(1);
             cursor: pointer;
         }
-        .food-input,textarea{
+        .secondary-input,textarea{
             font-size: $h2size ;
             background-color: transparent;
             border: none;
@@ -51,7 +51,7 @@
             background-color: Secondary(0.025);
 
         }
-        .food-input:hover,.food-input:focus,.food-input:active,textarea:hover,textarea:focus,textarea:active{
+        .secondary-input:hover,.secondary-input:focus,.secondary-input:active,textarea:hover,textarea:focus,textarea:active{
             border: none;
             box-shadow: none;
             background-color: transparent;
@@ -71,10 +71,15 @@
             border: 1px solid Secondary(1) ;
             resize: vertical;
         }
-        input[type=file]{
+        input[type=file],input[type=checkbox]{
             display: none;
         }
-        .food-input[type=number]{
+        img.small{
+            width: 35px;
+            object-fit: cover;
+            margin: 5px 15px;
+        }
+        .secondary-input[type=number]{
             width: 150px;
         }
         .options-list-header,.validate{

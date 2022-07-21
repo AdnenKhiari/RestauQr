@@ -1,10 +1,10 @@
-.food-review-id{
+.data-review-id{
     margin: 15px;
 }
-.food-review{
+.data-review{
     padding: 15px;
     background-color: Bright(1);
-    .food-review-header{
+    .data-review-header{
         display: flex;
         justify-content: space-between;
         button{
@@ -18,7 +18,7 @@
             transform: translateX(10px);
         }
     }
-    .food-review-body{
+    .data-review-body{
         > *{
             margin: 10px 0px;
         }

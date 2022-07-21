@@ -11,8 +11,7 @@ import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,
 
 
 
-const PaginatedUniversalTable = ({queryConstraints = [],title,onDataSubmit,structure,rows,filterData,onDataQueried,colname,pagname,subscribe = false})=>{
-    const page_lim = 2
+const PaginatedUniversalTable = ({queryConstraints = [],title,colors,onDataSubmit,schema,structure,rows,filterData,onDataQueried,colname,pagname,oncl,subscribe = false,page_lim= 10})=>{
     const db = getFirestore()
     //for the table of orders
     const [table_data,setTable_Data] = useState([[]])
@@ -30,7 +29,9 @@ const PaginatedUniversalTable = ({queryConstraints = [],title,onDataSubmit,struc
     const getBaseQuery = useCallback((customq = [orderBy(pagname,'desc')])=>{
         let cst = []
         if(searchdata){
-            cst = filterData(searchdata)
+            const res = filterData(searchdata,cst)
+            if(res)
+                return [collection(db,colname),...res]
         }
         return ([collection(db,colname),...queryConstraints,...cst,...customq,limit(page_lim)])
 
@@ -63,7 +64,7 @@ const PaginatedUniversalTable = ({queryConstraints = [],title,onDataSubmit,struc
         setQuery(getBaseQuery([orderBy(pagname,'asc'),startAfter(last)]))
     },[getBaseQuery])
 
-    const next =useCallback(()=> {
+    const next = useCallback(()=> {
         if(!table_data_ref.length)
             return
         console.log(table_data_ref)
@@ -83,19 +84,27 @@ const PaginatedUniversalTable = ({queryConstraints = [],title,onDataSubmit,struc
         if(col.docs.length > 0)
             setTable_Data_Ref(col.docs)
         else
-            setErrorMsg(["No Documents Found for the given query"])
+            setErrorMsg({err: null,msg: "No Documents Found for the given query"})
     },[])
 
     useEffect(()=>{
         if(subscribe){
-            const unsub = onSnapshot(query(...Query),(col)=>{ 
-                ProcessDocuments(col)
+            const unsub = onSnapshot(query(...Query),async (col)=>{ 
+                try{
+                    await ProcessDocuments(col)
+                }catch(err){
+                    setErrorMsg({err:err,msg: "An Error Occured , Could Not Retrieve The Information Requested"})
+                }
             })
             return unsub
         }else{
             const fts = async ()=>{
-                const col = await getDocs(query(...Query))
-                ProcessDocuments(col)
+                try{
+                    const col = await getDocs(query(...Query))
+                    ProcessDocuments(col)
+                }catch(err){
+                    setErrorMsg({err:err,msg: "An Error Occured , Could Not Retrieve The Information Requested"})
+                }
             }
             fts()
         }
@@ -103,8 +112,15 @@ const PaginatedUniversalTable = ({queryConstraints = [],title,onDataSubmit,struc
     },[db,Query])
 
     return <motion.div variants={FadeIn()}className="orders-table">
-        <UniversalTable head={rows} body={table_data} colors={table_data[0].length > 0 && table_data.map((it)=>it[4].toLowerCase())} title={title} oncl={(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row[0]))} prev={prev} next={next}  customOptions={customOptions}/>
-        {errormsg && errormsg.map((er,key)=><p key={key} className="error">{er}</p>)}
+        <UniversalTable head={rows} body={table_data} 
+        colors={colors} 
+        title={title} 
+        oncl={oncl} 
+        prev={prev} 
+        next={next}  
+        schema={schema}
+        errs={errormsg}
+        customOptions={customOptions}/>
     </motion.div>
 }
 

@@ -80,23 +80,23 @@ const FoodDetails = ({defaultVals = undefined})=>{
         return <Loading />
     if(errorCategories)
         return <Error error={errorCategories} msg={"Could Not Retrieve the categories"} />
-    return <motion.div variants={FadeIn()} className="food-addupd">
+    return <motion.div variants={FadeIn()} className="secondary-form">
         <h1>{defaultVals ? "Update Food : " + defaultVals.id :"Add Food" } </h1>
         <FormProvider {...formOptions}>
-        <form onReset={(e)=>reset()} onSubmit={handleSubmit(SubmitForm)}>
+        <form onReset={(e)=>{e.preventDefault();reset()}}  onSubmit={handleSubmit(SubmitForm)}>
         <div className="input-item">
         <label htmlFor="title"><h2>Name : </h2></label>
-            <input  placeholder="Name" className={"food-input " + (errors.title ? 'input-error' : '')} type="text" id="title" {...register('title')} />
+            <input  placeholder="Name" className={"secondary-input " + (errors.title ? 'input-error' : '')} type="text" id="title" {...register('title')} />
         </div>
         <label htmlFor='img'>
-            <img className={"food-img " + (errors.img ? 'input-error' : '')} src={(watch('img') && (typeof(watch('img')) === 'string' ? watch('img') :  URL.createObjectURL(new Blob(watch('img'))) )   ) || "/addimage.png" }  alt="" />
+            <img className={"secondary-img " + (errors.img ? 'input-error' : '')} src={(watch('img') && (typeof(watch('img')) === 'string' ? watch('img') :  URL.createObjectURL(new Blob(watch('img'))) )   ) || "/addimage.png" }  alt="" />
         </label>
-        <input className={"food-input "} type="file" id='img' {...register("img")} />
+        <input className={"secondary-input "} type="file" id='img' {...register("img")} />
         <label htmlFor="description"><h2>Description : </h2></label>
         <textarea className={(errors.description ? 'input-error' : '')} placeholder="Description Here ..." id="description" cols="30" rows="10"{...register("description")}></textarea>
         <div className="input-item">
             <label htmlFor="price"><h2>Price : </h2></label>
-            <input placeholder="0" className={"food-input " + (errors.price ? 'input-error' : '')} type="number" id="price" {...register("price")} />
+            <input placeholder="0" className={"secondary-input " + (errors.price ? 'input-error' : '')} type="number" id="price" {...register("price")} />
         </div>        
         <div className="input-item flex-start">
             <label htmlFor="category"><h2>Category  </h2></label>
@@ -150,8 +150,8 @@ const Options = ()=>{
             if(opt.type === 'check')
                 return <div key={index} className="check-item">
                     <img className="make-img-blue" src="/checkbox.png" alt="Option" />
-                    <input placeholder="Message..." className="food-input" type="text" {...register(`options.${index}.msg`)} />
-                    <input placeholder="0" className="food-input"  type="number" {...register(`options.${index}.price`)} />
+                    <input placeholder="Message..." className="secondary-input" type="text" {...register(`options.${index}.msg`)} />
+                    <input placeholder="0" className="secondary-input"  type="number" {...register(`options.${index}.price`)} />
                     <img  className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                         remove(index)
                     }} />
@@ -171,7 +171,7 @@ const MultipleChoiceItem = ({idx,removeItem})=>{
     return <div className="select-item">
         <div className="select-header">
             <img className="make-img-blue" src="/radio-button.png" alt="Option" />
-                <input  placeholder="Message..." className="food-input"  type="text" {...register(`options.${idx}.msg`)} />
+                <input  placeholder="Message..." className="secondary-input"  type="text" {...register(`options.${idx}.msg`)} />
                 <img className="add-img make-img-green" src="/plus.png" alt="Add Choice" onClick={(e)=>{
                 append({msg: '',price: ''})
                 }} />
@@ -183,8 +183,8 @@ const MultipleChoiceItem = ({idx,removeItem})=>{
         <div className="choices">
             {watch(`options.${idx}.choices`) && watch(`options.${idx}.choices`).map((choice,index)=><div className="choice-item"  key={index}>
                 <img className="make-img-blue" src="/radio.png" alt="radio" />
-                <input placeholder="Message..." className="food-input"  type="text" {...register(`options.${idx}.choices.${index}.msg`)} />
-                <input placeholder="0" className="food-input"  type="number" {...register(`options.${idx}.choices.${index}.price`)} />
+                <input placeholder="Message..." className="secondary-input"  type="text" {...register(`options.${idx}.choices.${index}.msg`)} />
+                <input placeholder="0" className="secondary-input"  type="number" {...register(`options.${idx}.choices.${index}.price`)} />
                 <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                         remove(index)
                 }} />

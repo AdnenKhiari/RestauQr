@@ -19,9 +19,9 @@ const ReviewFood =()=>{
     if( loading)
         return <Loading />
     return  <>
-    <h1 className="food-review-id">#{foodid}</h1>
-    <motion.div variants={FadeIn()} className="food-review">
-        <div className="food-review-header">
+    <h1 className="data-review-id">#{foodid}</h1>
+    <motion.div variants={FadeIn()} className="data-review">
+        <div className="data-review-header">
             <h1>{food.title} : {food.price}$</h1>
             <div>
                 {user.profile.permissions.food.manage && <><button onClick={(e)=>{
@@ -37,7 +37,7 @@ const ReviewFood =()=>{
                 }}>Delete</button></>}
             </div>
         </div>
-        <div className="food-review-body">
+        <div className="data-review-body">
             <img src={food.img} alt="" />
             <h2>Description: </h2>
             <p>{food.description}</p>

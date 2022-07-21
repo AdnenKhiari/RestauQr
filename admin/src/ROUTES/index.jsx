@@ -22,6 +22,15 @@ export const USERS = {
     PROFILE: "/users/profile/:userid",
     GET_PROFILE : (id)=>"/users/profile/" + id
 }
+export const TABLES = {
+    ALL : "/tables/",
+    REVIEW : "/tables/:tableid",
+    ADD : "/tables/add",
+    //in update add remove button
+    UPDATE : "/tables/update/:tableid",
+    GET_UPDATE : (id)=> "/tables/update/"+id,
+    GET_REVIEW : (id)=> "/tables/"+id
+}
 
 export const FOOD = {
     ALL : "/food/",
@@ -32,7 +41,6 @@ export const FOOD = {
     UPDATE : "/food/update/:foodid",
     GET_UPDATE : (id)=> "/food/update/"+id,
     GET_REVIEW : (id)=> "/food/"+id
-
 }
 export const OPTIONS = {
     MENU : "/options"
