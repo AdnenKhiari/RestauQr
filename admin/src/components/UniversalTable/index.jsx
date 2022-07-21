@@ -1,4 +1,3 @@
-import { useState } from "react"
 import {useForm} from "react-hook-form"
 
 const UniversalTable = ({title,head,body,colors,oncl,prev,next,customOptions})=>{
@@ -11,7 +10,7 @@ const UniversalTable = ({title,head,body,colors,oncl,prev,next,customOptions})=>
         <div className="table-header">
             { title && <h1>{title}</h1>}
             <div  className="table-options" >
-                {customOptions && customOptions.structure && customOptions.structure.map((option,index)=><div className="option-item">
+                {customOptions && customOptions.structure && customOptions.structure.map((option,index)=><div key={index+100} className="option-item">
                     <label htmlFor={option.name}>{option.label}</label>
                     <input id={option.name} type={option.type} {...register(option.name)} />
                 </div> ) }
@@ -34,4 +33,5 @@ const UniversalTable = ({title,head,body,colors,oncl,prev,next,customOptions})=>
         </table>
     </div>
 }
+
 export default UniversalTable

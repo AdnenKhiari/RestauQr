@@ -8,6 +8,8 @@ import {useNavigate} from "react-router-dom"
 import * as ROUTES from "../../ROUTES"
 import {motion} from "framer-motion"
 import {FadeIn,staggerChildren,TranslateIn} from "../../animations"
+import { useEffect } from "react"
+import { useCallback } from "react"
 const AllFood = ()=>{
     const [cats,setCats] = useState([])
     const [selectedCat,setSelectedCat] = useState('')
@@ -37,14 +39,19 @@ const AllFood = ()=>{
                     }} >{item}</p>)}
                 </div>
             </div>
-            <Menu categories={cats} />
+            <Menu categories={allcategories.result} selectedCat={cats}/>
         </div>
 
     </motion.div> 
 }
-const Menu = ({categories})=>{
+const Menu = ({categories,selectedCat})=>{
     const food_data = GetByCategories(categories)
 
+    const getSelectedFoods = useCallback(()=>{
+        if(selectedCat && selectedCat.length > 0)
+            return food_data.data.filter((fd)=>selectedCat.indexOf(fd.category) !== -1 )
+        return food_data.data
+    },[selectedCat,food_data.data])
     console.log(food_data)
 
     if( food_data.error)
@@ -52,7 +59,7 @@ const Menu = ({categories})=>{
     if( food_data.loading)
         return <Loading />
     return <motion.div className="menu-items" variants={staggerChildren()} animate="animate" initial="initial" exit="exit">
-        {food_data && food_data.data.map((item,key)=><MenuItem key={key} food={item} />)}
+        {food_data.data && food_data.data.length > 0 &&  getSelectedFoods().map((item,key)=><MenuItem key={key} food={item} />)}
     </motion.div>
 }
 
