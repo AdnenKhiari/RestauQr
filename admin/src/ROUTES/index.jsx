@@ -7,6 +7,15 @@ export const ORDERS = {
     REVIEW: "/orders/:orderid",
     GET_REVIEW : (id)=>"/orders/"+id
 }
+export const INVENTORY = {
+    ALL : "/inventory",
+    REVIEW_PRODUCT: "/inventory/:productid",
+    ALL_ORDERS: "/inventory/orders",
+    ALL_PRODUCT_ORDERS: "/inventory/:productid/orders",
+    REVIEW_PRODUCT_ORDER: "/inventory/:productid/orders/:orderid",
+    GET_REVIEW_PRODUCT : (id)=>"/inventory/"+id,
+    GET_REVIEW_PRODUCT_ORDER : (productid,orderid)=>"/inventory/"+productid+"/orders/"+orderid
+}
 export const AUTH = {
     SINGIN : "/auth/signin",
     SIGNUP : "/auth/signup",

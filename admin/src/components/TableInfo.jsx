@@ -56,7 +56,7 @@ const TableDetails = ({defaultVals = undefined})=>{
         <FormProvider {...formOptions}>
             <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>
             { !defaultVals &&  <div className="input-item">
-                <label htmlFor="id"><h2>Table Capacity : </h2></label>
+                <label htmlFor="id"><h2>Table Number : </h2></label>
                 <input className={"secondary-input " + (errors.price ? 'input-error' : '')} type="number" id="id" {...register("id")} />
             </div>   } 
             <div className="input-item">

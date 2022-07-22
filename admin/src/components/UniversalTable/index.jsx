@@ -3,7 +3,7 @@ import {useForm} from "react-hook-form"
 import Error from "../Error";
 import Loading from "../Loading";
 
-const UniversalTable = ({title,head,body,errs,colors,oncl,prev,next,customOptions,schema})=>{
+const UniversalTable = ({title,hide,head,body,errs,colors,oncl,prev,next,customOptions,schema})=>{
 
     const { register, handleSubmit, watch } = useForm({
         shouldUnregister: false,
@@ -36,7 +36,7 @@ const UniversalTable = ({title,head,body,errs,colors,oncl,prev,next,customOption
             </thead>
             <tbody>
                 {body && body.map((item,key)=><tr onClick={(e)=>oncl(item)} className={(colors && colors(body) && colors(body)[key] ) || undefined } key={key}>
-                    {body[key].map((data,data_ind) => <td key={key * head.length + data_ind}>{data}</td>)}
+                    {body[key].filter((itm,id)=>!hide || (hide && hide.indexOf(id) === -1)).map((data,data_ind) =>  <td key={key * head.length + data_ind}>{data}</td>)}
                 </tr>)}
             </tbody>
         </table>
