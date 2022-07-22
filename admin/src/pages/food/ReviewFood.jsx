@@ -19,10 +19,10 @@ const ReviewFood =()=>{
     if( loading)
         return <Loading />
     return  <>
-    <h1 className="data-review-id">#{foodid}</h1>
+    {/*<h1 className="data-review-id">#{foodid}</h1>*/}
     <motion.div variants={FadeIn()} className="data-review">
         <div className="data-review-header">
-            <h1>{food.title} : {food.price}$</h1>
+            <h1><span>{food.title}</span> : {food.price}$</h1>
             <div>
                 {user.profile.permissions.food.manage && <><button onClick={(e)=>{
                     usenav(ROUTES.FOOD.GET_UPDATE(food.id))
@@ -39,12 +39,12 @@ const ReviewFood =()=>{
         </div>
         <div className="data-review-body">
             <img src={food.img} alt="" />
-            <h2>Description: </h2>
+            <h2><span>Description:</span>  </h2>
             <p>{food.description}</p>
-            <h2>Category: {food.category}</h2>
-            <h2>Price: {food.price}$</h2>
+            <h2><span>Category:</span> {food.category}</h2>
+            <h2><span>Price:</span> {food.price}$</h2>
             <div>
-                {food.options && food.options.length > 0 && <h2>Options:</h2>}
+                {food.options && food.options.length > 0 && <h2><span>Options:</span></h2>}
                 {food.options && food.options.map((opt,key)=><Option key={key} opt={opt} />)}
             </div>
         </div>

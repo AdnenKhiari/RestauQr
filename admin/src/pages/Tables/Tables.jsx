@@ -8,10 +8,8 @@ import { useContext } from "react"
 import {UserContext} from "../../contexts"
 import {motion} from "framer-motion"
 import { FadeIn } from "../../animations"
-import PaginatedUniversalTable from "../../components/UniversalTable/PaginatedUniversalTable"
-import { collection, documentId, where } from "firebase/firestore"
 import moment from "moment"
-import TablesTable from "../../components/TablesTable"
+import TablesTable from "../../components/Tables/TablesTable"
 
 const AllTables = ({tables})=>{
 

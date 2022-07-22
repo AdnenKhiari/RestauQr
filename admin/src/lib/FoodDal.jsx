@@ -14,7 +14,7 @@ export const AddUpdateFood = ()=>{
                 ref = doc(db,'food',(data.id))
                 const foodid = data.id+""
                 delete data.id
-                await setDoc(ref,data)
+                await updateDoc(ref,data)
                 setResult(foodid)
                 return foodid
             }else{

@@ -1,10 +1,10 @@
 import joi from "joi"
-import PaginatedUniversalTable from "./UniversalTable/PaginatedUniversalTable"
+import PaginatedUniversalTable from "../UniversalTable/PaginatedUniversalTable"
 import {  documentId, where } from "firebase/firestore"
 import moment from "moment"
 import { useNavigate } from "react-router-dom"
-import * as ROUTES from "../ROUTES"
-import { formatFbDate } from "../lib/utils"
+import * as ROUTES from "../../ROUTES"
+import { formatFbDate } from "../../lib/utils"
 const schema  = joi.object({
     disabled: joi.bool().allow('').required().label("Disabled Only"),
     id: joi.string().allow('').required().label("Id"),

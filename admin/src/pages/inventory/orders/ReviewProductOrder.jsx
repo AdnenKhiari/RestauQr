@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom"
-import {GetTableById,DeleteTableById} from "../../lib/TablesDal"
+import {GetProductOrderById} from "../../lib/ProductsDal.jsx"
 import Loading from "../../components/Loading"
 import Error from "../../components/Error"
 import * as ROUTES from "../../ROUTES"
@@ -7,31 +7,27 @@ import { useContext } from "react"
 import { UserContext } from "../../contexts"
 import {motion} from "framer-motion"
 import { FadeIn } from "../../animations"
-import { load } from "mime"
-import { formatFbDate } from "../../lib/utils"
 
-const ReviewTable =()=>{
-    const {tableid} = useParams()
-    const {result : table,loading,error} = GetTableById(tableid)
-    const {deleteTable} = DeleteTableById()
+const ReviewProductOrder =()=>{
+    const {productid} = useParams()
+    const {result : product,loading,error} = GetProductById(productid)
     const user = useContext(UserContext)
     const usenav = useNavigate()
     if( error)
-        return <Error msg={"Error while retrieving Food information " + tableid} error={error} />
+        return <Error msg={"Error while retrieving Food information " + productid} error={error} />
     if( loading)
         return <Loading />
     return  <>
     <motion.div variants={FadeIn()} className="data-review">
         <div className="data-review-header">
-            <h1><span>Table: </span>{table.id}</h1>
+            <h1><span>Name: </span>{product.name}</h1>
             <div>
                 {user.profile.permissions.tables.manage && <><button onClick={(e)=>{
-                    usenav(ROUTES.TABLES.GET_UPDATE(table.id))
+                    usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT(productid))
                 }}>Update</button>
-                <button onClick={(e)=>{
+                <button onClick={async (e)=>{
                     try{
-                        deleteTable(table.id)
-                        usenav(ROUTES.TABLES.ALL)
+                        usenav(ROUTES.INVENTORY.ALL)
                     }catch(err){
                         console.log(err)
                     }
@@ -39,12 +35,12 @@ const ReviewTable =()=>{
             </div>
         </div>
         <div className="data-review-body">
-            <h2><span>Number Of Places:</span> {table.placesNum}</h2>
-            <h2><span>Disabled:</span> {table.disabled ? "Yes" : "No"}</h2>
-            <h2><span>Purshase Time:</span> {formatFbDate(table.time)}</h2>
+            <h2><span>Price/U:</span> {product.sellingUnitPrice} Millime</h2>
+            <h2><span>Quantity/U:</span> {product.unitQuantity}{product.unit}</h2>  
+            <h2><span>Available In Stock:</span> {product.stockQuantity}{product.unit}</h2>
         </div>
     </motion.div >
     </>
 }
 
-export default ReviewTable
+export default ReviewProductOrder

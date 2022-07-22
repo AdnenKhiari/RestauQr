@@ -7,11 +7,11 @@ import * as ROUTES from "../../ROUTES"
 import { useNavigate } from "react-router-dom"
 import { FadeIn } from "../../animations"
 import { motion } from "framer-motion"
-import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,documentId, FieldPath, getDoc, getDocs} from "firebase/firestore"
+import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,documentId, FieldPath, getDoc, getDocs, collectionGroup} from "firebase/firestore"
 
 
 
-const PaginatedUniversalTable = ({queryConstraints = [],title,hide = null,colors,onDataSubmit,schema,structure,rows,filterData,onDataQueried,colname,pagname,oncl,subscribe = false,page_lim= 10})=>{
+const PaginatedUniversalTable = ({queryConstraints = [],group=false,title,hide = null,colors,onDataSubmit,schema,structure,rows,filterData,onDataQueried,colname,pagname,oncl,subscribe = false,page_lim= 10})=>{
     const db = getFirestore()
     //for the table of orders
     const [table_data,setTable_Data] = useState([[]])
@@ -31,9 +31,9 @@ const PaginatedUniversalTable = ({queryConstraints = [],title,hide = null,colors
         if(searchdata){
             const res = filterData(searchdata,cst)
             if(res)
-                return [collection(db,colname),...res]
+                return [(group ? collectionGroup(db,colname): collection(db,colname)),...res]
         }
-        return ([collection(db,colname),...queryConstraints,...cst,...customq,limit(page_lim)])
+        return ([(group ? collectionGroup(db,colname): collection(db,colname)),...queryConstraints,...cst,...customq,limit(page_lim)])
 
     },[queryConstraints,db,searchdata])
     //TODO add usecallback

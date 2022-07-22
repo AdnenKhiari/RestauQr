@@ -18,7 +18,12 @@
             transform: translateX(10px);
         }
     }
+    span{
+        color:Secondary(1);
+        font-weight: bold;
+    }
     .data-review-body{
+
         > *{
             margin: 10px 0px;
         }

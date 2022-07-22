@@ -13,6 +13,9 @@ export const INVENTORY = {
     ALL_ORDERS: "/inventory/orders",
     ALL_PRODUCT_ORDERS: "/inventory/:productid/orders",
     REVIEW_PRODUCT_ORDER: "/inventory/:productid/orders/:orderid",
+    UPDATE_PRODUCT : "/inventory/update/:productid",
+    ADD_PRODUCT : "/inventory/add",
+    GET_UPDATE_PRODUCT : (id)=> "/inventory/update/" + id,
     GET_REVIEW_PRODUCT : (id)=>"/inventory/"+id,
     GET_REVIEW_PRODUCT_ORDER : (productid,orderid)=>"/inventory/"+productid+"/orders/"+orderid
 }

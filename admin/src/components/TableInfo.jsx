@@ -57,20 +57,20 @@ const TableDetails = ({defaultVals = undefined})=>{
             <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>
             { !defaultVals &&  <div className="input-item">
                 <label htmlFor="id"><h2>Table Number : </h2></label>
-                <input className={"secondary-input " + (errors.price ? 'input-error' : '')} type="number" id="id" {...register("id")} />
+                <input className={"secondary-input " + (errors.id ? 'input-error' : '')} type="number" id="id" {...register("id")} />
             </div>   } 
             <div className="input-item">
                 <label htmlFor="placesNum"><h2>Table Capacity : </h2></label>
-                <input placeholder="1" className={"secondary-input " + (errors.price ? 'input-error' : '')} type="number" id="placesNum" {...register("placesNum")} />
+                <input placeholder="1" className={"secondary-input " + (errors.placesNum ? 'input-error' : '')} type="number" id="placesNum" {...register("placesNum")} />
             </div>        
             <div className="input-item">
                 <label htmlFor="disabled"><h2>Is Disabled  :</h2></label>
                 <img className={(watch('disabled') && "make-img-blue ") + " small "  + (errors.price ? 'make-img-error' : '')}  onClick={(e)=>setValue("disabled",!watch("disabled"))}  src="/checkbox.png" alt="disabled" />
-                <input className={"secondary-input " + (errors.price ? 'input-error' : '')} type="checkbox" id="disabled" {...register("disabled")} />
+                <input className={"secondary-input " + (errors.disabled ? 'input-error' : '')} type="checkbox" id="disabled" {...register("disabled")} />
             </div>       
             <div className="input-item">
                 <label htmlFor="time"><h2>Purshase Date : </h2></label>
-                <input className={"secondary-input " + (errors.price ? 'input-error' : '')} type="date" id="time" {...register("time")} />
+                <input className={"secondary-input " + (errors.time ? 'input-error' : '')} type="date" id="time" {...register("time")} />
             </div>    
             {errors["disabled"] && <p className="error">{errors["disabled"].message.replaceAll('"','') }</p>}
             {errors["placesNum"] && <p className="error">{errors["placesNum"].message.replaceAll('"','') }</p>}

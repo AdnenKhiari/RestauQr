@@ -1,11 +1,8 @@
 import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,documentId, FieldPath} from "firebase/firestore"
-import { useCallback, useState } from "react"
-import { useEffect } from "react"
-import moment from "moment"
-import {formatFbDate, map_status_to_priority} from "../lib/utils"
-import * as ROUTES from "../ROUTES"
+
+import * as ROUTES from "../../ROUTES"
 import { useNavigate } from "react-router-dom"
-import PaginatedUniversalTable from "./UniversalTable/PaginatedUniversalTable"
+import PaginatedUniversalTable from "../UniversalTable/PaginatedUniversalTable"
 import joi from "joi"
 
 const schema  = joi.object({

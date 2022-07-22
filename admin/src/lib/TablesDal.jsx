@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 
 export const GetTableById = (id)=>{
@@ -45,7 +45,7 @@ export const AddUpdateTable = ()=>{
                 ref = doc(db,'tables',(data.id))
                 const foodid = data.id+""
                 delete data.id
-                await setDoc(ref,data)
+                await updateDoc(ref,data)
                 setResult(foodid)
                 return foodid
             }else{

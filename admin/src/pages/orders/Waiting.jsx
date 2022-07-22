@@ -1,5 +1,5 @@
 
-import OrderTable from "../../components/OrderTable"
+import OrderTable from "../../components/Tables/OrderTable"
 import {where} from "firebase/firestore"
 const WaitingOrders = ()=>{
     return <div className="orders">
