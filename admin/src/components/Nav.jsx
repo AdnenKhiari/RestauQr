@@ -24,7 +24,7 @@ const Nav = ()=>{
                     <h2>Food</h2>
                 </li>
                 <Link to={ROUTES.FOOD.ALL} ><li>All Food</li></Link>
-                {user.profile.permissions.food.manage && <Link to={ROUTES.FOOD.ADD}><li>Add Food</li></Link>}
+                {user.profile.permissions.food.manage && <Link to={ROUTES.FOOD.ADD}><li>New Food</li></Link>}
                 <li>
                     <img src="/options.png" alt="options" />
                     <h2>Options</h2>
@@ -35,14 +35,14 @@ const Nav = ()=>{
                     <h2>Restaurant</h2>
                 </li>
                 <Link to={ROUTES.TABLES.ALL} ><li>All Tables</li></Link>
-                <Link to={ROUTES.TABLES.ADD} ><li>Add Table</li></Link>
+                <Link to={ROUTES.TABLES.ADD} ><li>New Table</li></Link>
                 <li>
                     <img src="/options.png" alt="inventory" />
                     <h2>Inventory</h2>
                 </li>
                 <Link to={ROUTES.INVENTORY.ALL} ><li>All Products</li></Link>
                 <Link to={ROUTES.INVENTORY.ADD_PRODUCT} ><li>New Product</li></Link>
-                <Link to={ROUTES.INVENTORY.ALL_ORDERS} ><li>All Orders</li></Link>
+                <Link to={ROUTES.INVENTORY.ALL_ORDERS} ><li>All Product Orders</li></Link>
 
                 <li>
                     <img src="/utilisateur.png" alt="users" />

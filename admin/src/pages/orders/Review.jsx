@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import {GetOrderById, UpdateOrder} from "../../lib/OrderDal"
 import Loading from "../../components/Loading"
 import Error from "../../components/Error"
@@ -8,6 +8,7 @@ import { useContext } from "react"
 import { UserContext } from "../../contexts"
 import { FadeIn } from "../../animations"
 import {motion} from "framer-motion"
+import * as ROUTES from "../../ROUTES"
 
 const ReviewOrder = ()=>
 {
@@ -35,7 +36,7 @@ const ReviewOrder = ()=>
             return "/schedule.png"
         }
     }
-
+    const usenav = useNavigate()
     const changeStatus = ()=>{
         setStateidx((stateidx + 1)%4)
     }
@@ -55,7 +56,7 @@ const ReviewOrder = ()=>
        </div>
        <div className="order-foods">
                 {order && order.food.map((fd,key)=>  <div key={key} className="order-food">
-            <img src={fd.img} alt={fd.title} />
+            <img onClick={(e)=>usenav(ROUTES.FOOD.GET_REVIEW(fd.id))} src={fd.img} alt={fd.title} />
             <div className="food-details">
                 <h2>{fd.title} x {fd.count} ({fd.price}$)</h2>
                 <div className="food-options">

@@ -32,7 +32,9 @@ const ReviewProduct =()=>{
                     }catch(err){
                         console.log(err)
                     }
-                }}>Delete</button></>}
+                }}>Delete</button>
+                <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_ORDER(productid))}>New Order</button>
+                </>}
             </div>
         </div>
         <div className="data-review-body">

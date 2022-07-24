@@ -8,6 +8,7 @@ import joi from "joi"
 import Loading from "./Loading"
 import Error from "./Error"
 import { FadeIn } from "../animations"
+import {formatFbDate} from "../lib/utils"
 import {motion} from "framer-motion"
 
 
@@ -24,7 +25,13 @@ const schema = joi.object({
 })
 const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
     const formOptions = useForm({
-        defaultValues: defaultVals || {
+        defaultValues: {...defaultVals,expiresIn: formatFbDate(defaultVals.expiresIn,true),time:formatFbDate(defaultVals.time,true) } || {
+            name: '',
+            unitQuantity: '',
+            productQuantity: '',
+            unitPrice: '',
+            time: '',
+            expiresIn: '',
             used: 0,
             wasted: 0
         },
@@ -38,7 +45,7 @@ const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
         
         try{
             console.log("D",data)
-            /*
+            
             const productorderid  = await productordermutator.mutate(data)
             console.log(productorderid)
 
@@ -47,7 +54,7 @@ const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
               
             // normalement usenav to the new id
             usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_ORDER(productid,productorderid))
-            */
+            
         }catch(err){
             console.error(err)
         }
@@ -63,23 +70,23 @@ const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
             </div>            
             <div className="input-item">
                 <label htmlFor="productQuantity"><h2>Unit Count: </h2></label>
-                <input placeholder="0" className={"secondary-input " + (errors.productQuantity ? 'input-error' : '')} type="number" id="productQuantity" {...register("productQuantity")} />
+                <input  className={"secondary-input " + (errors.productQuantity ? 'input-error' : '')} type="number" id="productQuantity" {...register("productQuantity")} />
             </div>    
             <div className="input-item">
                 <label htmlFor="unitQuantity"><h2>Quantity/U : </h2></label>
-                <input placeholder="0" className={"secondary-input " + (errors.unitQuantity ? 'input-error' : '')} type="number" id="unitQuantity" {...register("unitQuantity")} />
+                <input  className={"secondary-input " + (errors.unitQuantity ? 'input-error' : '')} type="number" id="unitQuantity" {...register("unitQuantity")} />
             </div>    
             <div className="input-item">
                 <label htmlFor="unitPrice"><h2>Price/U : </h2></label>
-                <input placeholder="0" className={"secondary-input " + (errors.unitPrice ? 'input-error' : '')} type="number" id="unitPrice" {...register("unitPrice")} />
+                <input  className={"secondary-input " + (errors.unitPrice ? 'input-error' : '')} type="number" id="unitPrice" {...register("unitPrice")} />
             </div>   
             <div className="input-item">
                 <label htmlFor="used"><h2>Used : </h2></label>
-                <input placeholder="0" className={"secondary-input " + (errors.used ? 'input-error' : '')} type="number" id="used" {...register("used")} />
+                <input className={"secondary-input " + (errors.used ? 'input-error' : '')} type="number" id="used" {...register("used")} />
             </div>    
             <div className="input-item">
-                <label htmlFor="unitQuantity"><h2>Wasted : </h2></label>
-                <input placeholder="0" className={"secondary-input " + (errors.wasted ? 'input-error' : '')} type="number" id="wasted" {...register("wasted")} />
+                <label htmlFor="wasted"><h2>Wasted : </h2></label>
+                <input  className={"secondary-input " + (errors.wasted ? 'input-error' : '')} type="number" id="wasted" {...register("wasted")} />
             </div>    
             <div className="input-item">
                 <label htmlFor="time"><h2>Purshase Time : </h2></label>

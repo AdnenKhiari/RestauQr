@@ -12,6 +12,9 @@ export const map_status_to_priority = (status)=>{
         return 1
     return 0
 }
-export const formatFbDate = (dt)=>{
-    return moment(dt.toDate()).format("YYYY-MM-DD / hh:mm:ss")
+export const formatFbDate = (dt,dateonly = false)=>{
+    if(!dateonly)
+        return moment(dt.toDate()).format("YYYY-MM-DD / hh:mm:ss")
+    return moment(dt.toDate()).format("YYYY-MM-DD")
+
 }

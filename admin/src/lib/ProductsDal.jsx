@@ -32,6 +32,36 @@ export const GetProductById = (id)=>{
     }
 }
 
+export const GetProductOrderById = (productid,orderid)=>{
+
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const db = getFirestore()   
+    console.log(`products/${productid}/product_orders/${orderid}`)
+    const fetch = async ()=>{
+        try{
+            const po = await getDoc(doc(db,`products/${productid}/product_orders/${orderid}`))
+            if(po.exists()){
+                const po_data = po.data()
+                const id = po.id
+                setResult({id,...po_data})
+            }else{
+                throw new Error('Invalid Item Id')
+            }
+        }catch(err){
+            setError(err)
+        }
+    }
+    useEffect(()=>{
+        fetch()
+    },[db])
+    
+    return {
+        result,
+        error,
+        loading: !result && !error
+    }
+}
 export const AddUpdateProductOrder = (productid)=>{
 
     const [result,setResult] = useState(null)
@@ -51,10 +81,6 @@ export const AddUpdateProductOrder = (productid)=>{
                 setResult(productorderid)
                 return productorderid
             }else{
-                if(!data.used)
-                    data.used = 0
-                if(!data.wasted)
-                    data.wasted = 0
                 const snap = await addDoc(collection(db,'products/'+productid+'/product_orders'),data)
                 setResult(snap.id)
                 return snap.id  
