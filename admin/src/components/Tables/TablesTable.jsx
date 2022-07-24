@@ -17,7 +17,25 @@ const TablesTable = ()=>{
 
     const usenav = useNavigate()
     const colname = 'tables'
-    const rows = ['Table ID',"Places Count","Disabled","Purshase Date"]
+    const rows = [{
+        Header: 'Table ID',
+        accessor: 'id'
+    },
+    {
+        Header: 'Places Count',
+        accessor: 'placesNum'
+    },
+    {
+        Header: 'State',
+        accessor: 'disabled',
+        Cell : ({value})=>value ? "Disabled" : "Enabled"
+    },
+    {
+        Header: 'Purshase Date',
+        accessor: 'time',
+        Cell : ({value})=> formatFbDate(value)
+    },]
+    //const rows = ['Table ID',"Places Count","Disabled","Purshase Date"]
     const customOptions = {
         submit: (data)=>{
             console.log(data)
@@ -58,8 +76,7 @@ const TablesTable = ()=>{
                     ...table.data(),
                     id: table.id
                 }
-                const row = [table_data.id,table_data.placesNum,table_data.disabled ? "Disabled" : "Enabled",formatFbDate(table_data.time)]
-                res.push(row)
+                res.push(table_data)
             })
         }
         return res
@@ -90,7 +107,7 @@ const TablesTable = ()=>{
         subscribe={false}
         schema={schema}
         onDataQueried={onDataQueried}
-        oncl={(dt)=>usenav(ROUTES.TABLES.GET_REVIEW(dt[0]))}
+        oncl={(dt)=>usenav(ROUTES.TABLES.GET_REVIEW(dt.id))}
         />
     
 }   

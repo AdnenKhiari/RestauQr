@@ -73,6 +73,19 @@
         thead{
             text-align: left;
             tr{
+                .header-tag{
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    align-content: center;
+                    img{
+                        width: 20px;
+                        margin: 5px 10px;
+                        object-fit: cover;
+                        cursor: pointer;
+                    }
+                }
+
                 th{
                     font-weight: 400;
 

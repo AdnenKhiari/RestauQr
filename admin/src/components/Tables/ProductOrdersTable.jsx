@@ -18,7 +18,40 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
 
     const page_lim = 10
     const path = (parentid ? 'products/' + parentid+'/'  : '') + 'product_orders' 
-    const rows = ['Item Name','Item Quantity','Unit Quantity','Used','Purshase Time','Expires In']
+    const rows = [
+    {
+        Header: 'Order Id',
+        accessor: 'id'
+    },    
+    {
+        Header: 'Product Id',
+        accessor: 'product_id'
+    },        
+    {
+        Header: 'Item Name',
+        accessor: 'name'
+    },
+    {
+        Header: 'Product Quantity',
+        accessor: 'productQuantity'
+    },
+    {
+        Header: 'Purshase Time',
+        accessor: 'time'
+    },
+    {
+        Header: 'Expires In',
+        accessor: 'expiresIn'
+    },
+    {
+        Header: 'Used',
+        accessor: 'used'
+    },
+    {
+        Header: 'Wasted',
+        accessor: 'wasted'
+    },]
+    //const rows = ['Item Name','Item Quantity','Unit Quantity','Used','Purshase Time','Expires In']
     const customOptions = {
         submit :  (data)=>{
             console.log(data)
@@ -58,17 +91,7 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
             const alldata = col.docs.map((item)=>{
                 return {...item.data(),id: item.id,product_id: parentid ? parentid : item.ref.parent.parent.id}
             })
-           
-            res = alldata.map((dt)=> [
-                dt.product_id,
-                dt.id,  
-                dt.name,
-                dt.productQuantity,
-                dt.unitQuantity,
-                dt.used,
-                formatFbDate(dt.time),
-                formatFbDate(dt.expiresIn)
-            ])
+            res = alldata
         }
         return res
     }
@@ -117,7 +140,7 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
     schema={schema}
     hide={[0,1]}
     queryConstraints={queryConstraints}
-    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_ORDER(row[0],row[1]))}
+    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_ORDER(row.product_id,row.id))}
     page_lim= {page_lim}        />
 }
 export default ProductOrdersTable

@@ -2,14 +2,25 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import {useForm} from "react-hook-form"
 import Error from "../Error";
 import Loading from "../Loading";
+import {useTable,useSortBy} from "react-table"
 
 const UniversalTable = ({title,hide,head,body,errs,colors,oncl,prev,next,customOptions,schema})=>{
 
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow
+    } = useTable({
+        data: body,
+        columns: head
+    },useSortBy)
     const { register, handleSubmit, watch } = useForm({
         shouldUnregister: false,
         resolver: joiResolver(schema)
     });
-    console.log(errs)
+    console.log(errs,body,head)
     return  <div className="universal-table">
         <div className="table-header">
             { title && <h1>{title}</h1>}
@@ -28,16 +39,24 @@ const UniversalTable = ({title,hide,head,body,errs,colors,oncl,prev,next,customO
         </div>
         {!errs && !body && <Loading />}
         {
-            body && <table>
+            body && <table {...getTableProps()}>
             <thead>
-                <tr>
-                    {head && head.map((item,key)=><th key={item}>{item}</th>)}
-                </tr>
-            </thead>
-            <tbody>
-                {body && body.map((item,key)=><tr onClick={(e)=>oncl(item)} className={(colors && colors(body) && colors(body)[key] ) || undefined } key={key}>
-                    {body[key].filter((itm,id)=>!hide || (hide && hide.indexOf(id) === -1)).map((data,data_ind) =>  <td key={key * head.length + data_ind}>{data}</td>)}
+                {head && headerGroups.map((headGroup )=><tr {...headGroup.getHeaderGroupProps()}>
+                    {headGroup.headers.map((column)=><th {...column.getHeaderProps(column.getSortByToggleProps())} >
+                        <div className="header-tag">
+                        {column.render('Header')}
+                        {column.isSortedDesc !== undefined && (column.isSortedDesc ? <img style={{transform: "rotate(180deg)"}} src="/upload.png" alt="uparrow" /> : <img  src="/upload.png" alt="uparrow" />) }
+                        </div>
+                    </th>)}
                 </tr>)}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+                {rows.map((row)=>{
+                    prepareRow(row)
+                    return <tr {...row.getRowProps()} onClick={(e)=>oncl(row.values)}>
+                        {row.cells.map(cell => <td {...cell.getCellProps()} >{cell.render('Cell')}</td> )}
+                    </tr>
+                })}
             </tbody>
         </table>
         }

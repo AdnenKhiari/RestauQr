@@ -20,8 +20,30 @@ const schema  = joi.object({
 const OrderTable = ({queryConstraints,title})=>{
 
     const page_lim = 10
-
-    const rows = ['Order ID','Table ID','Count','Time','Status']
+const rows = [
+    {
+        Header: 'Order ID',
+        accessor: 'id'
+    },
+    {
+        Header: 'Table ID',
+        accessor: 'tableid'
+    },
+    {
+        Header: 'Count',
+        accessor: 'foodcount'
+    },
+    {
+        Header: 'Time',
+        accessor: 'time',
+        Cell : ({value})=>formatFbDate(value)
+    },
+    {
+        Header: 'Status',
+        accessor: 'status'
+    }
+]
+    //const rows = ['Order ID','Table ID','Count','Time','Status']
     const customOptions = {
         submit :  (data)=>{
             console.log(data)
@@ -53,21 +75,19 @@ const OrderTable = ({queryConstraints,title})=>{
         const new_table_data = col.docs.length > 0 && col.docs.map((document)=>{
             const id = document.id
             const data = document.data()
-            console.log(data)
-            return [id,"#"+data.tableid,data.food.length,(data.time), data.status.toUpperCase()]
+            return {id: id,time: data.time,tableid: data.tableid,foodcount: data.food.length,status: data.status.toUpperCase()}
+            //return [id,"#"+data.tableid,data.food.length,(data.time), data.status.toUpperCase()]
         }) 
         if(new_table_data)
             new_table_data.sort((a,b)=> {
-                const o1 = map_status_to_priority(a[4])
-                const o2 = map_status_to_priority(b[4])
+                const o1 = map_status_to_priority(a.status)
+                const o2 = map_status_to_priority(b.status)
                 if(o1 === o2){
                     return o1.seconds - o2.seconds
                 }
                 return o1 - o2
             })
-            
-        if(new_table_data && new_table_data.length > 0)
-            new_table_data.forEach((data)=> data[3] = formatFbDate(data[3]))
+        console.log("NT",new_table_data)    
         return new_table_data
     }
 
@@ -94,7 +114,7 @@ const OrderTable = ({queryConstraints,title})=>{
     subscribe={true} 
     schema={schema}
     queryConstraints={queryConstraints}
-    oncl = {(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row[0]))}
+    oncl = {(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row.id))}
     colors={(table_data)=> table_data[0].length > 0 && table_data.map((it)=>it[4].toLowerCase())}
     page_lim= {page_lim}        />
 }
