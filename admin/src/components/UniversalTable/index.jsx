@@ -4,7 +4,7 @@ import Error from "../Error";
 import Loading from "../Loading";
 import {useTable,useSortBy} from "react-table"
 
-const UniversalTable = ({title,hide,head,body,errs,colors,oncl,prev,next,customOptions,schema})=>{
+const UniversalTable = ({title,head,body,errs,colors,oncl,prev,next,customOptions,schema})=>{
 
     const {
         getTableProps,
@@ -53,7 +53,7 @@ const UniversalTable = ({title,hide,head,body,errs,colors,oncl,prev,next,customO
             <tbody {...getTableBodyProps()}>
                 {rows.map((row)=>{
                     prepareRow(row)
-                    return <tr {...row.getRowProps()} onClick={(e)=>oncl(row.values)}>
+                    return <tr className={colors ? colors(row.original) : undefined} {...row.getRowProps()} onClick={(e)=>oncl(row.original)}>
                         {row.cells.map(cell => <td {...cell.getCellProps()} >{cell.render('Cell')}</td> )}
                     </tr>
                 })}

@@ -22,7 +22,29 @@ const ProductsTables = ({queryConstraints,title})=>{
 
     const page_lim = 10
 
-    const rows = ['Product Name','Price/U','Quantity/U','Available','Unit']
+    const rows = [
+    {
+        Header: 'Product Name',
+        accessor: 'name'
+    },{
+        Header: 'Price/U',
+        accessor: 'sellingUnitPrice'
+    },
+    {
+        Header: 'Quantity/U',
+        accessor: 'unitQuantity'
+    },    
+    {
+        Header: 'Available Quantity',
+        accessor: 'stockQuantity'
+    },
+    {
+        Header: 'Unit',
+        accessor: 'unit'
+    }]
+
+
+
     const customOptions = {
         submit :  (data)=>{
             console.log(data)
@@ -70,17 +92,9 @@ const ProductsTables = ({queryConstraints,title})=>{
     const onDataQueried = (col)=>{
         let res = []
         if(col.docs.length > 0){
-            const alldata = col.docs.map((item)=>{
+            res = col.docs.map((item)=>{
                 return {...item.data(),id: item.id}
             })
-            res = alldata.map((dt)=> [
-                dt.id,  
-                dt.name,
-                dt.sellingUnitPrice,
-                dt.unitQuantity,
-                dt.stockQuantity,
-                dt.unit
-            ])
         }
         return res
     }
@@ -137,9 +151,8 @@ const ProductsTables = ({queryConstraints,title})=>{
     structure={customOptions.structure}   
     subscribe={false} 
     schema={schema}
-    hide={[0]}
     queryConstraints={queryConstraints}
-    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(row[0]))}
+    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(row.id))}
     page_lim= {page_lim}        />
 }
 export default ProductsTables

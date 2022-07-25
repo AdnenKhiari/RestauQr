@@ -25,7 +25,7 @@ const schema = joi.object({
 })
 const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
     const formOptions = useForm({
-        defaultValues: {...defaultVals,expiresIn: formatFbDate(defaultVals.expiresIn,true),time:formatFbDate(defaultVals.time,true) } || {
+        defaultValues: defaultVals ? {...defaultVals,expiresIn: formatFbDate(defaultVals.expiresIn,true),time:formatFbDate(defaultVals.time,true) } : {
             name: '',
             unitQuantity: '',
             productQuantity: '',

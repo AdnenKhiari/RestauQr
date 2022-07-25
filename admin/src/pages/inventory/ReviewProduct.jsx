@@ -26,6 +26,8 @@ const ReviewProduct =()=>{
                 {user.profile.permissions.tables.manage && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT(productid))
                 }}>Update</button>
+                <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_ORDER(productid))}>New Order</button>
+
                 <button onClick={async (e)=>{
                     try{
                         usenav(ROUTES.INVENTORY.ALL)
@@ -33,7 +35,6 @@ const ReviewProduct =()=>{
                         console.log(err)
                     }
                 }}>Delete</button>
-                <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_ORDER(productid))}>New Order</button>
                 </>}
             </div>
         </div>

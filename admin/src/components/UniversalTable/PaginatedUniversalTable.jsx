@@ -11,7 +11,7 @@ import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,
 
 
 
-const PaginatedUniversalTable = ({queryConstraints = [],group=false,title,hide = null,colors,onDataSubmit,schema,structure,rows,filterData,onDataQueried,colname,pagname,oncl,subscribe = false,page_lim= 10})=>{
+const PaginatedUniversalTable = ({queryConstraints = [],group=false,title,colors,onDataSubmit,schema,structure,rows,filterData,onDataQueried,colname,pagname,oncl,subscribe = false,page_lim= 10})=>{
     const db = getFirestore()
     //for the table of orders
     const [table_data,setTable_Data] = useState([])
@@ -113,7 +113,6 @@ const PaginatedUniversalTable = ({queryConstraints = [],group=false,title,hide =
 
     return <motion.div variants={FadeIn()}className="orders-table">
         <UniversalTable head={rows} body={table_data} 
-        hide = {hide}
         colors={colors} 
         title={title} 
         oncl={oncl} 

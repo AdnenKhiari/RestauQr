@@ -18,15 +18,7 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
 
     const page_lim = 10
     const path = (parentid ? 'products/' + parentid+'/'  : '') + 'product_orders' 
-    const rows = [
-    {
-        Header: 'Order Id',
-        accessor: 'id'
-    },    
-    {
-        Header: 'Product Id',
-        accessor: 'product_id'
-    },        
+    const rows = [      
     {
         Header: 'Item Name',
         accessor: 'name'
@@ -37,11 +29,13 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
     },
     {
         Header: 'Purshase Time',
-        accessor: 'time'
+        accessor: 'time',
+        Cell : ({value})=> formatFbDate(value,true)
     },
     {
         Header: 'Expires In',
-        accessor: 'expiresIn'
+        accessor: 'expiresIn',
+        Cell : ({value})=> formatFbDate(value,true)
     },
     {
         Header: 'Used',
@@ -138,7 +132,6 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
     subscribe={false} 
     group={!parentid}
     schema={schema}
-    hide={[0,1]}
     queryConstraints={queryConstraints}
     oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_ORDER(row.product_id,row.id))}
     page_lim= {page_lim}        />

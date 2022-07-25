@@ -20,31 +20,27 @@ const schema  = joi.object({
 const OrderTable = ({queryConstraints,title})=>{
 
     const page_lim = 10
-const rows = [
-    {
-        Header: 'Order ID',
-        accessor: 'id'
-    },
-    {
-        Header: 'Table ID',
-        accessor: 'tableid'
-    },
-    {
-        Header: 'Count',
-        accessor: 'foodcount'
-    },
-    {
-        Header: 'Time',
-        accessor: 'time',
-        Cell : ({value})=>formatFbDate(value)
-    },
-    {
-        Header: 'Status',
-        accessor: 'status'
-    }
-]
-    //const rows = ['Order ID','Table ID','Count','Time','Status']
-    const customOptions = {
+    const rows = [
+        {
+            Header: 'Table ID',
+            accessor: 'tableid'
+        },
+        {
+            Header: 'Count',
+            accessor: 'foodcount'
+        },
+        {
+            Header: 'Time',
+            accessor: 'time',
+            Cell : ({value})=>formatFbDate(value)
+        },
+        {
+            Header: 'Status',
+            accessor: 'status'
+        }
+    ]
+
+const customOptions = {
         submit :  (data)=>{
             console.log(data)
         },
@@ -115,7 +111,7 @@ const rows = [
     schema={schema}
     queryConstraints={queryConstraints}
     oncl = {(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row.id))}
-    colors={(table_data)=> table_data[0].length > 0 && table_data.map((it)=>it[4].toLowerCase())}
+    colors={(table_data)=> table_data.status.toLowerCase()}
     page_lim= {page_lim}        />
 }
 export default OrderTable
