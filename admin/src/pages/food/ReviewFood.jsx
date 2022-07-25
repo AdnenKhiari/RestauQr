@@ -40,7 +40,7 @@ const ReviewFood =()=>{
         <div className="data-review-body">
             <img src={food.img} alt="" />
             <h2><span>Description:</span>  </h2>
-            <p>{food.description}</p>
+            <h2>{food.description}</h2>
             <h2><span>Category:</span> {food.category}</h2>
             <h2><span>Price:</span> {food.price}$</h2>
             <div>
