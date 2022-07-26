@@ -5,12 +5,14 @@ import {useNavigate} from "react-router-dom"
 import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
 import{joiResolver} from "@hookform/resolvers/joi"
-import joi from "joi"
+import joi, { options } from "joi"
 import {GetCategories} from "../lib/Options"
 import Loading from "./Loading"
 import Error from "./Error"
 import { FadeIn } from "../animations"
 import {motion} from "framer-motion"
+import {useTable} from "react-table"
+import { useEffect, useMemo, useState } from "react"
 
 const check_schema = joi.object({
     msg: joi.string().required().label('Item Message'),
@@ -41,9 +43,8 @@ const FoodDetails = ({defaultVals = undefined})=>{
             img: null,
             description: '',
             category: '',
-            options: []
-        },
-        resolver: joiResolver(schema)
+            ingredients: '',
+        }
     })
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
     const uploader = UploadFile()
@@ -71,6 +72,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
 
         // normalement usenav to the new id
         usenav(ROUTES.FOOD.GET_REVIEW(food_id))
+        
         }catch(err){
             console.error(err)
         }
@@ -107,8 +109,8 @@ const FoodDetails = ({defaultVals = undefined})=>{
             arrowOpen={<img alt="open" src="/next.png" />}
             arrowClosed={<img alt="open" src="/back.png" />}
             />
-        </div>        
-        <Options/>
+        </div>      
+        <Ingredients />
         {errors["title"] && <p className="error">{errors["title"].message.replaceAll('"','') }</p>}
         {errors["description"] && <p className="error">{errors["description"].message.replaceAll('"','') }</p>}
         {errors["price"] && <p className="error">{errors["price"].message.replaceAll('"','') }</p>}
@@ -120,77 +122,168 @@ const FoodDetails = ({defaultVals = undefined})=>{
             <button type={"reset"}>Reset</button>
             <button type="submit">{defaultVals ? "Update" : "Add"}</button>
         </div>
+
         </form>
         </FormProvider>
     </motion.div>
 }
-const Options = ()=>{
+const Ingredients = ()=>{
+    const [active,setActive] = useState(["ingredients"])
+    const popActive = ()=>{
+        active.pop()
+        setActive([...active])
+    }
+    const pushActive = (item)=>{
+        active.push(item)
+        setActive([...active])
+    }
+    const {watch,setValue,register,reset,control} = useFormContext()
+    return  <div className="ingredients-details">
+        <h1>Ingredients : <small>{active && active.join('').replaceAll(".","/")}</small></h1>
+        <SelectionTable popActive={popActive} root={active} />  
+        <Options pushActive = {pushActive} root={active}/>
+    </div>
+}
 
-    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-        name: "options", // unique name for your Field Array
+const Options = ({root,pushActive})=>{
+    const path =  root.join('')+".options" 
+
+    const {watch,setValue,register,reset,control} = useFormContext()
+
+    const ufa = useFieldArray({
+        name: root.join('')+".options" ,
+        shouldUnregister: false,
+        control: control
     });
-
-    const {watch,setValue,register} = useFormContext()
+    const { fields, append, prepend, remove, swap, move, insert} = ufa
+const arrFields = watch(path)
     return  <div className="options-list">
         <div className="options-list-header">
+
             <h2>Options : </h2>
-            <h3><button onClick={(e)=>{
-                const leng = watch('options') ? watch('options').length : 0
-                setValue(`options.${leng}`,{type: 'check',msg: '',price: 0})
+            <h3><button type={"button"} onClick={(e)=>{
+                append({type: 'check',msg: '',price: 0,ingredients: {options: [],products: []}})
             }}>Add Check Item</button></h3>
-                    <h3><button onClick={(e)=>{
-                const leng = watch('options') ? watch('options').length : 0
-                setValue(`options.${leng}`,{type: 'select',msg: '',choices: []})
+                    <h3><button type={"button"} onClick={(e)=>{
+                append({type: 'select',msg: '',choices: []})
             }}>Add Multiple Select Item</button></h3>  
 
         </div>
-
         <div className="options-types">
-        {watch("options") && watch("options").map((opt,index)=>{
+        { arrFields && arrFields.map((opt,index)=>{
             if(opt.type === 'check')
-                return <div key={index} className="check-item">
+                return watch(`${path}.${index}`) && <div key={index} className="check-item">
                     <img className="make-img-blue" src="/checkbox.png" alt="Option" />
-                    <input placeholder="Message..." className="secondary-input" type="text" {...register(`options.${index}.msg`)} />
-                    <input placeholder="0" className="secondary-input"  type="number" {...register(`options.${index}.price`)} />
+                    <input value={watch(`${path}.${index}.msg`)} placeholder="Message..." className="secondary-input" type="text" {...register(`${path}.${index}.msg`)} />
+                    <input value={watch(`${path}.${index}.price`)} placeholder="0" className="secondary-input"  type="number" {...register(`${path}.${index}.price`)} />
                     <img  className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                         remove(index)
                     }} />
+                    <img className="add-img make-img-blue " src="/recipe-book.png" alt="Ingredients" onClick={(e)=>{
+                        pushActive(`.options.${index}.ingredients`)
+                    }} />
                 </div>
-            return <MultipleChoiceItem removeItem={remove} idx={index} key={index} />
+            return <MultipleChoiceItem pushActive={pushActive} root={path} removeItem={remove} idx={index} key={index} />
         })
         }
         </div>
     </div>
 }
-const MultipleChoiceItem = ({idx,removeItem})=>{
+const MultipleChoiceItem = ({root,idx,removeItem,pushActive})=>{
+    const path = root+`.${idx}`
     const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-        name: `options.${idx}.choices`, // unique name for your Field Array
+        name: path+".choices", // unique name for your Field Array
     });
     const {register,setValue,watch} = useFormContext()
-
+    const items  = watch(path+".choices")
     return <div className="select-item">
         <div className="select-header">
             <img className="make-img-blue" src="/radio-button.png" alt="Option" />
-                <input  placeholder="Message..." className="secondary-input"  type="text" {...register(`options.${idx}.msg`)} />
+                <input  placeholder="Message..." className="secondary-input"  type="text" {...register(`${path}.msg`)} />
                 <img className="add-img make-img-green" src="/plus.png" alt="Add Choice" onClick={(e)=>{
-                append({msg: '',price: ''})
+                append({msg: '',price: '',ingredients: {options: [],products: []} })
                 }} />
                 <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
-                        removeItem(idx)
+                    removeItem(idx)
                 }} />
+
         </div>
 
         <div className="choices">
-            {watch(`options.${idx}.choices`) && watch(`options.${idx}.choices`).map((choice,index)=><div className="choice-item"  key={index}>
+            { items && items.map((choice,index)=><div className="choice-item"  key={index}>
                 <img className="make-img-blue" src="/radio.png" alt="radio" />
-                <input placeholder="Message..." className="secondary-input"  type="text" {...register(`options.${idx}.choices.${index}.msg`)} />
-                <input placeholder="0" className="secondary-input"  type="number" {...register(`options.${idx}.choices.${index}.price`)} />
+                <input placeholder="Message..." className="secondary-input"  type="text" {...register(`${path}.choices.${index}.msg`)} />
+                <input placeholder="0" className="secondary-input"  type="number" {...register(`${path}.choices.${index}.price`)} />
                 <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                         remove(index)
+                }} />
+                <img className="add-img make-img-blue " src="/recipe-book.png" alt="Ingredients" onClick={(e)=>{
+                    pushActive(`.options.${idx}.choices.${index}.ingredients`)
                 }} />
             </div>)
             }
             </div>
         </div>
+}
+const productSchema = joi.object({
+    name : joi.string().required().label("Name"),
+    quantity : joi.number().required().label("Quantity"),
+    price : joi.number().required().label("Price")
+})
+
+const SelectionTable = ({root,popActive})=>{
+    let path = root.join('')+'.products'
+    const {register,setValue,watch,control} = useFormContext()
+    const ufa = useFieldArray({
+        name: path, // unique name for your Field Array,
+        control: control
+    });
+    const { fields, append, prepend, remove, swap, move, insert } = ufa
+    const columns = useMemo(()=>{
+        return [{
+            Header: 'Name',
+            accessor: 'name'
+        },
+        {
+            Header: 'Quantity',
+            accessor: 'quantity'
+        },{
+            Header: 'Price',
+            accessor: 'price'
+        }]
+    },[])
+    const tb = useTable({data:  watch(path) || [],columns: columns})
+    return <div className="products-table">
+
+        <div className="products-list-header">
+            <h2>Products : </h2>
+            <h3>
+                <button type={"button"} onClick={(e)=>{e.preventDefault();popActive()}} >Previous</button>
+                <button type={"button"} onClick={(e)=>{e.preventDefault();append({name: "lel",quantity: 4,price: 100})}}>Add Product</button>
+            </h3>  
+        </div>
+        
+        <table {...tb.getTableProps()}>
+            <thead>
+                {tb.headerGroups.map((headerGroup)=><tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column)=><th {...column.getHeaderProps()}>{column.render("Header")}</th>)}
+                <th>Action</th>
+                </tr>)}
+            </thead>
+            <tbody {...tb.getTableBodyProps()}>
+                {tb.rows.map((row,rowidx)=>{
+                    tb.prepareRow(row)
+                    return <tr {...row.getRowProps()}>{
+                        row.cells.map((cell)=><td {...cell.getCellProps()}>{cell.render("Cell")}</td>)
+                    }
+                    <td>
+                        <button type={"button"}>Update</button>
+                        <button type={"button"} onClick={(e)=>remove(rowidx)}>Remove</button>
+                    </td>
+                    </tr>
+                })}
+            </tbody>
+        </table>
+    </div> 
 }
 export default FoodDetails
