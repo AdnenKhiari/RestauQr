@@ -51,9 +51,9 @@ const UniversalTable = ({title,head,body,errs,colors,oncl,prev,next,customOption
                 </tr>)}
             </thead>
             <tbody {...getTableBodyProps()}>
-                {rows.map((row)=>{
+                {rows.map((row,rowidx)=>{
                     prepareRow(row)
-                    return <tr className={colors ? colors(row.original) : undefined} {...row.getRowProps()} onClick={(e)=>oncl(row.original)}>
+                    return <tr className={colors ? colors(row.original) : undefined} {...row.getRowProps()} onClick={(e)=>oncl(row.original,rowidx)}>
                         {row.cells.map(cell => <td {...cell.getCellProps()} >{cell.render('Cell')}</td> )}
                     </tr>
                 })}

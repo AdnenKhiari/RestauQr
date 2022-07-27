@@ -1,4 +1,4 @@
-import {FormProvider, useFieldArray, useForm, useFormContext} from "react-hook-form"
+import {FormProvider, useFieldArray, useForm, useFormContext, useWatch} from "react-hook-form"
 import UploadFile from "../lib/UploadFile"
 import {AddUpdateFood} from "../lib/FoodDal"
 import {useNavigate} from "react-router-dom"
@@ -13,20 +13,41 @@ import { FadeIn } from "../animations"
 import {motion} from "framer-motion"
 import {useTable} from "react-table"
 import { useEffect, useMemo, useState } from "react"
+import ProductsTables from "./Tables/ProductsTable"
 
-const check_schema = joi.object({
-    msg: joi.string().required().label('Item Message'),
-    type: joi.allow('check').required(),
-    price: joi.number().min(0).required().label('Item Price'),
+
+const productSchema = joi.object({
+    id: joi.string().optional() ,
+    name : joi.string().required().label("Name"),
+    quantity : joi.number().required().label("Quantity"),
+    unit: joi.string(),
+    sellingUnitPrice: joi.number(),
+    unitQuantity: joi.number()
 }).optional()
-const select_schema = joi.object({
-    msg: joi.string().required().label('Item Message'),
-    type: joi.allow('select').required(),
-    choices: joi.array().optional().items(joi.object({
-        msg: joi.string().required().label('Item Selection Message'),
-        price: joi.number().min(0).label('Item Selection Price')
-    }))
-}).optional()
+
+const ingredientsSchema = joi.object({
+    options: joi.array().optional().items(
+    joi.object({
+        msg: joi.string().required().label('Item Message'),
+        type: joi.allow('check').required(),
+        price: joi.number().min(0).required().label('Item Price'),
+        ingredients: joi.link('#ingr').optional()
+    }).optional()
+    , 
+    joi.object({
+        msg: joi.string().required().label('Item Message'),
+        type: joi.allow('select').required(),
+        choices: joi.array().optional().items(joi.object({
+            msg: joi.string().required().label('Item Selection Message'),
+            price: joi.number().min(0).label('Item Selection Price'),
+            ingredients: joi.link('#ingr').optional()
+        }))
+    }).optional()),
+    products: joi.array().items(productSchema).label("Products")
+
+}).id("ingr")
+
+
 const schema = joi.object({
     id: joi.string().optional().label('ID'),
     title: joi.string().required().label('Food Name'),
@@ -34,8 +55,11 @@ const schema = joi.object({
     category: joi.string().required().label('Food Category'),
     img: joi.any().required().label('Food Image'),
     price: joi.number().min(0).required().label('Food Price'),
-    options: joi.array().optional().items(check_schema,select_schema)
+    ingredients: ingredientsSchema
 })
+
+const schem = joi.any()
+
 const FoodDetails = ({defaultVals = undefined})=>{
     const formOptions = useForm({
         defaultValues: defaultVals || {
@@ -44,7 +68,8 @@ const FoodDetails = ({defaultVals = undefined})=>{
             description: '',
             category: '',
             ingredients: '',
-        }
+        },
+        resolver: joiResolver(schema)
     })
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
     const uploader = UploadFile()
@@ -110,13 +135,15 @@ const FoodDetails = ({defaultVals = undefined})=>{
             arrowClosed={<img alt="open" src="/back.png" />}
             />
         </div>      
+        
         <Ingredients />
+
         {errors["title"] && <p className="error">{errors["title"].message.replaceAll('"','') }</p>}
         {errors["description"] && <p className="error">{errors["description"].message.replaceAll('"','') }</p>}
         {errors["price"] && <p className="error">{errors["price"].message.replaceAll('"','') }</p>}
         {(!watch('category') || true)  && errors["category"] && <p className="error">{errors["category"].message.replaceAll('"','') }</p>}
         {errors["img"] && <p className="error">Select a valid image</p>}
-        {errors["options"] && <p className="error">Errors on option inputs</p>}
+        {errors["ingredients"] && <p className="error">Errors on ingredients inputs</p>}
 
         <div className="validate">
             <button type={"reset"}>Reset</button>
@@ -129,7 +156,13 @@ const FoodDetails = ({defaultVals = undefined})=>{
 }
 const Ingredients = ()=>{
     const [active,setActive] = useState(["ingredients"])
+    const [labels,setLabels] = useState(["Base"])
+
+    const {watch,setValue,register,reset,control} = useFormContext()
+
     const popActive = ()=>{
+        if(active.length <= 1)
+            return
         active.pop()
         setActive([...active])
     }
@@ -137,15 +170,28 @@ const Ingredients = ()=>{
         active.push(item)
         setActive([...active])
     }
-    const {watch,setValue,register,reset,control} = useFormContext()
+
+    const pushLabel= (item)=>{
+        labels.push(item)
+        setLabels([...labels])
+    }
+
+    const popLabel= (item)=>{
+        if(labels.length <= 1)
+            return
+        labels.pop()
+        setLabels([...labels])
+    }
+
+
     return  <div className="ingredients-details">
-        <h1>Ingredients : <small>{active && active.join('').replaceAll(".","/")}</small></h1>
-        <SelectionTable popActive={popActive} root={active} />  
-        <Options pushActive = {pushActive} root={active}/>
+        <h1 style={{margin: "15px 0px"}}>Ingredients : <small>{labels && labels.join('/')}</small></h1>
+        <SelectionTable popLabel={popLabel} popActive={popActive} root={active} />  
+        <Options pushLabel={pushLabel} pushActive = {pushActive} root={active}/>
     </div>
 }
 
-const Options = ({root,pushActive})=>{
+const Options = ({root,pushActive,pushLabel})=>{
     const path =  root.join('')+".options" 
 
     const {watch,setValue,register,reset,control} = useFormContext()
@@ -181,15 +227,16 @@ const arrFields = watch(path)
                     }} />
                     <img className="add-img make-img-blue " src="/recipe-book.png" alt="Ingredients" onClick={(e)=>{
                         pushActive(`.options.${index}.ingredients`)
+                        pushLabel(watch(`${path}.${index}.msg`))
                     }} />
                 </div>
-            return <MultipleChoiceItem pushActive={pushActive} root={path} removeItem={remove} idx={index} key={index} />
+            return <MultipleChoiceItem pushLabel={pushLabel} pushActive={pushActive} root={path} removeItem={remove} idx={index} key={index} />
         })
         }
         </div>
     </div>
 }
-const MultipleChoiceItem = ({root,idx,removeItem,pushActive})=>{
+const MultipleChoiceItem = ({root,idx,removeItem,pushLabel,pushActive})=>{
     const path = root+`.${idx}`
     const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
         name: path+".choices", // unique name for your Field Array
@@ -206,7 +253,6 @@ const MultipleChoiceItem = ({root,idx,removeItem,pushActive})=>{
                 <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
                     removeItem(idx)
                 }} />
-
         </div>
 
         <div className="choices">
@@ -219,30 +265,38 @@ const MultipleChoiceItem = ({root,idx,removeItem,pushActive})=>{
                 }} />
                 <img className="add-img make-img-blue " src="/recipe-book.png" alt="Ingredients" onClick={(e)=>{
                     pushActive(`.options.${idx}.choices.${index}.ingredients`)
+                    pushLabel(watch(`${path}.choices.${index}.msg`))
                 }} />
             </div>)
             }
             </div>
         </div>
 }
-const productSchema = joi.object({
-    name : joi.string().required().label("Name"),
-    quantity : joi.number().required().label("Quantity"),
-    price : joi.number().required().label("Price")
-})
 
-const SelectionTable = ({root,popActive})=>{
+const SelectionTable = ({root,popActive,popLabel})=>{
     let path = root.join('')+'.products'
     const {register,setValue,watch,control} = useFormContext()
     const ufa = useFieldArray({
         name: path, // unique name for your Field Array,
         control: control
     });
-    const { fields, append, prepend, remove, swap, move, insert } = ufa
+    const { fields, append, update, remove, swap, move, insert } = ufa
+
+    const [mutateProduct,setMutateProduct] = useState(null)
+
     const columns = useMemo(()=>{
         return [{
             Header: 'Name',
             accessor: 'name'
+        },
+        {
+            Header: 'Quantity/U',
+            accessor: 'unitQuantity',
+            Cell: ({value,row})=> value+""+row.original.unit
+        },
+        {
+            Header: 'Price/U',
+            accessor: 'sellingUnitPrice'
         },
         {
             Header: 'Quantity',
@@ -253,16 +307,32 @@ const SelectionTable = ({root,popActive})=>{
         }]
     },[])
     const tb = useTable({data:  watch(path) || [],columns: columns})
-    return <div className="products-table">
+
+    const addProduct = (prod,index)=>{
+        append({name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
+        setMutateProduct(null)
+    }
+
+    const modifyProduct = (prod,index)=>{
+        update(index,{name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
+        setMutateProduct(null)
+    }
+
+
+    return <>{mutateProduct !== null && 
+        <>
+        <ProductsTables title={<button type="button" style={{color: "white"}} onClick={(e)=>setMutateProduct(null)}>Cancel</button>} oncl={(row)=> mutateProduct === "add" ? addProduct(row) : modifyProduct(row,mutateProduct)} />
+        </>}
+     <div className="products-table">
 
         <div className="products-list-header">
             <h2>Products : </h2>
             <h3>
-                <button type={"button"} onClick={(e)=>{e.preventDefault();popActive()}} >Previous</button>
-                <button type={"button"} onClick={(e)=>{e.preventDefault();append({name: "lel",quantity: 4,price: 100})}}>Add Product</button>
+                <button type={"button"} onClick={(e)=>{e.preventDefault();popLabel();popActive()}} >Previous</button>
+                <button type={"button"} onClick={(e)=>{e.preventDefault();setMutateProduct("add")}}>Add Product</button>
             </h3>  
         </div>
-        
+
         <table {...tb.getTableProps()}>
             <thead>
                 {tb.headerGroups.map((headerGroup)=><tr {...headerGroup.getHeaderGroupProps()}>
@@ -274,16 +344,34 @@ const SelectionTable = ({root,popActive})=>{
                 {tb.rows.map((row,rowidx)=>{
                     tb.prepareRow(row)
                     return <tr {...row.getRowProps()}>{
-                        row.cells.map((cell)=><td {...cell.getCellProps()}>{cell.render("Cell")}</td>)
+                        row.cells.map((cell)=><td {...cell.getCellProps()}>
+                            {cell.column.Header === "Quantity" ? ( 
+                                <input 
+                                step={"any"}  
+                                className="secondary-input" 
+                                type="number" 
+                                {...register(`${path}.${rowidx}.quantity`)} />
+                            ) : cell.column.Header === "Price" ? (
+                                row.original.sellingUnitPrice * 1.0 * row.original.quantity / row.original.unitQuantity
+                            ) : (
+                                cell.render("Cell") 
+                            )
+                            }
+                            </td>)
                     }
                     <td>
-                        <button type={"button"}>Update</button>
+                        <button onClick={(e)=>{e.preventDefault();setMutateProduct(rowidx)}} type={"button"}>Update</button>
                         <button type={"button"} onClick={(e)=>remove(rowidx)}>Remove</button>
                     </td>
                     </tr>
                 })}
+                <tr><td></td><td></td><td></td><td></td><td><h2> Total: {watch(path) ? watch(path).reduce((prev,fd)=>{
+                    return prev +   fd.sellingUnitPrice * 1.0 * fd.quantity / fd.unitQuantity
+                },0) : 0} </h2></td><td></td></tr>
             </tbody>
         </table>
+
     </div> 
+    </>
 }
 export default FoodDetails

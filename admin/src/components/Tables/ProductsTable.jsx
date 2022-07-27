@@ -18,7 +18,7 @@ const schema  = joi.object({
     name: joi.string().allow('').required().label("Product Name"),
 })
 
-const ProductsTables = ({queryConstraints,title})=>{
+const ProductsTables = ({queryConstraints,title,oncl = undefined})=>{
 
     const page_lim = 10
 
@@ -139,6 +139,9 @@ const ProductsTables = ({queryConstraints,title})=>{
         return null
     }
 
+    const defaultCl = (row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(row.id))
+
+
     const usenav = useNavigate()
     return <PaginatedUniversalTable 
     colname={'products'}
@@ -152,7 +155,7 @@ const ProductsTables = ({queryConstraints,title})=>{
     subscribe={false} 
     schema={schema}
     queryConstraints={queryConstraints}
-    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(row.id))}
+    oncl={oncl ? oncl : defaultCl}
     page_lim= {page_lim}        />
 }
 export default ProductsTables
