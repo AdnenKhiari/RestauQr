@@ -15,6 +15,15 @@
             justify-content: flex-start;
             align-items: center ;
             align-content: center;
+            label{
+                font-size: $h2size;
+                color: Secondary(1);
+                margin: 5px;
+            }
+            button{
+                color: Bright(1);
+                margin: 5px;
+            }
         }
 
         .Dropdown-root{

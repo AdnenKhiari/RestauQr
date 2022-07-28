@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc} from "firebase/firestore"
+import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc, increment} from "firebase/firestore"
 
 export const GetProductById = (id)=>{
 
@@ -62,6 +62,37 @@ export const GetProductOrderById = (productid,orderid)=>{
         loading: !result && !error
     }
 }
+
+export const ConsumeProductItem = (productid,orderid) => {
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading,setLoading] = useState(null)
+    const db = getFirestore()
+    const mutate = async (data)=>{
+        setLoading(true)
+        try{
+            await updateDoc(doc(db,`products/${productid}/product_orders/${orderid}`),{
+                used: increment(data.used),
+                wasted: increment(data.wasted),
+            })
+            setResult(true)
+            return true
+        }catch(err){
+            setError(err)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    return {
+        result,
+        error,
+        loading,
+        mutate
+    }
+}
+
 export const AddUpdateProductOrder = (productid)=>{
 
     const [result,setResult] = useState(null)
