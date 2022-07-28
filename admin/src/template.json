@@ -1,0 +1,25 @@
+{
+    "10298/18743/23U2932428EREIRIER9" :{
+        "date": "UIERUEIFDFNDFNDKFNFKD",
+        "food":[
+            {
+            "name": "pizzaneptur",
+            "category" : "lel",
+            "count": 3284,
+            "supps":[{"fromage.mini":2},{"fromage.maxi":2},{"fromage.taille":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2},{"fromage":2}]
+            }   
+        ],
+        "orders": {
+            "sucess": 3294,
+            "canceled": 978
+        },
+        "inventory":[
+            {
+                "name": "dsdjzdi",
+                "used":4343,
+                "wasted":23832,
+                "total": 939493437
+            }
+        ]
+    }
+}
