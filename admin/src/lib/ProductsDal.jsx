@@ -115,12 +115,41 @@ export const RemoveProduct = (productid)=>{
     const [error,setError] = useState(null)
     const [loading,setLoading] = useState(null)
     const db  = getFirestore()
-
+    const verifyId = (ing)=>{
+        if(ing.products){            
+            if(ing.products.filter((p)=>p.id === productid).length > 0){
+                return false
+            }else{
+                let result = true
+                ing.options.forEach((opt)=>{
+                    if(opt.type === 'check'){
+                        result = result &&  verifyId(opt.ingredients)
+                    }else if(opt.type === "select"){
+                        opt.choices.forEach((choice)=>{
+                            result = result &&  verifyId(choice.ingredients)
+                        })
+                    }
+                })
+                return result
+            }
+        }
+    }
     const remove = async ()=>{
         setLoading(true)
         try{
             const ref = doc(db,'products/'+productid)
             const orders = collection(db,'products/'+productid+"/product_orders")
+            const food_ref = collection(db,'food')
+
+            let allfood = await getDocsFromServer(food_ref);
+
+            allfood.forEach((item)=>{
+                const food = item.data()
+                if(!verifyId(food.ingredients))
+                    throw Error("Product In Use In Food "+food.title)
+            })
+
+            allfood = null;
             const alldocs = await getDocsFromServer(orders)
             runTransaction(db,async (tr)=>{
                 alldocs.forEach((element)=>{

@@ -45,9 +45,10 @@ const ReviewFood =()=>{
             <h2><span>Category:</span> {food.category}</h2>
             <h2><span>Base Price:</span> {food.price}$</h2>
             <h2><span>Ingredients:</span></h2>
+            <Ingredients foodopt={food} />
+
             <div>
                 <GetOptions init={food.ingredients} />
-                <Ingredients foodopt={food} />
             </div>
         </div>
     </motion.div >
