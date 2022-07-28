@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom"
-import {GetProductById} from "../../lib/ProductsDal.jsx"
+import {GetProductById, RemoveProduct} from "../../lib/ProductsDal.jsx"
 import Loading from "../../components/Loading"
 import Error from "../../components/Error"
 import * as ROUTES from "../../ROUTES"
@@ -14,6 +14,7 @@ const ReviewProduct =()=>{
     const {result : product,loading,error} = GetProductById(productid)
     const user = useContext(UserContext)
     const usenav = useNavigate()
+    const del = RemoveProduct(productid)
     if( error)
         return <Error msg={"Error while retrieving Food information " + productid} error={error} />
     if( loading)
@@ -30,6 +31,7 @@ const ReviewProduct =()=>{
 
                 <button onClick={async (e)=>{
                     try{
+                        await del.remove()
                         usenav(ROUTES.INVENTORY.ALL)
                     }catch(err){
                         console.log(err)

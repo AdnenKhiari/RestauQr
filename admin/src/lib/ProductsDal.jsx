@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc, increment, runTransaction} from "firebase/firestore"
+import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc, increment, runTransaction, getDocsFromServer} from "firebase/firestore"
 
 export const GetProductById = (id)=>{
 
@@ -110,6 +110,78 @@ export const ConsumeProductItem = (productid,orderid) => {
     }
 }
 
+export const RemoveProduct = (productid)=>{
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading,setLoading] = useState(null)
+    const db  = getFirestore()
+
+    const remove = async ()=>{
+        setLoading(true)
+        try{
+            const ref = doc(db,'products/'+productid)
+            const orders = collection(db,'products/'+productid+"/product_orders")
+            const alldocs = await getDocsFromServer(orders)
+            runTransaction(db,async (tr)=>{
+                alldocs.forEach((element)=>{
+                    tr.delete(element.ref)
+                })
+                tr.delete(ref)
+            })
+            setResult(true)
+        }catch(err){
+            setError(err)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    return {
+        result,
+        error,
+        loading,
+        remove
+    }
+}
+
+export const RemoveProductOrder = (productid,orderid)=>{
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading,setLoading] = useState(null)
+    const db  = getFirestore()
+
+    const remove = async ()=>{
+        setLoading(true)
+        try{
+            let quan = 0
+            const ref = doc(db,'products/'+productid+'/product_orders/'+orderid)
+            runTransaction(db,async (tr)=>{
+                const snap = await tr.get(ref)
+                if(!snap.exists())
+                    throw Error("Invalid Id")
+                const data = snap.data()
+                quan = data.unitQuantity * data.productQuantity - (data.used + data.wasted)
+                tr.delete(ref).update(doc(db,'products/'+productid),{
+                    stockQuantity: increment(-quan)
+                })
+            })
+            setResult(true)
+        }catch(err){
+            setError(err)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    return {
+        result,
+        error,
+        loading,
+        remove
+    }
+}
 export const AddUpdateProductOrder = (productid)=>{
 
     const [result,setResult] = useState(null)
@@ -119,21 +191,43 @@ export const AddUpdateProductOrder = (productid)=>{
     const mutate = async (data)=>{
         setLoading(true)
         try{
+            const prodref = doc(db,'products/'+productid)
             if(data.id){
                 const ref = doc(db,'products/'+productid+'/product_orders/'+data.id)
                 const productorderid = data.id+""
                 delete data.id
-                await updateDoc(ref,data)
+                await runTransaction(db,async (tr)=>{
+
+                    const old_prod = (await tr.get(prodref))
+                    if(!old_prod.exists())
+                        throw Error("Invalid Product Id")
+                    const old_prod_data = old_prod.data()
+
+                    const old_ord = (await tr.get(ref))
+                    if(!old_ord.exists())
+                        throw Error("Invalid Order Id")
+                    const old_ord_data = old_ord.data()
+
+                    const new_quantity = data.unitQuantity * data.productQuantity - (data.used + data.wasted)
+                    const old_quantity = old_ord_data.unitQuantity * old_ord_data.productQuantity - (old_ord_data.used + old_ord_data.wasted)
+                    const diff = new_quantity - old_quantity
+                    if(-diff > old_prod_data.stockQuantity )
+                        throw Error("Exceeded maximum Capacity")
+                    tr.update(ref,data).update(prodref,{
+                        stockQuantity: increment(diff)
+                    })
+                })
                 setResult(productorderid)
                 return productorderid
             }else{
-                const ref = collection(db,'products/'+productid+'/product_orders')
-                const prodref = doc(db,'products/'+productid)
-
-                const snap = await addDoc(ref,{...data,used: 0,wasted: 0})
-                const dd =  increment(data.unitQuantity * data.productQuantity - (data.used + data.wasted))
-                setResult(snap.id)
-                return snap.id  
+                data = {...data,used: 0,wasted: 0}
+                const stockadd =  (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
+                const ref = doc(collection(db,'products/'+productid+'/product_orders'))
+                await runTransaction(db,async (tr)=>{
+                    tr.set(ref,data).update(prodref,{stockQuantity: increment(stockadd)})
+                })
+                setResult(ref.id)
+                return ref.id 
             }
         }catch(err){
             setError(err)

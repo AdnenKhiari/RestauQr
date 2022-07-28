@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom"
-import {ConsumeProductItem, GetProductOrderById} from "../../../lib/ProductsDal.jsx"
+import {ConsumeProductItem, GetProductOrderById, RemoveProductOrder} from "../../../lib/ProductsDal.jsx"
 import Loading from "../../../components/Loading"
 import Error from "../../../components/Error"
 import * as ROUTES from "../../../ROUTES"
@@ -30,7 +30,7 @@ const ReviewProductOrder =()=>{
         }
     })
     const consume = ConsumeProductItem(productid,orderid)
-
+    const del = RemoveProductOrder(productid,orderid)
     if( error)
         return <Error msg={"Error while retrieving Food information " + productid} error={error} />
     if( loading)
@@ -47,7 +47,8 @@ const ReviewProductOrder =()=>{
                 }}>Update</button>
                 <button onClick={async (e)=>{
                     try{
-                        usenav(ROUTES.INVENTORY.ALL)
+                        await del.remove()
+                        usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid))
                     }catch(err){
                         console.log(err)
                     }

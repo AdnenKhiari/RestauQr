@@ -5,6 +5,10 @@ ADMIN:
 
 FireStore Rules
 
+Error ids ?
+
+SPAMMING button sends request multiple times ( example fil create wala update problematique ) so add a disable button medem request is loading wenabled otherwise
+
 Add A food disable option ( bich ki ihib inahi mekla mayok3odch ifasikh Feha , but check firestore rules first)
 
 Check if the docs or collections do not exist initially create Them (Starter Script Or Somthing Like That)
