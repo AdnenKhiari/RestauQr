@@ -19,21 +19,26 @@ const schema = joi.object({
     unitQuantity: joi.number().min(0).required().label('Quantity/U'),
     unitPrice: joi.number().min(0).required().label('Price/U'),
     time: joi.date().required().label('Time'),
-    expiresIn: joi.date().required().label('Expires In'),
-    used: joi.number().min(0).required().label('Wasted'),
-    wasted: joi.number().min(0).required().label('Used')
+    expiresIn: joi.date().required().label('Expires In')
 })
 const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
     const formOptions = useForm({
-        defaultValues: defaultVals ? {...defaultVals,expiresIn: formatFbDate(defaultVals.expiresIn,true),time:formatFbDate(defaultVals.time,true) } : {
+        defaultValues: defaultVals ? {
+            name: defaultVals.name,
+            unitQuantity: defaultVals.unitQuantity,
+            productQuantity: defaultVals.productQuantity,
+            unitPrice: defaultVals.unitPrice,
+            expiresIn: formatFbDate(defaultVals.expiresIn,true),
+            time:formatFbDate(defaultVals.time,true)
+            } 
+            :
+            {
             name: '',
             unitQuantity: '',
             productQuantity: '',
             unitPrice: '',
             time: '',
             expiresIn: '',
-            used: 0,
-            wasted: 0
         },
         resolver: joiResolver(schema)
     })
@@ -81,14 +86,6 @@ const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
                 <input  className={"secondary-input " + (errors.unitPrice ? 'input-error' : '')} type="number" id="unitPrice" {...register("unitPrice")} />
             </div>   
             <div className="input-item">
-                <label htmlFor="used"><h2>Used : </h2></label>
-                <input className={"secondary-input " + (errors.used ? 'input-error' : '')} type="number" id="used" {...register("used")} />
-            </div>    
-            <div className="input-item">
-                <label htmlFor="wasted"><h2>Wasted : </h2></label>
-                <input  className={"secondary-input " + (errors.wasted ? 'input-error' : '')} type="number" id="wasted" {...register("wasted")} />
-            </div>    
-            <div className="input-item">
                 <label htmlFor="time"><h2>Purshase Time : </h2></label>
                 <input  className={"secondary-input " + (errors.time ? 'input-error' : '')} type="date" id="time" {...register("time")} />
             </div>    
@@ -100,8 +97,6 @@ const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
             {errors["name"] && <p className="error">{errors["name"].message.replaceAll('"','') }</p>}
             {errors["productQuantity"] && <p className="error">{errors["productQuantity"].message.replaceAll('"','') }</p>}
             {errors["unitPrice"] && <p className="error">{errors["unitPrice"].message.replaceAll('"','') }</p>}
-            {errors["used"] && <p className="error">{errors["used"].message.replaceAll('"','') }</p>}
-            {errors["wasted"] && <p className="error">{errors["wasted"].message.replaceAll('"','') }</p>}
             {errors["unitQuantity"] && <p className="error">{errors["unitQuantity"].message.replaceAll('"','') }</p>}
             {errors["time"] && <p className="error">{errors["time"].message.replaceAll('"','') }</p>}
             {errors["expiresIn"] && <p className="error">{errors["expiresIn"].message.replaceAll('"','') }</p>}

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import {ConsumeProductItem, GetProductOrderById} from "../../../lib/ProductsDal.jsx"
 import Loading from "../../../components/Loading"
 import Error from "../../../components/Error"
@@ -41,6 +41,7 @@ const ReviewProductOrder =()=>{
         <div className="data-review-header">
             <h1><span>Name: </span>{product.name}</h1>
             <div>
+                
                 {user.profile.permissions.tables.manage && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT_ORDER(productid,orderid))
                 }}>Update</button>
@@ -62,9 +63,12 @@ const ReviewProductOrder =()=>{
             <h2><span>Purshase Quantity:</span> {product.productQuantity}</h2>
             <h2><span>Used:</span> {product.used}</h2>
             <h2><span>Wasted:</span> {product.wasted}</h2>
-            <form onSubmit={handleSubmit((data)=>{
+            <h2><Link to={ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid)}>Go To Product</Link></h2>
+
+            <form onSubmit={handleSubmit(async (data)=>{
                 console.log(data)
-                consume.mutate(data)
+                await consume.mutate(data)
+                usenav(0)
             })}>
                 <div className="input-item">
                     <div>

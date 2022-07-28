@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc, increment} from "firebase/firestore"
+import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc, increment, runTransaction} from "firebase/firestore"
 
 export const GetProductById = (id)=>{
 
@@ -71,9 +71,26 @@ export const ConsumeProductItem = (productid,orderid) => {
     const mutate = async (data)=>{
         setLoading(true)
         try{
-            await updateDoc(doc(db,`products/${productid}/product_orders/${orderid}`),{
-                used: increment(data.used),
-                wasted: increment(data.wasted),
+            const docref = doc(db,`products/${productid}/product_orders/${orderid}`)
+            const prodref = doc(db,`products/${productid}`)
+            await runTransaction(db,async (tr)=>{
+                const snap = await tr.get(docref)
+                if(!snap.exists()){
+                    throw Error("Invalid IDs")
+                }
+                const cur = snap.data()
+                if(cur.used + data.used < 0 || cur.wasted + data.wasted < 0){
+                    throw Error("Invalid Query,the wasted and used total ammounts cannot be negative")
+                }
+                if(cur.used + data.used + cur.wasted + data.wasted  > cur.productQuantity * cur.unitQuantity){
+                    throw Error("Invalid Query,Exceeded maximum capacity")
+                }
+                tr.update(docref,{
+                    used: increment(data.used),
+                    wasted: increment(data.wasted),
+                }).update(prodref,{
+                    stockQuantity: increment(-(data.used + data.wasted))
+                })
             })
             setResult(true)
             return true
@@ -102,17 +119,19 @@ export const AddUpdateProductOrder = (productid)=>{
     const mutate = async (data)=>{
         setLoading(true)
         try{
-            var ref = null
-
             if(data.id){
-                ref = doc(db,'products/'+productid+'/product_orders/'+data.id)
+                const ref = doc(db,'products/'+productid+'/product_orders/'+data.id)
                 const productorderid = data.id+""
                 delete data.id
                 await updateDoc(ref,data)
                 setResult(productorderid)
                 return productorderid
             }else{
-                const snap = await addDoc(collection(db,'products/'+productid+'/product_orders'),data)
+                const ref = collection(db,'products/'+productid+'/product_orders')
+                const prodref = doc(db,'products/'+productid)
+
+                const snap = await addDoc(ref,{...data,used: 0,wasted: 0})
+                const dd =  increment(data.unitQuantity * data.productQuantity - (data.used + data.wasted))
                 setResult(snap.id)
                 return snap.id  
             }
