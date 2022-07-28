@@ -37,22 +37,22 @@
         > p {
 
         }
-        div:last-child{
-            .option-item{
-                font-size: $h3size  ;
-                margin: 20px 10px;
-                display: flex;
-                align-items: center;
-                align-content: center;
-                img{
-                    width: 25px;
-                    object-fit: cover;
-                    margin: 0px 5px;
-                }
-            }
-            .select-options{
-                padding-left: 20px;
+        
+        .option-item{
+            font-size: $h3size  ;
+            margin: 20px 10px;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            img{
+                width: 25px;
+                object-fit: cover;
+                margin: 0px 5px;
             }
         }
+        .select-options{
+            padding-left: 20px;
+        }
+        
     }
 }

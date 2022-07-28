@@ -25,7 +25,20 @@
                     font-family: $base_font;
                     font-size: $h3size*1.2;
                 }
+                .header-tag{
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    align-content: center;
+                    img{
+                        width: 20px;
+                        margin: 5px 10px;
+                        object-fit: cover;
+                        cursor: pointer;
+                    }
+                }
             }
+
         }
         tbody{
             width: 100%;
@@ -56,6 +69,13 @@
                         background-color: Green(1);
                     }
                 }
+            }
+            tr.review-row{
+                cursor: pointer;
+                transition: all 100ms ease-in;
+            }
+            tr.review-row:hover{
+                background-color: Secondary(0.8);
             }
             tr:nth-child(even){
                 background-color: Secondary(0.05);
