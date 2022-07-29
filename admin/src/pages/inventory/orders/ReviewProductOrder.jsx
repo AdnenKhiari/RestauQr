@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom"
-import {ConsumeProductItem, GetProductOrderById, RemoveProductOrder} from "../../../lib/ProductsDal.jsx"
+import {ConsumeProductOrderItem, GetProductOrderById, RemoveProductOrder} from "../../../lib/ProductsDal.jsx"
 import Loading from "../../../components/Loading"
 import Error from "../../../components/Error"
 import * as ROUTES from "../../../ROUTES"
@@ -29,7 +29,7 @@ const ReviewProductOrder =()=>{
             wasted: 0
         }
     })
-    const consume = ConsumeProductItem(productid,orderid)
+    const consume = ConsumeProductOrderItem(productid,orderid)
     const del = RemoveProductOrder(productid,orderid)
     if( error)
         return <Error msg={"Error while retrieving Food information " + productid} error={error} />
@@ -66,11 +66,7 @@ const ReviewProductOrder =()=>{
             <h2><span>Wasted:</span> {product.wasted}</h2>
             <h2><Link to={ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid)}>Go To Product</Link></h2>
 
-            <form onSubmit={handleSubmit(async (data)=>{
-                console.log(data)
-                await consume.mutate(data)
-                usenav(0)
-            })}>
+            <form onSubmit={(e)=>e.preventDefault()}>
                 <div className="input-item">
                     <div>
                         <label htmlFor="use">Use</label>
@@ -80,7 +76,16 @@ const ReviewProductOrder =()=>{
                         <label htmlFor="waste">Waste</label>
                         <input placeholder="Waste.." className="secondary-input" id="waste" type="number" {...register("wasted")} />
                     </div>
-                    <button type="submit">Update</button>  
+                    <button onClick={handleSubmit(async (data)=>{
+                        console.log(data)
+                        await consume.mutate(data,false)
+                        usenav(0)
+                    })} type="button">Update</button>  
+                    <button onClick={handleSubmit(async (data)=>{
+                    console.log(data)
+                    await consume.mutate(data,true)
+                    usenav(0)
+                })} type="button">Update Globally</button>  
                 </div>
             </form>
             {errors && errors["wasted"] && <p className="error">{errors["wasted"].message.replaceAll('"',"")}</p>}

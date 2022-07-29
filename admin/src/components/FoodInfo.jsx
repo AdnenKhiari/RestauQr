@@ -306,15 +306,18 @@ const SelectionTable = ({root,popActive,popLabel})=>{
             accessor: 'price'
         }]
     },[])
-    const tb = useTable({data:  watch(path) || [],columns: columns})
+    const arr = watch(path)
+    const tb = useTable({data: arr  || [],columns: columns})
 
     const addProduct = (prod,index)=>{
-        append({name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
+        if(!arr.find(item=>item.id === prod.id))
+            append({name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
         setMutateProduct(null)
     }
 
     const modifyProduct = (prod,index)=>{
-        update(index,{name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
+        if(!arr.find(item=>item.id === prod.id))
+            update(index,{name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
         setMutateProduct(null)
     }
 

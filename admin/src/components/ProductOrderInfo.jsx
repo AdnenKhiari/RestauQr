@@ -24,7 +24,7 @@ const schema = joi.object({
 const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
     const formOptions = useForm({
         defaultValues: defaultVals ? {
-            id: defaultVals.name,
+            id: defaultVals.id,
             name: defaultVals.name,
             unitQuantity: defaultVals.unitQuantity,
             productQuantity: defaultVals.productQuantity,

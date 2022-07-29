@@ -18,3 +18,9 @@ export const formatFbDate = (dt,dateonly = false)=>{
     return moment(dt.toDate()).format("YYYY-MM-DD")
 
 }
+export const getInsTime = ()=>{
+    const dt = Date.now()
+    const unit = 1000 * 3600 * 24 * 7
+    const ml = Math.floor(dt/unit) * unit
+    return `${ml}`
+}

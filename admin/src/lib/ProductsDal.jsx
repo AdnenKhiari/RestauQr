@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
-import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc, increment, runTransaction, getDocsFromServer} from "firebase/firestore"
+import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc, increment, runTransaction, getDocsFromServer, arrayRemove} from "firebase/firestore"
+import { getInsTime } from "./utils"
 
 export const GetProductById = (id)=>{
 
@@ -63,12 +64,12 @@ export const GetProductOrderById = (productid,orderid)=>{
     }
 }
 
-export const ConsumeProductItem = (productid,orderid) => {
+export const ConsumeProductOrderItem = (productid,orderid) => {
     const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
     const [loading,setLoading] = useState(null)
     const db = getFirestore()
-    const mutate = async (data)=>{
+    const mutate = async (data,updateGlobally = false)=>{
         setLoading(true)
         try{
             const docref = doc(db,`products/${productid}/product_orders/${orderid}`)
@@ -88,7 +89,47 @@ export const ConsumeProductItem = (productid,orderid) => {
                 tr.update(docref,{
                     used: increment(data.used),
                     wasted: increment(data.wasted),
-                }).update(prodref,{
+                })
+                if(updateGlobally)
+                    tr.update(prodref,{
+                        stockQuantity: increment(-(data.used + data.wasted))
+                    })
+            })
+            setResult(true)
+            return true
+        }catch(err){
+            setError(err)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    return {
+        result,
+        error,
+        loading,
+        mutate
+    }
+}
+
+export const ConsumeProductItem = (productid) => {
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading,setLoading] = useState(null)
+    const db = getFirestore()
+    const mutate = async (data)=>{
+        setLoading(true)
+        try{
+            const prodref = doc(db,`products/${productid}`)
+                
+            await runTransaction(db,async (tr)=>{
+                const snap = await tr.get(prodref)
+                const cur = snap.data()
+                if(data.used + data.wasted > cur.stockQuantity ){
+                    throw Error("Invalid Query,Exceeded maximum capacity")
+                }
+                tr.update(prodref,{
                     stockQuantity: increment(-(data.used + data.wasted))
                 })
             })
@@ -221,6 +262,8 @@ export const AddUpdateProductOrder = (productid)=>{
         setLoading(true)
         try{
             const prodref = doc(db,'products/'+productid)
+            console.log("IDD",data.id)
+
             if(data.id){
                 const ref = doc(db,'products/'+productid+'/product_orders/'+data.id)
                 const productorderid = data.id+""
@@ -237,8 +280,8 @@ export const AddUpdateProductOrder = (productid)=>{
                         throw Error("Invalid Order Id")
                     const old_ord_data = old_ord.data()
 
-                    const new_quantity = data.unitQuantity * data.productQuantity - (data.used + data.wasted)
-                    const old_quantity = old_ord_data.unitQuantity * old_ord_data.productQuantity - (old_ord_data.used + old_ord_data.wasted)
+                    const new_quantity = data.unitQuantity * data.productQuantity
+                    const old_quantity = old_ord_data.unitQuantity * old_ord_data.productQuantity
                     const diff = new_quantity - old_quantity
                     if(-diff > old_prod_data.stockQuantity )
                         throw Error("Exceeded maximum Capacity")
