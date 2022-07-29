@@ -23,19 +23,32 @@ export const getReducedCart = (ct)=>{
     } ,[])*/
     return ct
 }
-
-export const computePrice = (food,data)=>{
-    return food.price +  Object.keys(data).reduce((prev,key)=>{
-        const cur = data[key]
-        const fd = food.options.find(it=>it.msg === key)
-        if(fd.type === 'check' && cur){
-            return prev + fd.price
-        }else if(fd.type === 'select' && cur){
-            return prev + fd.choices.find(ch => ch.msg === cur).price
-        }else{
-            return 0
+export const prepareToHash = (options,parent = "")=>{
+    let res = []
+    options.forEach((item,index)=>{
+        if(item.value){
+            if(typeof(item.value) !== "boolean")
+                item.name = item.value
+            if(item.ingredients && item.ingredients.options )
+                res = [...res,prepareToHash(item.ingredients.options,item.name)]
+            else res.push(parent+"/"+item.name)
         }
-    },0)
+    })
+    return res
+}
+export const computePrice = (food,selections)=>{
+
+    let price = food.price 
+    if(food.ingredients && food.ingredients.options && selections)
+        food.ingredients.options.forEach((opt,index)=>{
+            if(selections[index].value){
+                if(opt.type ==="select")
+                    opt = opt.choices.find((ch) => ch.msg === selections[index].value)
+                price += computePrice(opt,selections[index].options)
+            }
+        })
+    return price
+
 }
 export const populateMenu = ()=>{
     const allitems = {
@@ -45,44 +58,14 @@ export const populateMenu = ()=>{
                 "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam et error, quisquam asperiores quibusdam laboriosam eaque animi veritatis aspernatur iste maiores omnis, molestiae labore voluptas in officia maxime. Repellendus, cumque!",
                 "price": 16,
                 "img" : "https://files.meilleurduchef.com/mdc/photo/recette/pizza-fruit-mer/pizza-fruit-mer-640.jpg"
-                ,options: [
-                    {
-                        type: 'check',
-                        price: 3,
-                        msg: 'Double Fromage'
-                    },{
-                        type: 'check',
-                        price: 6,
-                        msg: 'Double Crevette'
-                    },{
-                        type: 'check',
-                        price: 8,
-                        msg: 'Crevette Royale'
-                    },{
-                        type: 'select',
-                        msg: 'Taille',
-                        choices:[{price: 0,msg: 'Mini'},{price: 4,msg: 'Moyenne'},{price: 8,msg: 'Large'},{price: 16,msg: 'XL'}]
-                    }]
+
             },
             {
                 "title" : "Pizza Naptune",
                 "price": 6,
                 "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam et error, quisquam asperiores quibusdam laboriosam eaque animi veritatis aspernatur iste maiores omnis, molestiae labore voluptas in officia maxime. Repellendus, cumque!",
                 "img" : "https://img.cuisineaz.com/660x660/2021/07/28/i179970-pizza-neptune.webp",
-                options: [
-                    {
-                        type: 'check',
-                        price: 3,
-                        msg: 'Double Fromage'
-                    },{
-                        type: 'check',
-                        price: 2,
-                        msg: 'Double Thon'
-                    },{
-                        type: 'select',
-                        msg: 'Taille',
-                        choices:[{price: 0,msg: 'Mini'},{price: 2,msg: 'Moyenne'},{price: 4,msg: 'Large'},{price: 8,msg: 'XL'}]
-                    }]
+
             }
         ],
         "Pasta" :[        
@@ -91,16 +74,7 @@ export const populateMenu = ()=>{
                 "price": 15,
                 "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam et error, quisquam asperiores quibusdam laboriosam eaque animi veritatis aspernatur iste maiores omnis, molestiae labore voluptas in officia maxime. Repellendus, cumque!",
                 "img" : "https://cuisine.nessma.tv/uploads/1/2019-07/b52156d9b600734ac1a6e5a75f070689.jpg"
-                ,options: [
-                    {
-                        type: 'check',
-                        price: 3,
-                        msg: 'Fromage'
-                    },{
-                        type: 'select',
-                        msg: 'Assiette',
-                        choices:[{price: 0,msg: 'Normal'},{price: 8,msg: 'Grande'}]
-                }]
+
             }
         ],
         "Gratin" :[        
@@ -117,12 +91,7 @@ export const populateMenu = ()=>{
                 "price": 10,
                 "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam et error, quisquam asperiores quibusdam laboriosam eaque animi veritatis aspernatur iste maiores omnis, molestiae labore voluptas in officia maxime. Repellendus, cumque!",
                 "img" : "https://linstant-m.tn/uploads/62c5358d61186dc6d994d3e2f50452c2afe7be75.jpg",
-                options: [
-                {
-                    type: 'select',
-                    msg: 'Friture',
-                    choices:[{price: 0,msg: 'Panne'},{price: 0,msg: 'Panné'}]
-                }]
+
             }
         ],
         "Sandiwch Chaud":[        
@@ -131,25 +100,6 @@ export const populateMenu = ()=>{
                 "price": 10,
                 "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam et error, quisquam asperiores quibusdam laboriosam eaque animi veritatis aspernatur iste maiores omnis, molestiae labore voluptas in officia maxime. Repellendus, cumque!",
                 "img" : "https://www.la-viande.fr/sites/default/files/inline-images/sandwich-roti-boeuf.jpg",
-                options: [
-                {
-                    type: 'check',
-                    price: 0,
-                    msg: 'Harissa'
-                },{
-                    type: 'check',
-                    price: 0,
-                    msg: 'Mayo'
-                },
-                {
-                    type: 'check',
-                    price: 0,
-                    msg: 'Salade Michwia'
-                },{
-                    type: 'check',
-                    price: 3,
-                    msg: 'Raclette'
-                }]
             }
         ],
         "Sandwich Froid" : [        

@@ -2,11 +2,11 @@ import { useState } from "react"
 import { useEffect } from "react"
 import {useNavigate, useParams} from "react-router-dom"
 import * as ROUTES from "../../Routes/UI"
-import GetByCategories from "../../Lib/GetByCategories"
+import GetAllFood from "../../Lib/GetAllFood"
 
 
 const MenuItems = ({categories})=>{
-    const {data : menuData,loading,error} = GetByCategories(categories)
+    const {data : menuData,loading,error} = GetAllFood()
     const usenav = useNavigate()
     const {tableid} = useParams()
     if(loading)
@@ -15,7 +15,7 @@ const MenuItems = ({categories})=>{
         return "error"
     }
     return <div className="menu-items-container">
-        {menuData.map((food,index) => <div key={index+100} className="food-item" onClick={()=>{
+        {(categories.length > 0 ?menuData.filter(fd => categories.indexOf(fd.category) !== -1) : menuData).map((food,index) => <div key={index+100} className="food-item" onClick={()=>{
             usenav(ROUTES.GET_FOOD_DETAILS(tableid,food.id))
         }}>
            <img src={food.img} alt={food.title} />

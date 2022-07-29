@@ -9,7 +9,7 @@ import {firebaseConfig} from "./dev.conf"
 function App() {
   const app = initializeApp(firebaseConfig)
   const db = getFirestore(app)
-
+  //console.log = ()=>{}
   return (
     <BrowserRouter >
     <Routes>

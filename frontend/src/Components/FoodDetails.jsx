@@ -1,11 +1,29 @@
 import { useNavigate, useParams } from "react-router"
-import {useForm} from 'react-hook-form'
+import {useForm,FormProvider, useFormContext, useFieldArray} from 'react-hook-form'
 import {Link} from "react-router-dom"
-import { useContext } from "react"
+import React, { useContext } from "react"
 import {OrderContext} from "./Contexts"
 import hash from "object-hash"
 import GetFoodById from "../Lib/GetFoodById"
-import { computePrice } from "../Lib/util"
+import { computePrice, prepareToHash } from "../Lib/util"
+import { useState } from "react"
+import { useEffect } from "react"
+import { joiResolver } from '@hookform/resolvers/joi';
+import joi from "joi"
+
+const ingredientsSchema = joi.object({
+    options: joi.array().optional().items(
+    joi.object({
+        name: joi.string().required().label('Item Message'),
+        value: joi.alternatives(joi.boolean(),joi.string()).required(),
+        ingredients: joi.link('#ingr').optional()
+    }).optional()).optional()
+}).id("ingr")
+
+const schema = joi.object({
+    ingredients: ingredientsSchema
+})
+
 /*
 const tempfood = {
     id: '24U249289',
@@ -62,28 +80,93 @@ const FoodDetails = ()=>{
                 <p className="description">{food.description}</p>
                 <p className="price">Price :{food.price}</p>
                 <div className="food-custom">
-                    {food && food.options && Object.keys(food.options).length > 0 && <h2>Ajouter Des Supplements:</h2>}
-                    <Options food = {food} initfood={initfood} />
+                    <Choices food = {structuredClone(food)} initfood={initfood} />
                 </div>
             </div>
         </div>
     </div>
 }
+const IngredientsUi = ({parent,options,root})=>{
+    const path = `${root}.options`
+    const {append} = useFieldArray({
+        name: path
+    })
+    return <>
+    {options && options.map((opt,index)=><Option 
+    root={path} 
+    index={index}
+    parent={parent}
+    key={index*123} 
+    opt={opt} />)}
+    </>
+}
+const Ingredients = ({food,setOpenSubmit,openSubmit})=>{
 
-const Options = ({food,initfood = null})=>{
+    //not verry optimal memory managment xD
+    const [active,setActive] = useState([[{path: "ingredients",parent:"",options: food.ingredients.options}]])
+    const {watch,trigger, formState : {errors}} = useFormContext()
+    const nextActive = async ()=>{
+        
+
+        if(!(await trigger()))
+            return;
+        const red = []
+        
+        active[active.length - 1].forEach((item)=>{
+            const states = watch(`${item.path}.options`)
+            item.options && item.options.forEach((opt,index)=>{
+                if(states[index].value){
+
+                    if(opt.type === "select"){
+                        opt = opt.choices.find((g)=>g.msg === states[index].value )
+                    }
+                    
+                    if(opt && opt.ingredients && opt.ingredients.options && opt.ingredients.options.length > 0)
+                    red.push({
+                        path: `${item.path}.options.${index}.ingredients`,
+                        parent: item.parent+opt.msg+"/",
+                        options: opt.ingredients && opt.ingredients.options 
+                    })
+                }
+            
+            })
+        })
+        if(red.length > 0){
+            setOpenSubmit(false)
+            setActive([...active,red])
+        }else{
+            setOpenSubmit(true)
+        }     
+    }
+    const popActive = ()=>{
+        setOpenSubmit(false)
+        if(active.length <=1 )
+            return
+        active.pop()
+        setActive([...active])
+    }
+
+    return <>    
+    <button type="button" onClick={(e)=>popActive()}>Previous</button>
+    {!openSubmit && <><button type="button" onClick={(e)=>nextActive()}>Next</button>
+    {active[active.length - 1].map((current,ind) => <IngredientsUi key={ind } parent={current.parent} options={current.options} root={current.path}/>)}</>}
+    </>
+}
+
+const Choices = ({food,initfood = null})=>{
     const [order,setOrder] = useContext(OrderContext)
     const usenav = useNavigate()
     const {tableid} = useParams()
+    const [openSubmit,setOpenSubmit] = useState(false)
     const addToCart = (data)=>{
         const cmd = {...food}
-        if(data)
-            cmd.options = data
-        if(food.options){
-            cmd.price =computePrice(food,data)
-        }
+      
+        cmd.price = computePrice(cmd,data.ingredients.options)
+        cmd.options = data.ingredients.options
+
         if(!cmd.count)
             cmd.count = 1
-        cmd.cartid = hash({options: cmd.options,id : cmd.id})
+        cmd.cartid = hash({options: prepareToHash(cmd.options),id : cmd.id})
         if(initfood){
         {
             const idx = order.cart.findIndex(f => f.cartid === initfood.cartid)
@@ -109,25 +192,43 @@ const Options = ({food,initfood = null})=>{
             setOrder({...order})        
         }
     }
-
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
-    defaultValues: initfood ? initfood.options : {}
-  });
+    const add = (data)=>console.log(data)
+    const frm = useForm({
+        defaultValues: initfood ? {ingredients:{options: initfood.options}} : {},
+        resolver: joiResolver(schema),
+        mode: "onChange",
+        reValidateMode: "onChange"
+      });
+  const { register, handleSubmit, watch, formState: { errors } } = frm
+      console.log("er",errors)
   return <form onSubmit={handleSubmit(addToCart)}>
-    {food && food.options && food.options.map((opt,key)=><div className="form-input-container" key={key}> 
-    <label className={watch(opt.msg) ? 'selected' : undefined} htmlFor={opt.msg}>{opt.msg} {opt.price}{opt.price && "$"}</label>
-    <br />
-    {opt.type === 'select' ? opt.choices.map((c)=><div className="form-input"  key={c.msg}>
-        <label className={watch(opt.msg) === c.msg ? 'selected' : undefined} htmlFor={c.msg}>{c.msg} {c.price}$</label>
-        <input   type="radio" value={c.msg} name={opt.msg} id={c.msg} {...register(opt.msg,{required:true})} />
-    </div>
-    ) :  <div className="form-input">
-    <input  type="checkbox" id={opt.msg} {...register(opt.msg)}/>
- </div>}
-    </div>)
-    }
-    <button type="submit">{initfood ? "Update" : "Ajouter"}</button>
+    <FormProvider {...frm}>
+        <Ingredients food={food} openSubmit={openSubmit} setOpenSubmit={setOpenSubmit} />
+        {openSubmit && <button type="submit">{initfood ? "Update" : "Ajouter"}</button>}
+    </FormProvider>
   </form>
 
+}
+
+const Option = ({opt,root,index,parent})=>{
+    const path =  `${root}.${index}`
+    const {watch,register,setValue,trigger} = useFormContext() 
+    useEffect(()=>{
+        setValue(`${path}.name`,opt.msg)    
+        register(`${path}.name`)        
+
+    },[opt,root,index])
+    return<div className="form-input-container"> 
+        <label className={watch(`${path}.value`) ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}`}>{parent}{opt.msg} {opt.price}{opt.price && "$"}</label>
+            <br />
+            {opt.type === 'select' ? opt.choices.map((c)=><div className="form-input"  key={c.msg}>
+                <label className={watch(`${path}.value`) === c.msg ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}.${c.msg}`}>{c.msg} {c.price}$</label>
+                <input  type="radio" value={c.msg} id={`${path}.${opt.msg}.${c.msg}`} {...register(`${path}.value`,{required:true})} />
+            </div>
+            ) :  <div className="form-input">
+            <input data-val="true"  type="checkbox"  id={`${path}.${opt.msg}`} {...register(`${path}.value`)}/>
+        </div>}
+    </div>
+         
 }
 export default FoodDetails

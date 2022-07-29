@@ -17,7 +17,7 @@ const Cart = ()=>{
         <div className={"cart-content" + (active ? '' : ' cart-content-hide')}>
             <div>
                 <h2>Commandes</h2>
-            {order.cart && getReducedCart(order.cart).map((item,index)=><div key={item.id} className="cart-item">
+            {order.cart && getReducedCart(order.cart).map((item,index)=><div key={item.cartid} className="cart-item">
                 <img src={item.img} alt={item.title}  />
                 <div>
                     <p>{item.title}</p>

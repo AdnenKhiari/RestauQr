@@ -11,12 +11,14 @@ import GetOrder from "../Lib/GetOrder"
 import { useEffect } from "react"
 import { useCallback } from "react"
 import ValidateTableId from "../Lib/ValidateTableId"
+import GetCategories from "../Lib/GetCategories"
 
 const Home = ()=>{
     const usenav = useNavigate()
     const {tableid} = useParams()
     const {order,setOrder,loading,error} = GetOrder()
     const tvalid = ValidateTableId(parseInt(tableid))
+    const allCategories = GetCategories()
 
     if(tvalid.loading)
         return <h1>Loading ...</h1>
@@ -24,6 +26,10 @@ const Home = ()=>{
         return <h1>Invalid Table Number</h1>
     if(loading)
         return <h1>Loading ...</h1>
+    if(allCategories.loading)
+        return <h1>Loading ...</h1>
+    if(allCategories.error)
+        return <h1>Error, Could not get categories</h1>
     if(error){
         console.log(error)
         return <h1>Error</h1>
@@ -41,7 +47,7 @@ const Home = ()=>{
         <Routes>
             <Route path='/'> 
                 <Route path='/' index element={<div className="menu-container">
-                <Menu cats={tvalid.data} />
+                <Menu cats={allCategories.data} />
                 </div>} />
                 <Route path={ROUTES.FOOD_DETAILS} element={<FoodDetails />}/>
                 <Route path={ROUTES.CART_DETAILS} >

@@ -10,16 +10,16 @@ const ValidateTableId = (id)=>{
             if(isNaN(id)){
                 throw Error("Invalid Table Id")   
             }
-            let dc = await getDoc(doc(collection(db,'utils'),'menu'))
+            let dc = await getDoc(doc(collection(db,'tables'),''+id))
             if(!dc.exists())
                 throw Error("No Table Info Found ")
             const data = dc.data()
             console.log("cat",id,data)
 
-            if(data.tables.min <= id && data.tables.max >= id && data.tables.exclude.indexOf(id) === -1)
+            if(!data.disabled)
                 setResults(data.categories)
             else
-                throw Error("Invalid Table Id")
+                throw Error("Table Not In Service")
         }catch(err){
             console.log("ERR",err)
             setError(err)
