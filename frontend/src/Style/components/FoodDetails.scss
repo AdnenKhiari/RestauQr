@@ -7,75 +7,133 @@
 
     .food-details{
         width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+ 
         min-height: 650px;
-        .food-img{
-            height: 100%;
-            width: 100%;
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: 50% 50%;
+        > h1{
+            margin: 40px 10px;
+            text-align: center;
+            color: light_gray(1);
+            display: flex;
+            align-content: center;
+            align-items:center;
+            justify-content: center;
+            img{
+                width: 50px;
+                object-fit: cover;
+                margin: 0px 40px;
+            }
         }
-
-        .food-info{
-            background-color: blue(1);
-            width: 100%;
-            height: 100%;
-            padding: 30px;
-            h2{
-                line-height: 3rem; 
-                margin: 20px 0px;
+        > div{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            .food-img{
+                height: 100%;
+                width: 100%;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: 50% 50%;
             }
-            a{
-                color: primary(1);
-                display: block;
-                margin-bottom: 50px ;
-                font-size: $h3_size;
-            }
-            .category{
-                font-size: $h3_size;
-            }
-            .description{
-                padding: 10px 0px;
-            }
-            .price{
-                font-size: $h3_size;
-                font-weight: bold;
-            }
-            p{
-                max-width: 500px;
-            }
-            p:last-child{
-                margin: 15px 0px;
-            }
-            .food-custom{
-                margin: 40px 0px;
-                form{
-                    .selected{
-                        color: primary(1);
-                    }
+    
+            .food-info{
+                position: relative;
+                background-color: transparent;
+                width: 100%;
+                min-height: 600px;
+                padding: 10px 30px;
+                color: light_gray(1);
+                h2{
+                    margin: 20px 0px;
+                }
+                a{
+                    color: primary(1);
+                    display: block;
+                    margin-bottom: 50px ;
                     font-size: $h3_size;
-                    button{
-                        min-width: 150px;
-                    }
-                    label{
-                        margin: 10px;
-
-                    }
-                    .form-input-container {
+                }
+                .opt,.category{
+                    font-size: $h2_size;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    align-content: center;
+                }
+                .description{
+                    padding: 10px 0px;
+                    font-size: $h3_size;
+                    width: 100%;
+                }
+                .price{
+                    font-size: $h2_size;
+                    font-family: $secondary_font;
+                    line-height: 0rem;
+                    color: primary(1);
+                }
+                p{
+                    max-width: 500px;
+                }
+                p:last-child{
+                    margin: 15px 0px;
+                }
+                .food-custom{
+                    margin-bottom: 40px;
+                    form{
                         display: flex;
-                        flex-direction: row;
-                        justify-content: flex-start;
-                        align-items: center;
-                        align-content: center;
-                        .form-input{
-                            margin: 10px;
 
-  
-                            input{
-                                display: none;
+                        flex-direction: column-reverse;
 
+                        .selected{
+                            color: primary(1);
+                            
+                        }
+                        font-size: $h3_size;
+
+                        .btns{
+                            position: absolute;
+                            bottom: 0;
+                            left: 30px;
+                            
+                            button{
+                                min-width: 150px;
+                                font-weight: 800;
+                            }
+                        }
+
+                        .options{
+                            margin-bottom: 10px;
+                            .form-input-container {
+                                display: flex;
+                                flex-direction: row;
+                                justify-content: flex-start;
+                                flex-wrap: wrap;
+
+                                margin: 20px 2px;
+                                img{
+                                    width: 30px;
+                                    object-fit: cover;
+                                    filter: invert(1);
+                                    margin-right: 10px;
+                                }   
+                                label{
+                                    display: flex;
+                                    flex-direction: row-reverse;
+                                    justify-content: flex-end; 
+                                    span{
+                                        padding-left: 20px;
+                                        font-weight: bold;
+                                        color: green(1);
+                                    }
+                                }
+                                .form-input{
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    align-content: center;
+                                    padding: 0px 10px;
+                                    input{
+                                        display: none;
+                                    }
+
+                                }
                             }
                         }
                     }
@@ -83,25 +141,32 @@
             }
         }
     }
-
 }
 
 @media screen and (max-width: $small_screen) {
     .food-details-container{
         padding: 0px;
-        background-color: blue(1);
-        .food-details{
-
-            grid-template-columns: 1fr;
-            .food-img{
-                height: 500px;
-            }
-            .food-info{
-                padding: 10px;
-                a{
-                    margin: 10px 0px 30px 0px;
+        .food-details{  
+            > div{
+                grid-template-columns: 1fr;
+                .food-img{
+                    height: 500px;
+                }
+                .food-info{
+                    padding: 10px;
+                    a{
+                        margin: 10px 0px 30px 0px;
+                    }
+                    .form-input-container{
+                        display: grid !important;
+                        grid-template-columns: 1fr 1fr; 
+                        .form-input{
+                            margin: 10px 0px;
+                        }
+                    }
                 }
             }
+
         }
     }
 }

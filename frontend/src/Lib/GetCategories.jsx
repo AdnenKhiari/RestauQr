@@ -7,6 +7,8 @@ const GetCategories = (categories)=>{
     const db = getFirestore()
     const getData = useCallback(async ()=>{
         try{
+           /* setResults([])
+            return; */
             let results_snapshot = await  getDoc(doc(db,'utils/menu'))
             if(!results_snapshot.exists())
                 throw Error("No Categories Found")

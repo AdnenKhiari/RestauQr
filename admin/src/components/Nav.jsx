@@ -27,17 +27,17 @@ const Nav = ()=>{
                 {user.profile.permissions.food.manage && <Link to={ROUTES.FOOD.ADD}><li>New Food</li></Link>}
                 <li>
                     <img src="/options.png" alt="options" />
-                    <h2>Options</h2>
+                    <h2>Categories</h2>
                 </li>
-                <Link to={ROUTES.OPTIONS.MENU} ><li>Options</li></Link>
-                <li>
-                    <img src="/options.png" alt="Tables" />
-                    <h2>Restaurant</h2>
+                <Link to={ROUTES.OPTIONS.MENU} ><li>Categories</li></Link>
+                <li>    
+                    <img src="/table-a-dinner.png" alt="Tables" />
+                    <h2>Tables</h2>
                 </li>
                 <Link to={ROUTES.TABLES.ALL} ><li>All Tables</li></Link>
                 <Link to={ROUTES.TABLES.ADD} ><li>New Table</li></Link>
                 <li>
-                    <img src="/options.png" alt="inventory" />
+                    <img src="/inventaire.png" alt="inventory" />
                     <h2>Inventory</h2>
                 </li>
                 <Link to={ROUTES.INVENTORY.ALL} ><li>All Products</li></Link>

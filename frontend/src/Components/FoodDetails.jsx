@@ -70,17 +70,19 @@ const FoodDetails = ()=>{
     }
     return <div className="food-details-container">
         <div className="food-details">
-            <div className="food-img" style={{backgroundImage: "url("+food.img+")"}}>
-                {/*<img src={food.img} alt={food.title}/>*/}
-            </div>
-            <div className="food-info">
-            <Link to={'/'+tableid}>Main Menu</Link>
-                <h2>{food.title}</h2>
-                <p className="category">{food.category}</p>
-                <p className="description">{food.description}</p>
-                <p className="price">Price :{food.price}</p>
-                <div className="food-custom">
-                    <Choices food = {structuredClone(food)} initfood={initfood} />
+            <h1><img  className="make-img-primary" src="/etoiles.png" alt="" />{food.title}<img className="make-img-primary" src="/etoiles.png" alt="" /></h1>
+            <div>
+                <div className="food-img" style={{backgroundImage: "url("+food.img+")"}}>
+                    {/*<img src={food.img} alt={food.title}/>*/}
+                </div>
+                <div className="food-info">
+                    <Link style={{display: "none"}} to={'/'+tableid}>Main Menu</Link>
+                    <p className="category">{food.category}  <span className="price">{food.price}$</span></p>
+                    <p className="description">{food.description}</p>
+                    {food.ingredients && food.ingredients.options && <p className="opt">Options :</p>}
+                    <div className="food-custom">
+                        <Choices food = {structuredClone(food)} initfood={initfood} />
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,10 +102,10 @@ const IngredientsUi = ({parent,options,root})=>{
     opt={opt} />)}
     </>
 }
-const Ingredients = ({food,setOpenSubmit,openSubmit})=>{
+const Ingredients = ({food,setOpenSubmit,openSubmit,initfood})=>{
 
     //not verry optimal memory managment xD
-    const [active,setActive] = useState([[{path: "ingredients",parent:"",options: food.ingredients.options}]])
+    const [active,setActive] = useState(food.ingredients && food.ingredients.options ?[[{path: "ingredients",parent:"",options: food.ingredients.options}]] : [ ])
     const {watch,trigger, formState : {errors}} = useFormContext()
     const nextActive = async ()=>{
         
@@ -146,11 +148,14 @@ const Ingredients = ({food,setOpenSubmit,openSubmit})=>{
         setActive([...active])
     }
 
-    return <>    
-    <button type="button" onClick={(e)=>popActive()}>Previous</button>
-    {!openSubmit && <><button type="button" onClick={(e)=>nextActive()}>Next</button>
-    {active[active.length - 1].map((current,ind) => <IngredientsUi key={ind } parent={current.parent} options={current.options} root={current.path}/>)}</>}
-    </>
+    return <div className="options">  
+        {!openSubmit && food.ingredients && food.ingredients.options && active[active.length - 1].map((current,ind) => <IngredientsUi key={ind } parent={current.parent} options={current.options} root={current.path}/>)}
+        <div className="btns">
+            {food.ingredients && food.ingredients.options && <button type="button" onClick={(e)=>popActive()}>Previous</button>}
+            {!openSubmit && food.ingredients && food.ingredients.options &&  <button type="button" onClick={(e)=>nextActive()}>Next</button>}
+            {(openSubmit || !food.ingredients || !food.ingredients.options || food.ingredients.options.length === 0 ) && <button type="submit">{initfood ? "Update" : "Ajouter"}</button>}
+        </div>
+    </div>
 }
 
 const Choices = ({food,initfood = null})=>{
@@ -160,9 +165,9 @@ const Choices = ({food,initfood = null})=>{
     const [openSubmit,setOpenSubmit] = useState(false)
     const addToCart = (data)=>{
         const cmd = {...food}
-      
-        cmd.price = computePrice(cmd,data.ingredients.options)
-        cmd.options = data.ingredients.options
+        if(data.ingredients && data.ingredients.options)
+            cmd.price = computePrice(cmd,data.ingredients.options)
+        cmd.options = (data.ingredients && data.ingredients.options) || []
 
         if(!cmd.count)
             cmd.count = 1
@@ -201,10 +206,10 @@ const Choices = ({food,initfood = null})=>{
       });
   const { register, handleSubmit, watch, formState: { errors } } = frm
       console.log("er",errors)
+      console.log("Ingredients",food)
   return <form onSubmit={handleSubmit(addToCart)}>
     <FormProvider {...frm}>
-        <Ingredients food={food} openSubmit={openSubmit} setOpenSubmit={setOpenSubmit} />
-        {openSubmit && <button type="submit">{initfood ? "Update" : "Ajouter"}</button>}
+        {<Ingredients initfood={initfood} food={food} openSubmit={openSubmit} setOpenSubmit={setOpenSubmit} />}
     </FormProvider>
   </form>
 
@@ -219,10 +224,14 @@ const Option = ({opt,root,index,parent})=>{
 
     },[opt,root,index])
     return<div className="form-input-container"> 
-        <label className={watch(`${path}.value`) ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}`}>{parent}{opt.msg} {opt.price}{opt.price && "$"}</label>
+    
+        <label className={watch(`${path}.value`) ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}`}><span>{opt.price}{opt.price && "$"}</span> {parent}{opt.msg}{opt.type==="select" && " : " }
+        {opt.type === 'check' && <img  className={watch(`${path}.value`) ? 'make-img-primary' : undefined} src="/checkbox.png" alt="check" />}
+        </label>
             <br />
             {opt.type === 'select' ? opt.choices.map((c)=><div className="form-input"  key={c.msg}>
-                <label className={watch(`${path}.value`) === c.msg ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}.${c.msg}`}>{c.msg} {c.price}$</label>
+                <label className={watch(`${path}.value`) === c.msg ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}.${c.msg}`}><span> {c.price}$</span>{c.msg} 
+                {watch(`${path}.value`) === c.msg ? <img className='make-img-primary' src="/radio.png" alt="" /> : <img src="/radio-button.png" alt="" />}</label>
                 <input  type="radio" value={c.msg} id={`${path}.${opt.msg}.${c.msg}`} {...register(`${path}.value`,{required:true})} />
             </div>
             ) :  <div className="form-input">

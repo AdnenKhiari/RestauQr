@@ -39,9 +39,14 @@ const Home = ()=>{
     return <>
         <OrderContext.Provider value={[order,setOrder]}>
         <div className="hero">
+            <div>
+
             <h1 onClick={(e)=>usenav("/"+tableid)}>Restaurant Kdhe</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-            <button onClick={(e)=>populateMenu()}>Populate Data</button>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil ab sequi assumenda optio et eius laboriosam velit dolor itaque, corporis quos a ea id ratione similique animi voluptates reprehenderit quis.</p>
+
+            <button onClick={(e)=>usenav(ROUTES.CART_DETAILS)}>Commander</button>
+           {false && <button onClick={(e)=>populateMenu()}>Populate Data</button>}
+            </div>
         </div>
         <Cart />
         <Routes>

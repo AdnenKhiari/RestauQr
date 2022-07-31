@@ -24,7 +24,7 @@ body{
     font-family: $primary_font;
     font-size: $base_font_size;
     overflow-x: hidden;
-    background-color: rgb(240, 240, 240);
+    background-color: black(1);
 }
 input,button{
     padding: 5px 10px;
@@ -35,14 +35,16 @@ button{
     cursor: pointer;
     border: 1px solid black;
     min-width: 100px;
+    padding: 15px 40px;
     font-family: $secondary_font;
     font-size: $h3_size;
-    background-color: white;
+    background-color: primary(1);
     transition: all 200ms ease-in-out;
-    margin: 10px 0px;
+    margin: 10px 3px;
+    border-radius: 10px;
 }
 button:hover {
-    background-color: black;
+    background-color: green(1);
     color:white;
 }
 a{
@@ -70,4 +72,8 @@ a:hover{
     h3{
         font-size: $h3_size/ 1.2;
     }
+}
+
+.make-img-primary{
+    filter: invert(93%) sepia(13%) saturate(6848%) hue-rotate(339deg) brightness(104%) contrast(102%) !important;
 }

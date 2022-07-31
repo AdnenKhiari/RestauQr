@@ -48,8 +48,10 @@ const CartItem = ({item})=>{
     const {tableid} = useParams()
     const usenav = useNavigate()
     return <div className="cart-details-item" >
-        <img src="/close.png" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid)} className="rm-item-cart" alt="" />
-        <h3>{item.title}</h3>
+        <div>
+            <img src="/close.png" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid)} className="rm-item-cart" alt="" />
+            <h2>{item.title}</h2>
+        </div>
         <div>
             <img src={item.img} alt={item.title} onClick={(e)=>usenav(ROUTES.GET_FOOD_UPDATE(tableid,item.cartid))}/>
             <div className="item-info">

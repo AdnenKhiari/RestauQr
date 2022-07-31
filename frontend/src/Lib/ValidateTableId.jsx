@@ -7,6 +7,8 @@ const ValidateTableId = (id)=>{
     const db = getFirestore()
     const getData = useCallback(async ()=>{
         try{
+            setResults(true)
+            return;
             if(isNaN(id)){
                 throw Error("Invalid Table Id")   
             }
@@ -17,7 +19,7 @@ const ValidateTableId = (id)=>{
             console.log("cat",id,data)
 
             if(!data.disabled)
-                setResults(data.categories)
+                setResults({id: dc.id,...data})
             else
                 throw Error("Table Not In Service")
         }catch(err){
