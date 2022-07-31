@@ -5,10 +5,12 @@ import Error from "../../components/Error"
 import * as ROUTES from "../../ROUTES"
 import { useContext } from "react"
 import { UserContext } from "../../contexts"
-import {motion} from "framer-motion"
+import {createDomMotionComponent, motion} from "framer-motion"
 import { FadeIn } from "../../animations"
 import { load } from "mime"
 import { formatFbDate } from "../../lib/utils"
+import qr from "qrcode"
+import { useState } from "react"
 
 const ReviewTable =()=>{
     const {tableid} = useParams()
@@ -16,6 +18,7 @@ const ReviewTable =()=>{
     const {deleteTable} = DeleteTableById()
     const user = useContext(UserContext)
     const usenav = useNavigate()
+    const [qrImg,setQrImg] = useState(undefined)
     if( error)
         return <Error msg={"Error while retrieving Food information " + tableid} error={error} />
     if( loading)
@@ -42,6 +45,26 @@ const ReviewTable =()=>{
             <h2><span>Number Of Places:</span> {table.placesNum}</h2>
             <h2><span>Disabled:</span> {table.disabled ? "Yes" : "No"}</h2>
             <h2><span>Purshase Time:</span> {formatFbDate(table.time)}</h2>
+            <button onClick={(e)=>{
+                qr.toDataURL(`http://localhost:3000/${tableid}`,{type: "image/png",scale: 20,quality: 1,errorCorrectionLevel: 'H'},(err,res)=> {
+                    if(err)
+                        console.log(err)
+                    setQrImg(res)
+                    console.log(res)
+                    /**                const op = window.open()
+                    const img = op.document.createElement('img')
+                    img.set('src', res)
+                    img.setAttribute('width', "800px")
+                    img.setAttribute('height', "800px")
+
+                    op.document.body.appendChild(img)
+
+                    op.print()
+                    op.close() */
+                })
+
+            }}>Generate Qr Code</button>
+            {qrImg && <img style={{objectFit: "contain"}} src={qrImg || undefined} alt="" />}
         </div>
     </motion.div >
     </>
