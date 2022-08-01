@@ -16,7 +16,7 @@ import GetCategories from "../Lib/GetCategories"
 const Home = ()=>{
     const usenav = useNavigate()
     const {tableid} = useParams()
-    const {order,setOrder,loading,error} = GetOrder()
+    const {order,setOrder,loading,error,getOrder} = GetOrder()
     const tvalid = ValidateTableId(parseInt(tableid))
     const allCategories = GetCategories()
 
@@ -35,9 +35,8 @@ const Home = ()=>{
         return <h1>Error</h1>
     }
 
-
     return <>
-        <OrderContext.Provider value={[order,setOrder]}>
+        <OrderContext.Provider value={[order,setOrder,getOrder]}>
         <div className="hero">
             <div>
 

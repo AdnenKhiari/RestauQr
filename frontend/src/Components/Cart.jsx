@@ -17,18 +17,20 @@ const Cart = ()=>{
         <div className={"cart-content" + (active ? '' : ' cart-content-hide')}>
             <div>
                 <h2>Commandes</h2>
-            {order.cart && getReducedCart(order.cart).map((item,index)=><div key={item.cartid} className="cart-item">
+            {order.cart && order.cart.map((subcart,subkey) => subcart.food.map((item)=><div key={subkey + "-"+item.cartid} className="cart-item">
                 <img src={item.img} alt={item.title}  />
                 <div>
                     <p>{item.title}</p>
                     <p>Price: {item.price}</p>
-                    <p>Q: {item.count}</p>
+                    <p>Quantity: {item.count}</p>
+                    <p>Order Num: {subkey+1}</p>
                 </div>
                 <img src="/close.png" alt="remove" className="rm-item-cart" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid)} />
-            </div>)}
+            </div>) )}
             </div>
             <button onClick={(e)=>{usenav(ROUTES.CART_DETAILS);setActive(false)}} >Commandes</button>
         </div>
     </div>
 }
 export default Cart
+

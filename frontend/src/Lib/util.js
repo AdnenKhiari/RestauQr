@@ -1,13 +1,16 @@
 import { addDoc, collection, doc, getFirestore, writeBatch } from "firebase/firestore"
-
-export const RemoveFromCart = (order,setOrder,cartid)=>{
-    const idx = order.cart.findIndex(it => it.cartid === cartid)
+import hash from "object-hash"
+export const RemoveFromCart = (order,setOrder,cartid,ordernum)=>{
+    if(ordernum === undefined)
+        ordernum = order.cart.length - 1
+    const currentcart = order.cart[ordernum]
+    const idx = currentcart.food.findIndex(it => it.cartid === cartid)
     if(idx === -1)
         return
-    if(order.cart[idx].count >1)
-        order.cart[idx].count-=1
+    if(currentcart.food[idx].count >1)
+        currentcart.food[idx].count-=1
     else
-        order.cart.splice(idx,1)
+        currentcart.food.splice(idx,1)
     setOrder({...order})
 }
 export const getReducedCart = (ct)=>{
@@ -35,6 +38,9 @@ export const prepareToHash = (options,parent = "")=>{
         }
     })
     return res
+}
+export const hashFood = (id,options)=>{
+    return hash({id: id,options: prepareToHash(options)})
 }
 export const computePrice = (food,selections)=>{
 

@@ -5,7 +5,7 @@ import React, { useContext } from "react"
 import {OrderContext} from "./Contexts"
 import hash from "object-hash"
 import GetFoodById from "../Lib/GetFoodById"
-import { computePrice, prepareToHash } from "../Lib/util"
+import { computePrice, hashFood, prepareToHash } from "../Lib/util"
 import { useState } from "react"
 import { useEffect } from "react"
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -21,7 +21,7 @@ const ingredientsSchema = joi.object({
 }).id("ingr")
 
 const schema = joi.object({
-    ingredients: ingredientsSchema
+    ingredients: ingredientsSchema,
 })
 
 /*
@@ -51,23 +51,31 @@ const tempfood = {
 
 const FoodDetails = ()=>{
     const [order,setOrder] = useContext(OrderContext)
-    var {id,cartid,tableid} = useParams() 
+    var {id,ordnum,cartid,tableid} = useParams() 
     var food = null
     if(cartid){
-        var initfood = order.cart.find(f=>f.cartid === cartid)
+
+        ordnum = parseInt(ordnum)
+        if((isNaN(ordnum) || ordnum < 0 || ordnum >= order.cart.length ))
+            return "Error , Order Number Invalid"
+
+        var initfood = order.cart[ordnum].food.find(f=>f.cartid === cartid)
         if(!initfood)
             return "Error , Item do not exist in Cart"
         id = initfood.id
+        console.log("Init Fodd",initfood)
     }
     if(id){
+        console.warn("I'm getting new food")
         var {data,error,loading} = GetFoodById(id)
         if(error)
             return "errro"
         if(loading)
             return "loading"
         food = data
-        console.log("FD",food)
     }
+    console.log("FD",food,"Order Num",ordnum)
+
     return <div className="food-details-container">
         <div className="food-details">
             <h1><img  className="make-img-primary" src="/etoiles.png" alt="" />{food.title}<img className="make-img-primary" src="/etoiles.png" alt="" /></h1>
@@ -76,12 +84,11 @@ const FoodDetails = ()=>{
                     {/*<img src={food.img} alt={food.title}/>*/}
                 </div>
                 <div className="food-info">
-                    <Link style={{display: "none"}} to={'/'+tableid}>Main Menu</Link>
                     <p className="category">{food.category}  <span className="price">{food.price}$</span></p>
                     <p className="description">{food.description}</p>
                     {food.ingredients && food.ingredients.options && <p className="opt">Options :</p>}
                     <div className="food-custom">
-                        <Choices food = {structuredClone(food)} initfood={initfood} />
+                        <Choices ordernum={ordnum !== undefined ? ordnum : order.cart.length - 1} food = {structuredClone(food)} initfood={initfood} />
                     </div>
                 </div>
             </div>
@@ -151,14 +158,14 @@ const Ingredients = ({food,setOpenSubmit,openSubmit,initfood})=>{
     return <div className="options">  
         {!openSubmit && food.ingredients && food.ingredients.options && active[active.length - 1].map((current,ind) => <IngredientsUi key={ind } parent={current.parent} options={current.options} root={current.path}/>)}
         <div className="btns">
-            {food.ingredients && food.ingredients.options && <button type="button" onClick={(e)=>popActive()}>Previous</button>}
-            {!openSubmit && food.ingredients && food.ingredients.options &&  <button type="button" onClick={(e)=>nextActive()}>Next</button>}
+            {food.ingredients && food.ingredients.options && food.ingredients.options.length > 0 && <button type="button" onClick={(e)=>popActive()}>Previous</button>}
+            {!openSubmit && food.ingredients && food.ingredients.options &&  food.ingredients.options.length > 0 &&  <button type="button" onClick={(e)=>nextActive()}>Next</button>}
             {(openSubmit || !food.ingredients || !food.ingredients.options || food.ingredients.options.length === 0 ) && <button type="submit">{initfood ? "Update" : "Ajouter"}</button>}
         </div>
     </div>
 }
 
-const Choices = ({food,initfood = null})=>{
+const Choices = ({food,initfood = null,ordernum})=>{
     const [order,setOrder] = useContext(OrderContext)
     const usenav = useNavigate()
     const {tableid} = useParams()
@@ -168,43 +175,42 @@ const Choices = ({food,initfood = null})=>{
         if(data.ingredients && data.ingredients.options)
             cmd.price = computePrice(cmd,data.ingredients.options)
         cmd.options = (data.ingredients && data.ingredients.options) || []
-
-        if(!cmd.count)
+        const current_order = order.cart[ordernum].food
+        if(!initfood)
             cmd.count = 1
-        cmd.cartid = hash({options: prepareToHash(cmd.options),id : cmd.id})
+        else
+            cmd.count = initfood.count
+        const oldcartid = initfood ? initfood.cartid : ""
+        cmd.cartid = hashFood(cmd.id,cmd.options)
         if(initfood){
-        {
-            const idx = order.cart.findIndex(f => f.cartid === initfood.cartid)
-            if(idx ===-1)
-                return;
-            /*order.cart.splice(idx,1)
-            order.cart.push(cmd)*/
-            order.cart[idx].options = cmd.options
-            order.cart[idx].cartid = cmd.cartid
-        }
-            setOrder({...order})
-            usenav("/"+tableid)
-        } else{
-            //try to find an order similar to upgrade the count 
-            const idx = order.cart.findIndex(f => f.cartid === cmd.cartid)
-            if(idx ===-1)
-                order.cart.push(cmd)
-            else{
-                order.cart[idx].count +=1
-                /*order.cart.push(order.cart[idx])
-                order.cart.splice(idx,1)*/
-            }
-            setOrder({...order})        
-        }
+            let idx = current_order.findIndex(f => f.cartid === oldcartid)
+            if(idx !== -1){
+                current_order.splice(idx,1)
+            }else{
+                console.log("Did not found old")
+                if(initfood)
+                    usenav("/"+tableid)                
+                }
+        } 
+        //try to find an order similar to upgrade the count 
+        const idx = current_order.findIndex(f => f.cartid === cmd.cartid)
+        if(idx ===-1)
+            current_order.push(cmd)
+        else
+            current_order[idx].count += cmd.count
+
+        setOrder({...order})    
+        if(initfood)
+            usenav("/"+tableid)    
     }
-    const add = (data)=>console.log(data)
+
     const frm = useForm({
         defaultValues: initfood ? {ingredients:{options: initfood.options}} : {},
         resolver: joiResolver(schema),
         mode: "onChange",
         reValidateMode: "onChange"
       });
-  const { register, handleSubmit, watch, formState: { errors } } = frm
+  const { register, handleSubmit, setValue, formState: { errors } } = frm
       console.log("er",errors)
       console.log("Ingredients",food)
   return <form onSubmit={handleSubmit(addToCart)}>
@@ -221,7 +227,6 @@ const Option = ({opt,root,index,parent})=>{
     useEffect(()=>{
         setValue(`${path}.name`,opt.msg)    
         register(`${path}.name`)        
-
     },[opt,root,index])
     return<div className="form-input-container"> 
     
