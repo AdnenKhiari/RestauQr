@@ -317,6 +317,32 @@ export const AddUpdateProductOrder = (productid)=>{
     }
 }
 
+const updateFoodProducts = (cur,data,productid)=>{
+    if(cur.ingredients){
+            if(cur.ingredients.products)
+            cur.ingredients.products.forEach(prod=>{
+                if(prod.id.trim() === productid.trim()){
+                    prod.name = data.name
+                    prod.sellingUnitPrice = data.sellingUnitPrice
+                    prod.unit = data.unit
+                    prod.unitQuantity = data.unitQuantity
+                }
+            })
+            if(cur.ingredients.options)
+            cur.ingredients.options.forEach((opt)=>{
+                if(opt.type==="select"){
+                    opt.choices.forEach((select)=>{
+                       // console.log("Select",select)
+                       updateFoodProducts(select,data,productid)
+                    })
+                }else{
+                   // console.log("Check",opt)
+                   updateFoodProducts(opt,data,productid)   
+                }
+            })
+    } 
+}
+
 export const AddUpdateProduct = ()=>{
 
     const [result,setResult] = useState(null)
@@ -331,8 +357,20 @@ export const AddUpdateProduct = ()=>{
             if(data.id){
                 ref = doc(db,'products',(data.id))
                 const productid = data.id+""
+                const allfood = (await getDocs(collection(db,"food"))).docs.map((fd)=>{return {id: fd.id,...fd.data()}})
+                allfood.forEach((fd)=>{
+                    updateFoodProducts(fd,data,productid)
+                })
+                console.log("All FOOD",allfood)
                 delete data.id
-                await updateDoc(ref,data)
+
+                await runTransaction(db,async tr =>{
+                    allfood.forEach((fd)=>{
+                        tr.update(doc(collection(db,"food"),fd.id),fd)
+                    })
+                    tr.update(ref,data)
+
+                })
                 setResult(productid)
                 return productid
             }else{

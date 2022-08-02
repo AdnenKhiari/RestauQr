@@ -1,10 +1,12 @@
 export const ORDERS = {
     ALL : "/orders",
-    ACCOMPLISHED : "/orders/accomplished",
-    PENDING : "/orders/pending",
-    WAITING : "/orders/waiting",
-    CANCELED : "/orders/canceled",
+    ACCOMPLISHED : "/suborders/accomplished",
+    PENDING : "/suborders/pending",
+    WAITING : "/suborders/waiting",
+    CANCELED : "/suborders/canceled",
     REVIEW: "/orders/:orderid",
+    SUBREVIEW: "/suborders/:orderid/:subid",
+    GET_SUBREVIEW : (orderid,id)=>"/suborders/"+orderid+"/"+id,
     GET_REVIEW : (id)=>"/orders/"+id
 }
 export const INVENTORY = {

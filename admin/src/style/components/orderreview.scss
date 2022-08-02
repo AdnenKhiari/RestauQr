@@ -4,8 +4,28 @@
         margin: 40px 15px;
         display: flex;
         justify-content: space-between;
-        button{
-            width: 150px;
+        div{
+            height: 100%;
+            button{
+                width: 150px;
+                height: 100%;
+                margin: 5px;
+            }
+        }
+    }
+    .cancel-reason{
+        font-size: $h3size;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        label{
+            margin: 10px 0px;
+            font-size: $h1size;
+        }
+        textarea{
+            font-size: $h3size;
+            resize: none;
+
         }
     }
     .order-meta{

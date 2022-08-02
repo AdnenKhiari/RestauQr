@@ -25,15 +25,18 @@ const SubOrderDetails = ({ordernum,order})=>{
                 price: ct.food.reduce((prev,cur)=>prev+cur.price*cur.count,0),
                 id: ct.id,
                 food : ct.food.map((item)=>{
-                return {
-                        id: item.id,
-                        category: item.category,
-                        img: item.img,
-                        title: item.title,
-                        options : item.options,
-                        count : item.count,
-                        price: item.price
-                    }   
+                const dt = {
+                    id: item.id,
+                    category: item.category,
+                    img: item.img,
+                    title: item.title,
+                    options : item.options,
+                    count : item.count,
+                    price: item.price
+                }   
+                if(item.ingredients)
+                    dt.ingredients = item.ingredients
+                return dt
                 })
             }
         
@@ -41,6 +44,7 @@ const SubOrderDetails = ({ordernum,order})=>{
     return <div className="cart-details-container">
     {(!order.cart || !order.cart.length) ? <h2>Veuillez commander au moins un article</h2> : (<>
     {<h1 className="cart-status">{current_cart().status}</h1> }
+    {/*current_cart().status === 'canceled'&& current_cart().reason && <p>{current_cart().reason}</p>*/}
     <div className="cart-details">
         {current_cart().food.length > 0 && current_cart().food.map((item,idx)=><CartItem key={idx} item = {item} ordernum={ordernum} />)}
     </div>
@@ -48,7 +52,7 @@ const SubOrderDetails = ({ordernum,order})=>{
         <h2>Total: {current_cart().food.reduce((prev,cur)=>prev + cur.price * cur.count,0)}</h2>
         <div>
             <button onClick={(e)=>usenav("/"+tableid)}>Menu</button>
-            {(!current_cart().status || current_cart().status  === "Waiting") &&  <button onClick={async (e)=> {
+            {(!current_cart().status || current_cart().status  === "waiting") &&  <button onClick={async (e)=> {
                 try{
                     if(order.cart[ordernum] && order.cart[ordernum].food &&  order.cart[ordernum].food.length > 0){
                     await updateOrder(processCart(ordernum),ordernum)
@@ -60,7 +64,7 @@ const SubOrderDetails = ({ordernum,order})=>{
             }}}>
             {!current_cart().status ? 'Commander' : 'Update'}
             </button>}
-            {current_cart().status && current_cart().status === 'Waiting' && <button onClick={(e)=> removeOrder(ordernum) }  >Cancel</button>}
+            {current_cart().status && current_cart().status === 'waiting' && <button onClick={(e)=> removeOrder(ordernum) }  >Cancel</button>}
             {/*order.status && order.status === "waiting" && <button onClick={(e)=> removeOrder() }>Cancel Order</button>*/}
         </div>
     </div>}

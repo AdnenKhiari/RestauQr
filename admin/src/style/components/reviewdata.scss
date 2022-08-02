@@ -24,7 +24,11 @@
         font-family: $base_font;
     }
     .data-review-body{
-
+        .review-btn{
+            margin: 10px;
+            margin-left: 0px;
+            color: Bright(1);
+        }
         > *{
             margin: 10px 0px;
         }

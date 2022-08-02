@@ -1,9 +1,9 @@
 
-import OrderTable from "../../components/Tables/OrderTable"
 import {where} from "firebase/firestore"
+import SubOrderTable from "../../components/Tables/SubOrderTable"
 const WaitingOrders = ()=>{
     return <div className="orders">
-        <OrderTable title={"Orders Waiting"} queryConstraints={[where('status','==','waiting')]}  />
+        <SubOrderTable title={"Orders Waiting"} queryConstraints={[where('status','==','waiting')]}  />
     </div>
 }
 export default WaitingOrders

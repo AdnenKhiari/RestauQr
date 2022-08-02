@@ -11,6 +11,8 @@ import { load } from "mime"
 import { formatFbDate } from "../../lib/utils"
 import qr from "qrcode"
 import { useState } from "react"
+import {useReactToPrint} from 'react-to-print';
+import { useRef } from "react"
 
 const ReviewTable =()=>{
     const {tableid} = useParams()
@@ -19,6 +21,10 @@ const ReviewTable =()=>{
     const user = useContext(UserContext)
     const usenav = useNavigate()
     const [qrImg,setQrImg] = useState(undefined)
+    const printQr = useReactToPrint({
+        content : ()=> qrRef.current
+    })
+    const qrRef = useRef(null)
     if( error)
         return <Error msg={"Error while retrieving Food information " + tableid} error={error} />
     if( loading)
@@ -45,26 +51,17 @@ const ReviewTable =()=>{
             <h2><span>Number Of Places:</span> {table.placesNum}</h2>
             <h2><span>Disabled:</span> {table.disabled ? "Yes" : "No"}</h2>
             <h2><span>Purshase Time:</span> {formatFbDate(table.time)}</h2>
-            <button onClick={(e)=>{
+        
+            <button className="review-btn" onClick={(e)=>{
                 qr.toDataURL(`http://localhost:3000/${tableid}`,{type: "image/png",scale: 20,quality: 1,errorCorrectionLevel: 'H'},(err,res)=> {
                     if(err)
                         console.log(err)
                     setQrImg(res)
                     console.log(res)
-                    /**                const op = window.open()
-                    const img = op.document.createElement('img')
-                    img.set('src', res)
-                    img.setAttribute('width', "800px")
-                    img.setAttribute('height', "800px")
-
-                    op.document.body.appendChild(img)
-
-                    op.print()
-                    op.close() */
                 })
-
             }}>Generate Qr Code</button>
-            {qrImg && <img style={{objectFit: "contain"}} src={qrImg || undefined} alt="" />}
+            {qrImg && <button className="review-btn" onClick={printQr}>Print Qr code</button>}
+            {qrImg && <img ref={qrRef} style={{objectFit: "contain"}} src={qrImg || undefined} alt="" />}
         </div>
     </motion.div >
     </>

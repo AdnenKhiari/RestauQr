@@ -36,6 +36,7 @@ const Main = ()=>{
                 <Route path={ROUTES.ORDERS.WAITING} element={<ORDERS.Waiting />} />
                 <Route path={ROUTES.ORDERS.PENDING} element={<ORDERS.Pending />} />
                 <Route path={ROUTES.ORDERS.REVIEW} element={<ORDERS.Review />} />
+                <Route path={ROUTES.ORDERS.SUBREVIEW} element={<ORDERS.SubReviewOrder />} />
 
                 <Route path={ROUTES.FOOD.ADD} element={<FOOD.Add />} />
                 <Route path={ROUTES.FOOD.ALL} element={<FOOD.All />} />

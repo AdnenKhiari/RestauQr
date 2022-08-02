@@ -31,10 +31,11 @@ const GetOrder = ()=>{
                     }}),
                     status: sub_data.status,
                     id: sub_data.id,
+                    reason: sub_data.reason,
                     price: sub_data.price
                 }
                 })
-                if(order_data.cart[order_data.cart.length - 1].status !== "Waiting")
+                if(order_data.cart[order_data.cart.length - 1].status !== "waiting")
                     order_data.cart.push({food: []})
                 setOrder(order_data)
                 console.log(order_data)

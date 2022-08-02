@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router"
+import { Navigate, useNavigate, useParams } from "react-router"
 import {useForm,FormProvider, useFormContext, useFieldArray} from 'react-hook-form'
 import {Link} from "react-router-dom"
 import React, { useContext } from "react"
@@ -74,7 +74,9 @@ const FoodDetails = ()=>{
             return "loading"
         food = data
     }
-    console.log("FD",food,"Order Num",ordnum)
+    console.log("FD",food,"Order Num",ordnum,order.cart[ordnum !== undefined ? ordnum : order.cart.length - 1].status)
+    if(ordnum !== undefined && order.cart[ordnum !== undefined ? ordnum : order.cart.length - 1].status !== "waiting")
+        return <Navigate to={"/"+tableid} />
 
     return <div className="food-details-container">
         <div className="food-details">
@@ -181,7 +183,7 @@ const Choices = ({food,initfood = null,ordernum})=>{
         else
             cmd.count = initfood.count
         const oldcartid = initfood ? initfood.cartid : ""
-        cmd.cartid = hashFood(cmd.id,cmd.options)
+        cmd.cartid = hashFood(cmd.id,structuredClone(cmd.options))
         if(initfood){
             let idx = current_order.findIndex(f => f.cartid === oldcartid)
             if(idx !== -1){
@@ -198,7 +200,6 @@ const Choices = ({food,initfood = null,ordernum})=>{
             current_order.push(cmd)
         else
             current_order[idx].count += cmd.count
-
         setOrder({...order})    
         if(initfood)
             usenav("/"+tableid)    
@@ -225,9 +226,10 @@ const Option = ({opt,root,index,parent})=>{
     const path =  `${root}.${index}`
     const {watch,register,setValue,trigger} = useFormContext() 
     useEffect(()=>{
+        
         setValue(`${path}.name`,opt.msg)    
         register(`${path}.name`)        
-    },[opt,root,index])
+    },[opt,root,index]) 
     return<div className="form-input-container"> 
     
         <label className={watch(`${path}.value`) ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}`}><span>{opt.price}{opt.price && "$"}</span> {parent}{opt.msg}{opt.type==="select" && " : " }

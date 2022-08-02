@@ -2,7 +2,7 @@ import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,
 import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import moment from "moment"
-import {formatFbDate, map_order_status_to_priority, map_status_to_priority} from "../../lib/utils"
+import {formatFbDate, map_status_to_priority} from "../../lib/utils"
 import * as ROUTES from "../../ROUTES"
 import { useNavigate } from "react-router-dom"
 import { FadeIn } from "../../animations"
@@ -12,11 +12,12 @@ import joi from "joi"
 
 const schema  = joi.object({
     tableid: joi.number().allow('').required().label("Table Id"),
+    id: joi.string().allow('').required().label("Id"),
     startDate: joi.date().allow('').required().label('Start Order Date'),
     endDate: joi.date().allow('').required().label('End Order Date')
 })
 
-const OrderTable = ({queryConstraints,title})=>{
+const SubOrderTable = ({queryConstraints,title})=>{
 
     const page_lim = 10
     const rows = [
@@ -25,9 +26,9 @@ const OrderTable = ({queryConstraints,title})=>{
             accessor: 'tableid'
         },
         {
-            Header: 'Total Price',
-            accessor: 'price',
-            Cell : ({value}) => value + "$"
+            Header: 'Food Count',
+            accessor: 'foodcount'
+  
         },
         {
             Header: 'Time',
@@ -51,11 +52,15 @@ const customOptions = {
             label: 'Table ID'
         },
         {
+            type: "text",
+            name: 'id',
+            label: 'Order ID'
+        },
+        {
             type: "datetime-local",
             name: 'startDate',
             label: 'Start Date'
-        },
-        {
+        },{
             type: "datetime-local",
             name: 'endDate',
             label: 'End Date'
@@ -67,12 +72,12 @@ const customOptions = {
         const new_table_data = col.docs.length > 0 && col.docs.map((document)=>{
             const id = document.id
             const data = document.data()
-            return {id: id,time: data.time,tableid: data.tableid,price: 100,status: data.status.toUpperCase()}
+            return {id: id,orderid: data.order_ref,time: data.time,tableid: data.tableid,foodcount: (data.food && data.food.length) || 0,status: data.status.toUpperCase()}
         }) 
         if(new_table_data)
             new_table_data.sort((a,b)=> {
-                const o1 = map_order_status_to_priority(a.status)
-                const o2 = map_order_status_to_priority(b.status)
+                const o1 = map_status_to_priority(a.status)
+                const o2 = map_status_to_priority(b.status)
                 if(o1 === o2){
                     return o1.seconds - o2.seconds
                 }
@@ -93,7 +98,7 @@ const customOptions = {
         return null
     }
     const usenav = useNavigate()
-    return <PaginatedUniversalTable colname={'orders'} pagname="time" 
+    return <PaginatedUniversalTable colname={'sub_orders'} pagname="time" 
     rows={rows}  
     title={title} 
     filterData={filterData} 
@@ -101,10 +106,11 @@ const customOptions = {
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   
     subscribe={true} 
+    group={true}
     schema={schema}
     queryConstraints={queryConstraints}
-    oncl = {(row)=>usenav(ROUTES.ORDERS.GET_REVIEW(row.id))}
+    oncl = {(row)=>usenav(ROUTES.ORDERS.GET_SUBREVIEW(row.orderid,row.id))}
     colors={(table_data)=> table_data.status.toLowerCase()}
     page_lim= {page_lim}        />
 }
-export default OrderTable
+export default SubOrderTable

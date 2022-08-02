@@ -29,6 +29,7 @@ function App() {
   const auth = getAuth(app)
   const usenav = useNavigate()
   const location = useLocation()
+
   const {user,loading} = GetAuthState()
   if(loading)
       return <Loading  /> 
