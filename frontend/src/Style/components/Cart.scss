@@ -229,19 +229,24 @@
 @media screen and (max-width: $small_screen){
     .cart-details-container{
         padding: 0px;
+        width: 100%;
+
         .cart-details{
 
             width: 100%;
             grid-template-columns: 1fr;
             .cart-details-item{
-                width: 100%;
-                max-width: 500px;
+                width: 95vw !important;
                 margin: 10px 0px;
                 h3{
                     padding: 0px 10px;
                 }
             }
         }
+    }
+    .suborder-details .cart-details-container .cart-details .cart-details-item > div:last-child img {
+        width: 100%;
+        object-fit: cover;
     }
     .cart-container{
         .cart-img{
