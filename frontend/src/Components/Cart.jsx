@@ -12,10 +12,12 @@ const Cart = ()=>{
     const usenav = useNavigate()
 
     return <div className="cart-container">
+        <div>
         <img className={"cart-img" + (active ? ' cart-img-active' : '')} src="/menu.png" alt="" onClick={(e)=>setActive(!active)} />
         <div className={"cart-content" + (active ? '' : ' cart-content-hide')}>
-            <div>
-                <h2>Commandes</h2>
+        <h2>Commandes</h2>  
+            <div className="cart-item-container">
+                
             {order.cart && order.cart.map((subcart,subkey) => subcart.food.map((item)=><div key={subkey + "-"+item.cartid} className="cart-item">
                 <img src={item.img} alt={item.title}  />
                 <div>
@@ -29,6 +31,8 @@ const Cart = ()=>{
             </div>
             <button onClick={(e)=>{usenav(ROUTES.CART_DETAILS);setActive(false)}} >Commandes</button>
         </div>
+        </div>
+
     </div>
 }
 export default Cart
