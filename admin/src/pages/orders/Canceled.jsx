@@ -1,9 +1,9 @@
 
-import OrderTable from "../../components/Tables/OrderTable"
+import SubOrderTable from "../../components/Tables/SubOrderTable"
 import {where} from "firebase/firestore"
 const CanceledOrders = ()=>{
     return <div className="orders">
-        <OrderTable title={"Canceled Orders"} queryConstraints={[where('status','==','canceled')]}  />
+        <SubOrderTable title={"Canceled Orders"} queryConstraints={[where('status','==','canceled')]}  />
     </div>
 }
 export default CanceledOrders

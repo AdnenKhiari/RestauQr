@@ -9,7 +9,8 @@ import { UserContext } from "../../contexts"
 import { FadeIn } from "../../animations"
 import {motion} from "framer-motion"
 import * as ROUTES from "../../ROUTES"
-
+import SubOrderTable from "../../components/Tables/SubOrderTable"
+import {where} from "firebase/firestore"
 const ReviewOrder = ()=>
 {
     const {orderid} = useParams()
@@ -18,7 +19,7 @@ const ReviewOrder = ()=>
     const {mutate : orderUpdate,error : errorUpdate} = UpdateOrder(orderid)
     const user = useContext(UserContext)
     console.log(order,error,loading)
-    const states = ['waiting','pending','accomplished','canceled']
+    const states = ['unpaid','paid','canceled']
 
     useEffect(()=>{
         if(!error && !loading && order)
@@ -26,19 +27,23 @@ const ReviewOrder = ()=>
     },[order])
 
     const getImg = (status)=>{
-        if(status === 'accomplished')
-            return "/checked.png"
-        else if(status === 'canceled'){
+        if(status === 'unpaid')
+            return "/paper-money.png"
+        else if(status === 'paid'){
+            return "/paid.png"
+        }else if(status === 'canceled'){
             return "/cancel.png"
-        }else if(status === 'waiting'){
-            return "/time-left.png"
-        }else{
-            return "/schedule.png"
         }
     }
     const usenav = useNavigate()
     const changeStatus = ()=>{
-        setStateidx((stateidx + 1)%4)
+        if(order.status === 'paid'){
+            return
+        }
+        if(order.status === 'canceled'){
+            return
+        }
+        setStateidx((stateidx+1)%2)
     }
 
     if(loading)
@@ -46,26 +51,18 @@ const ReviewOrder = ()=>
     if(error)
         return <Error error={error} msg={"Error ,Check the Id Or report the issue"} />
     return <motion.div variants={FadeIn()} className="order-review">
-        <h1>#{orderid} {user.profile.permissions.orders.manage &&  <button onClick={(e)=>orderUpdate(states[stateidx])}>Save</button>}</h1>
+        <h1>Order: {user.profile.permissions.orders.manage &&  <button onClick={async (e)=>{
+            await orderUpdate(states[stateidx])
+            usenav(0)
+        }}>Save</button>}</h1>
 
        <div className="order-meta">
             <div><img src="/table-ronde.png" alt="" /><h2>#{order.tableid}</h2></div> 
-            <div><img src="/remise.png" alt="" /><h2>{order && order.food.reduce((prev,fd)=>prev+fd.price*fd.count,0)}$</h2></div>
-            <div onClick={(e)=> user.profile.permissions.orders.manage && changeStatus() } className={states[stateidx].toLowerCase()}><img src={getImg(states[stateidx].toLowerCase())}
+            <div><img src="/remise.png" alt="" /><h2>{order && order.price}$</h2></div>
+            <div onClick={(e)=> user.profile.permissions.orders.manage && changeStatus() } className={(states[stateidx] && states[stateidx].toLowerCase()) === "unpaid" ? 'waiting' : (states[stateidx] && states[stateidx].toLowerCase()) === 'canceled' ? 'canceled' : 'accomplished'}><img src={getImg(states[stateidx].toLowerCase())}
             alt="" /><h2>{states[stateidx].toLowerCase()}</h2></div>
        </div>
-       <div className="order-foods">
-                {order && order.food.map((fd,key)=>  <div key={key} className="order-food">
-            <img onClick={(e)=>usenav(ROUTES.FOOD.GET_REVIEW(fd.id))} src={fd.img} alt={fd.title} />
-            <div className="food-details">
-                <h2>{fd.title} x {fd.count} ({fd.price}$)</h2>
-                <div className="food-options">
-                {Object.keys(fd.options).length > 0 && Object.keys(fd.options).filter(f => fd.options[f] !== false).map((opt)=><p>{opt} {typeof(fd.options[opt]) === 'string' && fd.options[opt] }</p>)}
-                </div>
-            </div>
-        </div>)}
-       </div>
-
+       <SubOrderTable title={"Related Sub Orders"} queryConstraints={[where('order_ref','==',orderid)]} />
     </motion.div>
 }
 export default ReviewOrder

@@ -67,7 +67,7 @@ const customOptions = {
         const new_table_data = col.docs.length > 0 && col.docs.map((document)=>{
             const id = document.id
             const data = document.data()
-            return {id: id,time: data.time,tableid: data.tableid,price: 100,status: data.status.toUpperCase()}
+            return {id: id,time: data.time,tableid: data.tableid,price: data.price,status: data.status.toUpperCase()}
         }) 
         if(new_table_data)
             new_table_data.sort((a,b)=> {

@@ -7,6 +7,7 @@ import {getMessaging} from "firebase/messaging"
 
 export const GetOrderById = (id)=>{
 
+
     const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
     const db = getFirestore()
@@ -120,6 +121,9 @@ export const UpdateSubOrder = (orderid,subid)=>{
     const [loading,setLoading] = useState(null)
     const db = getFirestore()
     const msg = getMessaging()
+
+
+    
     const upd = async (st,current,reason)=>{
         try{
             setLoading(true)
@@ -141,13 +145,20 @@ export const UpdateSubOrder = (orderid,subid)=>{
                 })
             
             await runTransaction(db,async tr =>{
-                /*   
+                 
                 tr.update(doc(db,`orders/${orderid}/sub_orders/${subid}`),dt)
                 
                 if(st === 'canceled'){
-                    tr.update(cur_ord,{
-                        price: increment(-current.price)
-                    })
+                    if(cur_ord.price > current.price)
+                        tr.update(cur_ord,{
+                            price: increment(-current.price)
+                        })
+                    else{
+                        tr.update(cur_ord,{
+                            price: increment(-current.price),
+                            status: 'canceled'
+                        })
+                    }
                 }
 
                 if(add || del){
@@ -166,30 +177,11 @@ export const UpdateSubOrder = (orderid,subid)=>{
                     })
                 }
 
-               
- */
-                const current_order = await tr.get(cur_ord)
+              /*  const current_order = await tr.get(cur_ord)
                 if(!current_order.exists()){
                     throw Error("Does Not Exists")
-                }
-                const accesstoken = ""
-                const uri = `https://fcm.googleapis.com/v1/projects/restaurantqr-6b5f0/messages:send`
-                fetch(uri,{
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + accesstoken 
-                    },
-                    body: {
-                        "message": {
-                            "token" : "zeze",
-                            "notification": {
-                              "title": "FCM Message",
-                              "body": "This is a message from FCM"
-                            }  
-                        }
-                    }
-                })
+                }*/
+
             })
             
 
