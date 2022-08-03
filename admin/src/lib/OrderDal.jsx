@@ -1,7 +1,9 @@
 import  {collection, deleteField, doc, getDoc, increment,getFirestore, runTransaction, updateDoc} from "firebase/firestore"
 import { useState } from "react"
 import { useEffect } from "react"
+import {getMessaging} from "firebase/messaging"
 
+//Temporarly using the firebase admin sdk
 
 export const GetOrderById = (id)=>{
 
@@ -117,7 +119,8 @@ export const UpdateSubOrder = (orderid,subid)=>{
     const [error,setError] = useState(null)
     const [loading,setLoading] = useState(null)
     const db = getFirestore()
-    const fetch = async (st,current,reason)=>{
+    const msg = getMessaging()
+    const upd = async (st,current,reason)=>{
         try{
             setLoading(true)
             const cur_ord = doc(db,'orders/'+orderid)
@@ -136,15 +139,12 @@ export const UpdateSubOrder = (orderid,subid)=>{
                     if(fd.ingredients)
                         computeUsage(fd.ingredients,fd.options,usage,fd.count)
                 })
-
+            
             await runTransaction(db,async tr =>{
+                /*   
                 tr.update(doc(db,`orders/${orderid}/sub_orders/${subid}`),dt)
-
+                
                 if(st === 'canceled'){
-                    /*const ord = await tr.get(cur_ord)
-                    if(!ord.exists())
-                        throw Error("Order Not Found")
-*/
                     tr.update(cur_ord,{
                         price: increment(-current.price)
                     })
@@ -165,7 +165,33 @@ export const UpdateSubOrder = (orderid,subid)=>{
                         }
                     })
                 }
+
+               
+ */
+                const current_order = await tr.get(cur_ord)
+                if(!current_order.exists()){
+                    throw Error("Does Not Exists")
+                }
+                const accesstoken = ""
+                const uri = `https://fcm.googleapis.com/v1/projects/restaurantqr-6b5f0/messages:send`
+                fetch(uri,{
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + accesstoken 
+                    },
+                    body: {
+                        "message": {
+                            "token" : "zeze",
+                            "notification": {
+                              "title": "FCM Message",
+                              "body": "This is a message from FCM"
+                            }  
+                        }
+                    }
+                })
             })
+            
 
         }catch(err){
             setError(err)
@@ -176,7 +202,7 @@ export const UpdateSubOrder = (orderid,subid)=>{
     }
 
     return {
-        mutate: fetch,
+        mutate: upd,
         error
     }
 }

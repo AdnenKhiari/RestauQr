@@ -33,7 +33,7 @@ const RemoveOrder = ()=>{
                 }
             })
             if(toremove){
-                setOrder({cart: [{food: []}]})
+                setOrder({cart: [{food: []}],tokens:[]})
             }else{
                 order.cart.splice(ordernum,1)
                 order.price -= order.cart[ordernum].price

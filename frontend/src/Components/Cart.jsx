@@ -5,10 +5,9 @@ import * as ROUTES from "../Routes/UI"
 import { getReducedCart, RemoveFromCart } from "../Lib/util"
 
 const Cart = ()=>{
+    
     const [order,setOrder] = useContext(OrderContext)
     const [active,setActive] = useState(false)
-
-
 
     const usenav = useNavigate()
 

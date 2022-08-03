@@ -1,0 +1,34 @@
+.notification-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 100%;
+    .notification-item{
+        margin: 10px 0px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        max-width: 800px;
+        background-color: primary(1);
+        padding: 15px;
+        div{
+            h2{
+            }
+            p{
+                color: black(1);
+
+            }
+        }
+        img{
+            width: 30px;
+            object-fit: contain;
+            cursor: pointer;
+        }
+        img:hover{
+            transform: scale(1.1);
+        }
+    }
+}

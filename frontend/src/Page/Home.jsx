@@ -5,20 +5,23 @@ import Cart from "../Components/Cart"
 import FoodDetails from "../Components/FoodDetails"
 import CartDetails from "../Components/CartDetails"
 import {useState} from "react"
-import { OrderContext } from "../Components/Contexts";
+import { OrderContext,NotificationsContext } from "../Components/Contexts";
 import { populateMenu } from "../Lib/util"
 import GetOrder from "../Lib/GetOrder"
 import { useEffect } from "react"
 import { useCallback } from "react"
 import ValidateTableId from "../Lib/ValidateTableId"
 import GetCategories from "../Lib/GetCategories"
-
+import NotificationsContainer from "../Components/NotificationsContainer"
+import { GetPushMessages, GetToken } from "../Lib/PushNotifications"
 const Home = ()=>{
     const usenav = useNavigate()
     const {tableid} = useParams()
     const {order,setOrder,loading,error,getOrder} = GetOrder()
     const tvalid = ValidateTableId(parseInt(tableid))
     const allCategories = GetCategories()
+    
+    GetPushMessages()
 
     if(tvalid.loading)
         return <h1>Loading ...</h1>
@@ -35,8 +38,12 @@ const Home = ()=>{
         return <h1>Error</h1>
     }
 
+
     return <>
         <OrderContext.Provider value={[order,setOrder,getOrder]}>
+
+        <NotificationsContainer />
+        
         <div className="hero">
             <div>
 

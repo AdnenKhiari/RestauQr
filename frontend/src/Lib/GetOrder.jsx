@@ -40,7 +40,7 @@ const GetOrder = ()=>{
                 setOrder(order_data)
                 console.log(order_data)
             }else{
-                setOrder({cart:[{food: []}]})
+                setOrder({cart:[{food: []}],tokens: []})
             }
 
         }catch(err){

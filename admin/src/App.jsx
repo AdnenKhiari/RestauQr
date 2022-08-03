@@ -10,6 +10,7 @@ import ValidateEmail from "./pages/auth/ValidateEmail"
 import {firebaseConfig} from "./dev.conf"
 import {initializeApp} from "firebase/app"
 import {getFirestore} from "firebase/firestore"
+import {getMessaging} from "firebase/messaging"
 import {getStorage} from "firebase/storage"
 import {getAuth} from "firebase/auth"
 import * as ROUTES from "./ROUTES"
@@ -26,6 +27,7 @@ function App() {
   const app = initializeApp(firebaseConfig)
   const storage = getStorage(app)
   const db = getFirestore(app)
+  const msg = getMessaging(app)
   const auth = getAuth(app)
   const usenav = useNavigate()
   const location = useLocation()
