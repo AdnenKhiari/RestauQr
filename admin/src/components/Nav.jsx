@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import * as ROUTES from "../ROUTES"
 import {LogOut} from "../lib/Auth"
 import { useContext } from "react"
@@ -6,8 +6,9 @@ import { UserContext } from "../contexts"
 const Nav = ()=>{
     const {error: logouterr,loading: loadingerr,logout} = LogOut()
     const user = useContext(UserContext)
+    const usenav = useNavigate()
     return <div className="nav-bar">
-        <h1>Menu</h1>
+        <h1 onClick={(e)=>usenav('/')}>Menu</h1>
         <nav className="main-nav">
             <ul>
                 <li>

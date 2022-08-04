@@ -66,7 +66,6 @@ const FoodDetails = ()=>{
         console.log("Init Fodd",initfood)
     }
     if(id){
-        console.warn("I'm getting new food")
         var {data,error,loading} = GetFoodById(id)
         if(error)
             return "errro"

@@ -1,7 +1,8 @@
-import  {collection, deleteField, doc, getDoc, increment,getFirestore, runTransaction, updateDoc} from "firebase/firestore"
+import  {collection, deleteField, doc, getDoc, increment,getFirestore, runTransaction, updateDoc, getDocs} from "firebase/firestore"
 import { useState } from "react"
 import { useEffect } from "react"
 import {getMessaging} from "firebase/messaging"
+import { getTodayDate } from "./utils"
 
 //Temporarly using the firebase admin sdk
 
@@ -70,11 +71,34 @@ export const UpdateOrder = (id)=>{
     const db = getFirestore()
 
     const fetch = async (st)=>{
+        const global_stats_ref = collection(db,'global_stats')
+        const today_stats = doc(global_stats_ref,getTodayDate())
+        const all_subs = collection(db,'orders/'+id+'/sub_orders')
+        const all_data = await getDocs(all_subs)
+        console.log(all_data.docs.map((val)=>val.data()))
+        if(st === 'paid' && (all_data.docs.length !== 0 && all_data.docs.map((item)=>item.data()).some(item=>item.status !== "accomplished" && item.status !== 'canceled')))
+            throw Error("Please Validate Sub Orders First")
         try{
-
-            const order = await updateDoc(doc(db,'orders',id),{
-                status: st
+            await runTransaction(db,async tr=>{
+                const current_ref = doc(db,'orders',id)
+                
+                tr.update(current_ref,{
+                    status: st
+                })
+                const pr = await getDoc(current_ref)
+                if(!pr.exists())
+                    throw Error('Order Not Found')
+                const price = pr.data().price
+                if(st === 'paid'){
+                    tr.set(today_stats,{
+                        orders: increment(1),
+                        success: increment(1),
+                        total: increment(price),
+                        date: new Date()
+                    },{merge: true})
+                }
             })
+            
         }catch(err){
             setError(err)
         }
@@ -127,6 +151,8 @@ export const UpdateSubOrder = (orderid,subid)=>{
     const upd = async (st,current,reason)=>{
         try{
             setLoading(true)
+            if(current.status === st)
+                return;
             const cur_ord = doc(db,'orders/'+orderid)
             const dt = {
                 status: st,
@@ -135,29 +161,44 @@ export const UpdateSubOrder = (orderid,subid)=>{
             if(reason)
                 dt.reason = reason
 
-            const add = current.status === "accomplished" && st === "canceled"
-            const del  = current.status === "pending" && st === "accomplished"
+            const del = current.status === "accomplished" && st === "canceled"
+            const add  = current.status === "pending" && st === "accomplished"
             const usage = {}
             if(add || del)
                 current.food.forEach((fd)=>{
                     if(fd.ingredients)
                         computeUsage(fd.ingredients,fd.options,usage,fd.count)
                 })
-            
+            const global_stats_ref = collection(db,'global_stats')
+            const today_stats = doc(global_stats_ref,getTodayDate())
             await runTransaction(db,async tr =>{
-                 
+                const cur_ord_data = (await tr.get(cur_ord)).data()
                 tr.update(doc(db,`orders/${orderid}/sub_orders/${subid}`),dt)
-                
                 if(st === 'canceled'){
-                    if(cur_ord.price > current.price)
+                    if(cur_ord_data.price > current.price){
                         tr.update(cur_ord,{
                             price: increment(-current.price)
                         })
-                    else{
+                    }else{
+
                         tr.update(cur_ord,{
                             price: increment(-current.price),
                             status: 'canceled'
                         })
+                        // Decrease the stats cause of canceled order
+                        tr.set(today_stats,{
+                            success: increment(-1),
+                            canceled: increment(1),
+                            total: increment(-current.price),
+                        },{merge: true})
+                        
+                    }
+
+                    if(cur_ord_data.state==="paid"){
+                        // Decrease the stats cause of canceled suborder
+                        tr.set(today_stats,{
+                            price: increment(-current.price)
+                        },{merge: true})     
                     }
                 }
 
@@ -165,15 +206,21 @@ export const UpdateSubOrder = (orderid,subid)=>{
                     Object.keys(usage).forEach((id)=>{
                         console.log(id)
                         const ref = doc(collection(db,'products'),id)
-                        //should add wasted and used per day for aggregation
+                        const stat_ref =  doc(collection(db,'products/'+id+'/orders_stats/'),getTodayDate())
+
                         if(add){
                             tr.update(ref,{
                                 stockQuantity: increment(-usage[id])
                             })
+                            tr.set(stat_ref,{
+                                used: increment(usage[id])
+                            },{merge: true})
                         }
                         if(del){
-                            //should transfer the used to wasted 
-                        }
+                            tr.set(stat_ref,{
+                                used: increment(-usage[id]),
+                                wasted: increment(usage[id])
+                            },{merge: true})                     }
                     })
                 }
 

@@ -12,6 +12,7 @@ import { UserContext } from "../contexts"
 import OPTIONS from "./options"
 import {AnimatePresence, motion} from "framer-motion"
 import {useLocation} from "react-router-dom"
+import DashBoard from "./DashBoard"
 
 const Main = ()=>{
     const location = useLocation()
@@ -28,7 +29,7 @@ const Main = ()=>{
             <motion.h1 className="logged-user">You Are Logged As : {user.profile.name}</motion.h1>
             <AnimatePresence exitBeforeEnter>
             <Routes location={location} key={location.pathname} >
-                <Route path="/" element={<Navigate to={ROUTES.ORDERS.ALL} />} />
+                <Route path="/" element={<DashBoard />} />
 
                 <Route path={ROUTES.ORDERS.ALL} element={<ORDERS.AllOrders />} />
                 <Route path={ROUTES.ORDERS.ACCOMPLISHED} element={<ORDERS.Accomplished />} />
