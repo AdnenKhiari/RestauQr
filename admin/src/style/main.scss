@@ -35,5 +35,10 @@
         margin: 30px 0px
     }
 }
-
+.chart-container{
+    width: 99%;
+    height: 800px;
+    min-width: 0;
+    background-color: Bright(1)
+}
 @include scrollify(".main",true);

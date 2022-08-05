@@ -4,9 +4,7 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^2.9.5",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@nivo/line": "^0.79.1",
     "danfojs-node": "^1.1.1",
     "firebase": "^9.9.0",
     "firebase-error-codes": "^1.2.2",
@@ -14,16 +12,18 @@
     "joi": "^17.6.0",
     "mime": "^3.0.0",
     "moment": "^2.29.4",
+    "nivo": "^0.31.0",
     "qr-image": "^3.2.0",
     "qrcode": "^1.5.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-dropdown": "^1.10.0",
     "react-hook-form": "^7.33.1",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-table": "^7.8.0",
     "react-to-print": "^2.14.7",
+    "react-virtualized-auto-sizer": "^1.0.6",
     "sass": "^1.53.0",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4"
@@ -36,8 +36,7 @@
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {

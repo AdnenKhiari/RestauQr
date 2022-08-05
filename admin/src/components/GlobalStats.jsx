@@ -1,18 +1,20 @@
 import Loading from "../components/Loading"
 import Error from "../components/Error"
 import { GetGlobalStats } from "../lib/Stats"
+import LineChart from "./Charts/Line"
 
 const GlobalStats = ()=>{
-    return <DescNumbers />
-}
-const DescNumbers = ()=>{
     const {data,loading,error} = GetGlobalStats()
     if( error)
-    return <Error msg={"Error while retrieving Statistique for today "} error={error} />
-if( loading)
-    return <Loading />
-
-    console.warn(data)
+        return <Error msg={"Error while retrieving Statistique for today "} error={error} />
+    if( loading)
+        return <Loading />
+    return <>
+    <DescNumbers data={data} />
+    <LineChart  />
+    </>
+}
+const DescNumbers = ({data})=>{
     
     return <div className="card-container">
         <div className="card-item">

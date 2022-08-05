@@ -1,4 +1,4 @@
-import { doc, getDoc, getFirestore } from "firebase/firestore"
+import { doc, getDoc, getFirestore, onSnapshot } from "firebase/firestore"
 import { useEffect } from "react"
 import { useState } from "react"
 import { getTodayDate } from "./utils"
@@ -7,23 +7,20 @@ export const GetGlobalStats = ()=>{
     const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
     const db = getFirestore()
-
-    const fetch = async ()=>{
-        try{
-            const menu = await getDoc(doc(db,'global_stats',getTodayDate()))
+    useEffect(()=>{
+        const ref = doc(db,'global_stats',getTodayDate())
+        const unsub = onSnapshot(ref,(menu)=>{
             if(menu.exists()){
                 const menu_data = menu.data()
                 setResult({id: menu.id,...menu_data})
             }else{
-                throw new Error('Stats not found for ' + getTodayDate())
+                setResult({id: menu.id,success: 0,canceled: 0,total:0,orders:0})
             }
-        }catch(err){
+        },(err)=>{
             setError(err)
-        }
-    }
-    useEffect(()=>{
-        fetch()
-    },[db])
+        })
+        return unsub
+    },[db,getTodayDate()])
 
     return {
         data: result,
