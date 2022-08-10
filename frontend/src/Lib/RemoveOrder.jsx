@@ -17,26 +17,27 @@ const RemoveOrder = ()=>{
                 const dt = await tr.get(dd)
                 if(!dt.exists())
                     throw Error("Could not retrieve cart information")
-                const status = dt.data().status
-                const oldprice = dt.data().price
+                const oldorder_data = dt.data()
+                const status = oldorder_data.status
+                const oldprice = oldorder_data.price
                 if(status !== "waiting")
                     throw Error("Request Already Running")
                 tr.delete(dd)
                 if(order.price > oldprice){
                     tr.update(orderdoc,{
-                        price: increment(-oldprice)
+                        price: increment(-oldprice),
+                        foodcount: increment(-oldorder_data.food.reduce((init,fd)=>fd.count + init,0))
                     })
                 }else{
                     tr.delete(orderdoc)
                     toremove= true
-
                 }
             })
             if(toremove){
                 setOrder({cart: [{food: []}],tokens:[]})
             }else{
-                order.cart.splice(ordernum,1)
                 order.price -= order.cart[ordernum].price
+                order.cart.splice(ordernum,1)
                 setOrder({...order})
             }
         }catch(err){
