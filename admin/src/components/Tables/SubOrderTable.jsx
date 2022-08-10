@@ -65,7 +65,6 @@ const customOptions = {
             name: 'endDate',
             label: 'End Date'
         }]
-
     }
 
     const onDataQueried = (col)=>{

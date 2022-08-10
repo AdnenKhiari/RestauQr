@@ -26,6 +26,9 @@ export const map_order_status_to_priority = (status)=>{
 export const getTodayDate = ()=>{
     return moment(new Date()).format("DD.MM.YYYY")
 }
+export const getDateFromN = (N)=>{
+    return moment(new Date() - N).format("DD.MM.YYYY")
+}
 
 export const getOptionsList = (fd,last = "")=>{
     const arr =[]

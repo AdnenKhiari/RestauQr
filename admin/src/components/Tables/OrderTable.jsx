@@ -85,7 +85,7 @@ const customOptions = {
     const filterData = (searchdata,cst)=>{
 
         if(searchdata.tableid)
-            cst.push(where('tableid','==',parseInt(searchdata.tableid)))
+            cst.push()
         if(searchdata.startDate)
             cst.push(where('time','>=',(moment(searchdata.startDate).toDate())))
         if(searchdata.endDate)

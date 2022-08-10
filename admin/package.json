@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^2.9.5",
+    "@nivo/bar": "^0.79.1",
     "@nivo/line": "^0.79.1",
     "danfojs-node": "^1.1.1",
     "firebase": "^9.9.0",

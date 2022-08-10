@@ -1,0 +1,59 @@
+.chart{
+    padding: 10px;
+    background-color: Bright(1);
+    .chart-options{
+        padding: 0px 40px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between ;
+        align-items: center;
+        align-content: center;
+        .options-container{            
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            padding-top: 20px ;
+            padding-right: 70px;
+            height: 100%;
+            height: 100px;
+            img{
+                width: 30px;
+                max-height: 50px;
+                object-fit: cover;
+                padding: 0px;
+            }
+            button{
+                height: 100%;
+                max-height: 50px;
+                background: transparent;
+            }
+            .option-item{
+                margin: 10px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                label{
+                    margin-right: 20px;
+                    margin-bottom: 3px;
+                }
+                input[type=number]{
+                    max-width: 100px;
+                }
+                input{
+                    background-color: Green(0.1);
+                }
+                input:focus,input:hover{
+                    border-color: Green(0.5);
+                }
+            }
+        }
+    }
+
+    .chart-container{
+        width: 99%;
+        height: 800px;
+        min-width: 0;
+    }
+}

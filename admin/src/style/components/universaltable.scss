@@ -88,7 +88,6 @@
 
                 th{
                     font-weight: 400;
-
                     font-family: $secondary_font;
                     font-size: $h2size;
                     th{
@@ -98,6 +97,7 @@
             }
 
         }
+
         $table_transparency : 0.1;
         $table_hover_transparency : 1;
 
@@ -112,7 +112,6 @@
                 transition: all 100ms ease-in;
                 width: 100%;
             }
-
 
             tr.waiting{
                 font-weight: bold;

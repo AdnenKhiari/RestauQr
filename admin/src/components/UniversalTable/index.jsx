@@ -27,7 +27,7 @@ const UniversalTable = ({title,head,body,errs,colors,oncl,prev,next,customOption
             <div  className="table-options" >
                 {customOptions && customOptions.structure && customOptions.structure.map((option,index)=><div key={index+100} className="option-item">
                     <label htmlFor={option.name}>{option.label}
-                    <img className={option.type === 'checkbox' ? (watch(option.name) ?"selected-box make-img-blue" : "selected-box " ) : undefined  } src="/checkbox.png" alt="checkbox" />
+                    {option.type === 'checkbox' && <img className={option.type === 'checkbox' ? (watch(option.name) ?"selected-box make-img-blue" : "selected-box " ) : undefined  } src="/checkbox.png" alt="checkbox" />}
 
                     </label>
                     <input id={option.name} type={option.type} {...register(option.name)} />

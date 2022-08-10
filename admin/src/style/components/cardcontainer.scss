@@ -7,6 +7,8 @@
     align-content: center;
     height: 250px;
     .card-item{
+        transition: all 100ms ease;
+
         width: 350px;
         height: 100%;
         background-color: Secondary(1);
@@ -47,7 +49,7 @@
 
     }
     .card-item::before{
-        $startgrad : rgba(0,0,0,0.4);
+        $startgrad : rgba(0,0,0,0.2);
         $endgrad : rgba(0,0,0,0);
 
         position: absolute;
@@ -58,6 +60,11 @@
         top: 0;
         z-index: 1;
         background: linear-gradient(60deg,$startgrad,$endgrad);
+    }
+    .card-item:hover{
+        img{
+            transform: translateY(-5px) scale(1.05);
+        }
     }
     .make-green{
         background-color: Green(1);

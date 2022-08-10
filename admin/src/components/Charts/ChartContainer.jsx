@@ -1,6 +1,29 @@
 import React from "react"
-const ChartContainer = ({children})=>{
-    return <div className="chart-container">
+import {useForm} from "react-hook-form"
+import {joiResolver} from "@hookform/resolvers/joi"
+import joi from "joi"
+
+const ChartContainer = ({children,schema,animate,xTitle,yTitle,title,customOptions})=>{
+    const { register, handleSubmit, watch } = useForm({
+        shouldUnregister: false,
+        resolver: joiResolver(schema)
+    });
+    
+    return <div className="chart">
+        <div className="chart-options">
+
+            { title && <h1>{title}</h1>}
+            <div  className="options-container" >
+                {customOptions && customOptions.structure && customOptions.structure.map((option,index)=><div key={index+100} className="option-item">
+                    <label htmlFor={option.name}>{option.label}
+                    {option.type === 'checkbox' && <img className={option.type === 'checkbox' ? (watch(option.name) ?"selected-box make-img-blue" : "selected-box " ) : undefined  } src="/checkbox.png" alt="checkbox" />}
+                    </label>
+                    <input id={option.name} type={option.type} {...register(option.name)} />
+                </div> ) }
+                {customOptions && customOptions.structure && <button onClick={handleSubmit(customOptions.submit)} type="submit"><img src="/search.png" alt="search" /></button >}
+            </div>        
+        </div>
+        <div className="chart-container">
         {React.cloneElement(children,{
             theme: {
                 fontFamily: 'Open Sans',
@@ -24,7 +47,7 @@ const ChartContainer = ({children})=>{
             axisLeft: {
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'count',
+                legend: yTitle,
                 legendOffset: -60,
                 legendPosition: 'middle'
             },
@@ -32,7 +55,7 @@ const ChartContainer = ({children})=>{
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: 0,
-                legend: 'Ahla',
+                legend: xTitle,
                 legendOffset: 60,
                 legendPosition: 'middle'
             },
@@ -62,10 +85,12 @@ const ChartContainer = ({children})=>{
                 ]
                 }
             ],
-            animate: true,
+            animate: animate !== undefined ? animate : true,
             motionStiffness: 90,
             motionDamping: 15
         })}
+        </div>
+
     </div>
 }
 export default ChartContainer

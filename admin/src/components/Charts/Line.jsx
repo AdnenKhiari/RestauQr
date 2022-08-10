@@ -1,64 +1,136 @@
+
 import {ResponsiveLine,Line} from "@nivo/line"
-import { useEffect, useState } from "react"
-import AutoSizer from "react-virtualized-auto-sizer"
+import joi from "joi"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import Loading from "../Loading"
 import ChartContainer from "./ChartContainer"
+const schema = joi.object({
+    xmin: joi.number().optional().allow('').empty('').default(null),
+    xmax: joi.number().optional().allow('').empty('').default(null),
+    ymin: joi.number().optional().allow('').empty('').default(null),
+    ymax: joi.number().optional().allow('').empty('').default(null),
+    last: joi.number().optional().allow('').empty('').default(null)
+})
+const LineChart = ({rawdata,xTitle,yTitle,yaxisType,xaxisType})=>{
 
-const LineChart = ()=>{
-    const [data,setData] = useState([{
-        id: 106,
-        color: 'red',
-        data:[
-            {x:1,y:10},      
-            {x:3,y:4},      
-            {x:5,y:-1},      
-            {x:6,y:4},      
-            {x:7,y:8},      
-            {x:8,y:4},  
-        ]
-    },
-    {
-        id: 104,
-        color: 'dark',
-        data:[
-            {x:1,y:2},      
-            {x:3,y:4},      
-            {x:5,y:0},      
-            {x:6,y:4},      
-            {x:7,y:4},      
-            {x:8,y:4},
-        ]
-    }
-    ])
+
+    const [processedData,setProcessedData] = useState(rawdata)
+
+    const [chartProperties,setChartProperties] = useState({
+        xmin: null,
+        xmax: null,
+        ymin: null,
+        ymax: null
+    }) 
+    const [chartOptions,setChartOptions] = useState({
+        xmin: null,
+        xmax: null,
+        ymin: null,
+        ymax: null,
+        last: null
+    }) 
+
+    const customOptions = useMemo(()=>{return {
+        submit: (data)=>{
+            console.log(data)
+            setChartOptions({...data})
+        },
+        structure: [{
+            label: "X Max",
+            name: 'xmax',
+            type: 'number'
+        },
+        {
+            label: "X Min",
+            name: 'xmin',
+            type: 'number'
+        },
+        {
+            label: "Y Max",
+            name: 'ymax',
+            type: 'number'
+        },
+        {
+            label: "Y Min",
+            name: 'ymin',
+            type: 'number'
+        },
+        {
+            label: "Show Last",
+            name: 'last',
+            type: 'number'   
+        }]
+    }},[setChartOptions])
+
     useEffect(()=>{
-        const num = setInterval(()=>{
-            data[0].data.push({x:data[0].data[data[0].data.length - 1].x + 1,y: 4})
-            data[1].data.push({x:data[1].data[data[1].data.length - 1].x + 1,y: 6})
+        
+        const newprocessedData = structuredClone(rawdata)
+        newprocessedData.forEach(element => {
+            if(chartOptions.last)
+                element.data = element.data.slice(-(chartOptions.last))
+            element.data = element.data.map((dt)=>{
 
-            setData([...data])
-        },1000)
-        return ()=>clearInterval(num)
-    },[])
+                if(chartOptions.last === null){
+                    if(chartOptions.xmin && dt.x < chartOptions.xmin )
+                        dt.x = null
+                    if(chartOptions.xmax && dt.x > chartOptions.xmax )
+                        dt.x = null
+                    if(chartOptions.ymin && dt.y < chartOptions.ymin )
+                        dt.y = chartOptions.ymin
+                    if(chartOptions.ymax && dt.y > chartOptions.ymax )
+                        dt.y = chartOptions.ymax
+                }
+  
+
+                if(chartProperties.xmin === null || chartProperties.xmin > dt.x)
+                    chartProperties.xmin = dt.x
+
+                if(chartProperties.xmin === null || chartProperties.xmax < dt.x)
+                    chartProperties.xmax = dt.x
+                
+                if(chartProperties.ymin === null || chartProperties.ymin > dt.y)
+                    chartProperties.ymin = dt.y
+
+                if(chartProperties.ymax === null || chartProperties.ymax < dt.y)
+                    chartProperties.ymax = dt.y
+                    
+                return dt
+            })
+            //console.log(chartProperties)
+
+        }); 
+        setChartProperties(chartProperties)
+        setProcessedData(newprocessedData)
+    }, [chartOptions,rawdata])
 
 
-    console.log(data.map((item)=>{item.data = item.data.slice(-15);return item}))
-    if(data)
-        return <ChartContainer >
-    <ResponsiveLine
-        data={data.map((item)=>{item.data = item.data.slice(-15);return item})}
-        enableArea={true}
-        yScale={{
-        type: 'linear',
-        min: 0,
-        max: 10     
-        }}
-        pointSize={10}
-        curve="natural"
-        lineWidth={3}
-        isInteractive={true}
-        useMesh={true}
-        pointLabelYOffset={10}
-  />
+    
+
+    console.log(processedData)
+    if(rawdata)
+        return <ChartContainer xTitle={xTitle} yTitle={yTitle}  schema={schema} customOptions={customOptions} title='Hii lel' >
+            <ResponsiveLine
+                data={processedData}
+                areaBaselineValue={chartOptions.ymin ||  Math.ceil(chartProperties.ymin*1.15) || 0}
+                enableArea={true}
+                yScale={{
+                    type: yaxisType || 'linear', 
+                    min: (chartOptions.last === null && chartOptions.ymin ) ||  Math.ceil( chartProperties.ymin*1.15) || 'auto',
+                    max: (chartOptions.last === null && chartOptions.ymax ) ||  Math.ceil( chartProperties.ymax*1.15)  || 'auto',
+                }}
+                xFormat="time:%H:%M:%S"
+                    xScale={{
+                    type: xaxisType || 'linear',
+                    min: (chartOptions.last === null && chartOptions.xmin ) ||  'auto',
+                    max: (chartOptions.last === null && chartOptions.xmax ) ||  'auto',
+                }}
+                pointSize={10}
+                curve="natural"
+                lineWidth={3}
+                isInteractive={true}
+                useMesh={true}
+                pointLabelYOffset={10}
+        />
   </ChartContainer>
         
     return <Loading />

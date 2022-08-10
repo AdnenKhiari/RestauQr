@@ -296,7 +296,7 @@ export const AddUpdateProductOrder = (productid)=>{
                 const stockadd =  (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
                 const ref = doc(collection(db,'products/'+productid+'/product_orders'))
                 await runTransaction(db,async (tr)=>{
-                    tr.set(ref,data).update(prodref,{stockQuantity: increment(stockadd)})
+                    tr.set(ref,{...data,product_ref:productid }).update(prodref,{stockQuantity: increment(stockadd)})
                 })
                 setResult(ref.id)
                 return ref.id 

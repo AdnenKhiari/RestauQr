@@ -45,6 +45,7 @@ const ReviewProductOrder =()=>{
                 {user.profile.permissions.tables.manage && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT_ORDER(productid,orderid))
                 }}>Update</button>
+                <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid))}>Related Product</button>
                 <button onClick={async (e)=>{
                     try{
                         await del.remove()
@@ -64,7 +65,6 @@ const ReviewProductOrder =()=>{
             <h2><span>Purshase Quantity:</span> {product.productQuantity}</h2>
             <h2><span>Used:</span> {product.used}</h2>
             <h2><span>Wasted:</span> {product.wasted}</h2>
-            <h2><Link to={ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid)}>Go To Product</Link></h2>
 
             <form onSubmit={(e)=>e.preventDefault()}>
                 <div className="input-item">

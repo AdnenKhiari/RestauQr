@@ -39,20 +39,15 @@ export const AddUpdateTable = ()=>{
     const db = getFirestore()
     const mutate = async (data)=>{
         setLoading(true)
+        console.log(data)
         try{
-            var ref = null
-            if(data.id){
-                ref = doc(db,'tables',(data.id))
-                const foodid = data.id+""
-                delete data.id
-                await updateDoc(ref,data)
-                setResult(foodid)
-                return foodid
-            }else{
-                const snap = await addDoc(collection(db,'tables'),data)
-                setResult(snap.id)
-                return snap.id  
-            }
+            const id = data.id
+            delete data.id
+            const snap = await setDoc(doc(db,'tables/'+id),data)
+            console.log(snap)
+            setResult(id    )
+            return id  
+            
         }catch(err){
             setError(err)
             throw err
