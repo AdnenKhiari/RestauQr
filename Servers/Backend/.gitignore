@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 #firebase
-/restaurantqr-6b5f0-firebase-adminsdk-hs4mz-3e7f876851.json
+/service-account.json

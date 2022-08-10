@@ -1,23 +1,63 @@
 import {Router} from "express"
+import  Food from "../../../DataAcessLayer/Food"
 const router = Router()
 
-
-router.get('/:id',(req,res)=>{
+router.get('/:id',async (req,res,next)=>{
+    const id: string = req.params.id
+    try{
+        const data = await Food.GetFoodById(id)
+        return res.send({
+            data: data
+        })
+    }catch(err){
+        return next(err)
+    }
+})
+router.get('/',async (req,res,next)=>{
+    const categories : string[] | string = <string[] | string>req.query.categories
+    console.log(categories)
+    try{
+        const data = await Food.GetFoods(<string[]>(typeof(categories) === "string" ? [categories] : categories))
+        return res.send({
+            data: data
+        })
+    }catch(err){
+        return next(err)
+    }
+})
+router.post('/',async (req,res,next)=>{
+    const data = req.body
+    try{
+        const result = await Food.AddUpdateFood(data)
+        return res.send({
+            data: result
+        })
+    }catch(err){
+        return next(err)
+    }
+})
+router.put('/',async (req,res,next)=>{
+    const data = req.body
+    try{
+        const result = await Food.AddUpdateFood(data)
+        return res.send({
+            data: result
+        })
+    }catch(err){
+        return next(err)
+    }
+})
+router.delete('/:id',async (req,res,next)=>{
     const {id} = req.params
-    console.log(id)
-    return res.send(id)
-})
-router.post('/:id',(req,res)=>{
-    const bd = req.body
-    return res.send(bd)
-})
-router.put('/:id',(req,res)=>{
-    const bd = req.body
-    return res.send(bd)
-})
-router.delete('/:id',(req,res)=>{
-    const bd = req.body
-    return res.send(bd)
+    try{
+        const data = await Food.DeleteFoodById(id)
+        return res.send({
+            data: data
+        })
+
+    }catch(err){
+        return next(err)
+    }
 })
 
 router.get("/",(req,res)=>{
