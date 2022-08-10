@@ -133,24 +133,13 @@ const AddUpdateProductOrders = async (productid: string,orderid: string | undefi
     }else{
         data = {...data,used: 0,wasted: 0}
         const stockadd =  (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
-        const ref = db.collection('products/'+productid+'/product_orders')
+        const ref = db.collection('products/'+productid+'/product_orders').doc()
         await db.runTransaction(async (tr)=>{
-            tr.create(ref.doc(),data)
+            tr.create(ref,data)
             tr.update(prodref,{stockQuantity: admin.firestore.FieldValue.increment(stockadd)})
         })
         return ref.id 
     }
-}
-const GetFoods =  async (categories: string[])=>{
-    const db = admin.firestore()
-    let ref : FirebaseFirestore.CollectionReference | FirebaseFirestore.Query | null = null
-    if(categories && categories.length === 0)
-        ref = db.collection("food")
-    else 
-        ref = db.collection("food").where('category','in',categories)
-
-    const result = await ref?.get()
-    return result.docs.map((fd)=>{return{id:fd.id ,...fd.data()}})
 }
 
 const updateFoodProducts = (cur: any,data: any,productid :any)=>{

@@ -85,10 +85,22 @@ router.get('/',
     }
 })
 
-router.put('/',async (req,res,next)=>{
+router.post('/',async (req,res,next)=>{
     const data = req.body
     try{
-        const result = await Inventory.Products.AddUpdateProduct(data)
+        const result = await Inventory.Products.AddUpdateProduct(data,undefined)
+        return res.send({   
+            data: result
+        })
+    }catch(err){
+        return next(err)
+    }
+})
+router.put('/:id',async (req,res,next)=>{
+    const data = req.body
+    const id = req.params.id
+    try{
+        const result = await Inventory.Products.AddUpdateProduct(data,id)
         return res.send({   
             data: result
         })

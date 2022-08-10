@@ -12,7 +12,7 @@ const GetProductById =  async (id: string)=>{
 }
 
 const verifyId = (ing: any,productid: string)=>{
-    if(ing.products){            
+    if(ing && ing.products){            
         if(ing.products.filter((p: any)=>p.id === productid).length > 0){
             return false
         }else{
@@ -147,18 +147,17 @@ const updateFoodProducts = (cur: any,data: any,productid :any)=>{
             })
     } 
 }
-const AddUpdateProduct = async (data: any)=>{
+const AddUpdateProduct = async (data: any,id: string | undefined)=>{
     const db = admin.firestore()
-    if(data.id){
-        const ref = db.doc('products/'+data.id)
-        const productid = data.id+""
+    if(id){
+        const ref = db.doc('products/'+id)
+        const productid = id+""
         const allfood_ref = db.collection("food") 
         const allfood_snap = await allfood_ref.get()
         const allfood = allfood_snap.docs.map((fd)=>{return {id: fd.id,...fd.data()}})
         allfood.forEach((fd)=>{
             updateFoodProducts(fd,data,productid)
         })
-        delete data.id
         await db.runTransaction(async tr =>{
             allfood.forEach((fd)=>{
                 tr.update(db.doc("food/"+fd.id),fd)

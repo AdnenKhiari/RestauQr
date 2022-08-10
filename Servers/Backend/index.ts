@@ -23,7 +23,7 @@ app.get("/",(req,res)=>{
     return res.send("Hii")
 })
 
-app.use((ErrHandler.HandleHttpErrors))
+app.use(ErrHandler.HandleHttpErrors)
 
 app.listen((process.env.SERVER_PORT),()=>{
     console.log('Serving at port',process.env.SERVER_PORT)
