@@ -63,7 +63,7 @@ export const SubReviewOrderUi = ({orderid,order})=>{
         <button onClick={(e)=>usenav(ROUTES.ORDERS.GET_REVIEW(orderid))}>Order</button>
          {user.profile.permissions.orders.manage &&  <button onClick={async (e)=> {
             try{
-                await orderUpdate(states[stateidx],order,reasonref.current && reasonref.current.value);
+                await orderUpdate(states[stateidx],reasonref.current && reasonref.current.value);
                 usenav(0)
             }
             catch(err){

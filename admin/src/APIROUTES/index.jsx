@@ -27,6 +27,7 @@ export const ORDERS = {
     UPDATE_ORDER: (id)=> baseurl+"orders/"+id,
     REMOVE_ORDER: (id)=> baseurl+"orders/"+id,
     SUB_ORDERS : {
+        GET_SUB_ORDER_BY_ID : (orderid,subid)=> baseurl+"orders/"+orderid+"/suborders/"+subid,
         GET_SUB_ORDERS: baseurl+"orders/suborders",
         GET_SUB_ORDERS_OF_ORDER : (orderid)=> baseurl+"orders/"+orderid+"/suborders",
         ADD_SUB_ORDER:(orderid)=>  baseurl+"orders/" + orderid  + "/suborders",
@@ -40,11 +41,16 @@ export const PRODUCTS = {
     ADD_PRODUCT: baseurl+"products/",
     UPDATE_PRODUCT: (id)=> baseurl+"products/"+id,
     REMOVE_PRODUCT: (id)=> baseurl+"products/"+id,
+    CONSUME_PRODUCT: (id)=> baseurl+"products/consume/"+id,
+
     PRODUCT_ORDERS : {
+        GET_PRODUCT_ORDER_OF_PRODUCT_BY_ID: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
         GET_PRODUCT_ORDERS: baseurl+"products/product_orders",
         GET_PRODUCT_ORDERS_OF_PRODUCT : (productid)=> baseurl+"products/"+productid+"/product_orders",
         ADD_PRODUCT_ORDER:(productid)=>  baseurl+"products/" + productid  + "/product_orders",
         UPDATE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
         REMOVE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
+        CONSUME_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/consume/" + subid,
+
     }
 }

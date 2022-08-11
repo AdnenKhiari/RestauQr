@@ -109,6 +109,7 @@ export const GetFoodById = (id)=>{
 export const GetByCategories = (categories)=>{
 
     const [error,setError] = useState(null)
+    console.warn(categories)
     const {data,isLoading,error: quer_err} = Query.useQuery(['food'],async ()=>{
         const res = await axios_inst.get(APIROUTES.FOOD.GET_FOODS,{
             params: {

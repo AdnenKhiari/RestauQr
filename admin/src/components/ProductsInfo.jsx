@@ -35,7 +35,7 @@ const ProductsDetails = ({defaultVals = undefined})=>{
         resolver: joiResolver(schema)
     })
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
-    const productmutator = AddUpdateProduct()
+    const productmutator = AddUpdateProduct(!defaultVals)
     const usenav = useNavigate() 
     console.log(errors)
     const SubmitForm = async (data)=>{

@@ -46,9 +46,11 @@ export const getOptionsList = (fd,last = "")=>{
 }
 
 export const formatFbDate = (dt,dateonly = false)=>{
+    const new_date = dt && dt._seconds ? new Date(dt._seconds*1000 + dt._nanoseconds / 1000) : dt
+
     if(!dateonly)
-        return moment(dt.toDate()).format("YYYY-MM-DD / hh:mm:ss")
-    return moment(dt.toDate()).format("YYYY-MM-DD")
+        return moment(new_date).format("YYYY-MM-DD / hh:mm:ss")
+    return moment(new_date).format("YYYY-MM-DD")
 
 }
 export const getInsTime = ()=>{

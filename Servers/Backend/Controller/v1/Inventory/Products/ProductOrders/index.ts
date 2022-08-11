@@ -73,6 +73,21 @@ router.put('/:subid',async (req,res,next)=>{
         return next(err)
     }
 })
+router.post('/consume/:subid',async (req,res,next)=>{
+    const {subid} = req.params
+    const productid: string = <string>req.productid
+
+    const data : {used:number,wasted:number,updateGlobally : boolean} = req.body
+    try{
+        const result = await Inventory.ProductOrders.ConsumeProductOrder(productid,subid,data)
+        return res.send({
+            data: result
+        })
+
+    }catch(err){
+        return next(err)
+    }
+})
 router.delete('/:id',async (req,res,next)=>{
     const {id} = req.params
     const productid: string = <string>req.productid

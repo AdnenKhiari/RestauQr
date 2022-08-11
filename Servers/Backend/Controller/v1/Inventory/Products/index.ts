@@ -120,6 +120,19 @@ router.delete('/:id',async (req,res,next)=>{
         return next(err)
     }
 })
+router.post('/consume/:id',async (req,res,next)=>{
+    const {id} = req.params
+    const data : {used:number,wasted:number} = req.body
+    try{
+        const result = await Inventory.Products.ConsumeProductItem(id,data)
+        return res.send({
+            data: result
+        })
+
+    }catch(err){
+        return next(err)
+    }
+})
 
 router.use('/:productid/product_orders',(req: Request,res,next)=>{
     req.productid = <string>req.params.productid
