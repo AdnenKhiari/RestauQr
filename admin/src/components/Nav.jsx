@@ -53,7 +53,14 @@ const Nav = ()=>{
                 <Link to={ROUTES.USERS.MY_PROFILE}><li>Profile</li></Link>
             </ul>
         </nav>
-        <button className="nav-button" onClick={(e)=>logout()}>Log Out !</button>
+        <button className="nav-button" onClick={async (e)=>{
+            try{
+                await logout()
+                usenav(0)
+            }catch(err){
+                console.log(err)
+            }
+        }}>Log Out !</button>
     </div>
 }
 export default Nav

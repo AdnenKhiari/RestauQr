@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { UserContext } from "../../contexts";
 import { useState } from "react";
 import Error from "../../components/Error"
-import {SendPasswordResetEmail} from "../../lib/Auth"
+import {SendPasswordResetEmail, VerifyEmailCode} from "../../lib/Auth"
 import { useForm } from "react-hook-form";
 
 
@@ -31,11 +31,11 @@ const VerifyMail = ({oobCode,mode})=>{
     const auth = getAuth()
     const user = useContext(UserContext)
     const [error,setError] = useState(null)
+    const {data,loading,err,validateMail} = VerifyEmailCode()
     const usenav = useNavigate()
     const verifyEmail = async ()=>{
         try{
-           await applyActionCode(auth,oobCode)
-           setError(false)
+           await validateMail(oobCode)
            usenav(0)
         }catch(err){
             setError(err)

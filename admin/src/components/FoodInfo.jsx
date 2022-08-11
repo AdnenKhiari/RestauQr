@@ -73,7 +73,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
     })
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
     const uploader = UploadFile()
-    const food_uploader = AddUpdateFood()
+    const food_uploader = AddUpdateFood(!defaultVals)
     const usenav = useNavigate() 
     const {result : categories,loading: categoriesLoading,error : errorCategories} = GetCategories()
 

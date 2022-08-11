@@ -12,7 +12,7 @@ import {useTable,useSortBy} from "react-table"
 const ReviewFood =()=>{
     const {foodid} = useParams()
     const {result : food,loading,error} = GetFoodById(foodid)
-    const {deleteFood} = DeleteFoodById()
+    const {deleteFood} = DeleteFoodById(foodid)
     const user = useContext(UserContext)
     const usenav = useNavigate()
     if( error)
