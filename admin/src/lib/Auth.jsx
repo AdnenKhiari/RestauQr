@@ -15,28 +15,27 @@ import { QueryClient } from "@tanstack/react-query"
 const axios_inst = axios.create({
     withCredentials: true
 })
-const getProfileInfo = async (id,db)=>{
-    const user_col = collection(db,'users')
-    const profile_snap = await getDoc(doc(user_col,id))
-    if(profile_snap.exists()){
-        return profile_snap.data()
-    }else{
-        return null
-    }
-}
-export const UpdateProfile = ()=>{
+
+export const CreateProfile = ()=>{
     const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
     const [loading,setLoading] = useState(null)
-
-    const auth = getAuth()
+    const user = useContext(UserContext)
     const db = getFirestore()
-    const updateprofile = async (id,data)=>{
-        setLoading(true)
+    const mutate = async (data)=>{
         try{
-            await updateDoc(doc(collection(db,'users'),id),data)
-            setResult(auth.currentUser)
-            return auth.currentUser 
+            setLoading(true)
+            if(!user)
+                throw Error("No User Is Logged In")
+            const profile = {name: data.name,permissions: {
+                food: {manage:false},
+                orders: {manage: false},
+                tables: {manage:false},
+                categories: {manage:false},
+                users: {read:false,manage:false}
+            }}
+            await setDoc(doc(collection(db,'users'),user.uid),profile)
+            setResult(profile)
         }catch(err){
             setError(err)
             throw err
@@ -48,9 +47,50 @@ export const UpdateProfile = ()=>{
         result,
         loading,
         error,
-        updateprofile
+        mutate
     }
 }
+
+export const SendPasswordResetEmail = ()=>{
+    const [result,setResult] = useState(null)
+    const [error,setError] = useState(null)
+    const [loading,setLoading] = useState(null)
+
+    const auth = getAuth()
+    const send_reset = async (email)=>{
+        try{
+            setLoading(true)
+            await sendPasswordResetEmail(auth,email)
+            setResult(email)
+        }catch(err){
+            setError(err)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }   
+    const verify = async (code,new_password)=>{
+        try{
+            setLoading(true)
+            await confirmPasswordReset(auth,code,new_password)
+            setResult(true)
+        }catch(err){
+            setError(err)
+            throw err
+        }finally{
+            setLoading(false)
+        }
+    }
+    return {
+        result,
+        loading,
+        error,
+        send_reset,
+        verify
+    }
+}
+
+
 
 export const RemoveAccount = ()=>{
     const [error,setError] = useState(null)
@@ -78,61 +118,8 @@ export const RemoveAccount = ()=>{
     }
 }
 
-export const UpdateEmail = ()=>{
-    const [result,setResult] = useState(null)
-    const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
 
-    const auth = getAuth()
-    const updateemail = async (email)=>{
-        setLoading(true)
-
-        try{
-            await updateEmail(auth.currentUser,email)
-            setResult(auth.currentUser)
-            return auth.currentUser
-        }catch(err){
-            setError(err)
-            throw err
-        }finally{
-            setLoading(false)
-        }
-    }   
-    return {
-        result,
-        loading,
-        error,
-        updateemail
-    }
-}
-
-export const UpdatePassword = ()=>{
-    const [result,setResult] = useState(null)
-    const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
-
-    const auth = getAuth()
-    const updatepassword = async (password)=>{
-        setLoading(true)
-        try{
-            await updatePassword(auth.currentUser,password)
-            setResult(auth.currentUser)
-            return auth.currentUser
-        }catch(err){
-            setError(err)
-            throw err
-        }finally{
-            setLoading(false)
-        }
-    }   
-    return {
-        result,
-        loading,
-        error,
-        updatepassword
-    }
-}
-
+//??
 export const ConfirmIdentity = ()=>{
 
     const [result,setResult] = useState(null)
@@ -189,95 +176,63 @@ export const VerifyEmailCode = ()=>{
 }
 
 export const GetAllProfiles = ()=>{
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(false)
-
-    const db = getFirestore()
-    const getdata = async ()=>{
-        setLoading(true)
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['users'],async ()=>{
+        const res = await axios_inst.get(APIROUTES.USERS.GET_USERS)
+        return res.data
+    },{
+        retry: 0,
+        refetchOnWindowFocus: false
+    })
+    const fetch = async ()=>{
         try{
-            const user_col = collection(db,'users')
-            const alldocs = await getDocs(user_col)
-            const res = alldocs.docs.map((item)=>{
-                return {id : item.id,...item.data()}
-            })
-            setResult(res)
+            await refetch()
         }catch(err){
             setError(err)
-        }finally{
-            setLoading(false)
         }
     }
+    //console.log("Dt",data,isLoading,error)
     useEffect(()=>{
-        getdata()
-    },[db])
-
+        setError(quer_err)
+    },[quer_err])
+    
     return {
-        result,
+        result : data && data.data,
         error,
-        loading,
-        getdata
+        loading: isLoading,
+        getdata: fetch
     }
 }
 export const GetProfile = (id)=>{
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const db = getFirestore()
-    const getp = async ()=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['users',id],async ()=>{
+        const res = await axios_inst.get(APIROUTES.USERS.GET_USER_BY_ID(id))
+        return res.data
+    },{
+        retry: 0,
+        refetchOnWindowFocus: false
+    })
+    const fetch = async ()=>{
         try{
-            const profile = await getProfileInfo(id,db)
-            if(!profile)
-                throw Error("Invalid Profile ID Not Found")
-            setResult({...profile,id})
+            await refetch()
         }catch(err){
             setError(err)
         }
     }
+    //console.log("Dt",data,isLoading,error)
     useEffect(()=>{
-        getp()
-    },[db,id])
+        setError(quer_err)
+    },[quer_err])
+    
     return {
-        result,
+        result : data && data.data,
         error,
-        loading: !result && !error
+        loading: isLoading,
+        fetch
     }
 }
 
-export const CreateProfile = ()=>{
-    const [result,setResult] = useState(null)
-    const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
-    const user = useContext(UserContext)
-    const db = getFirestore()
-    const mutate = async (data)=>{
-        try{
-            setLoading(true)
-            if(!user)
-                throw Error("No User Is Logged In")
-            const profile = {name: data.name,permissions: {
-                food: {manage:false},
-                orders: {manage: false},
-                tables: {manage:false},
-                categories: {manage:false},
-                users: {read:false,manage:false}
-            }}
-            await setDoc(doc(collection(db,'users'),user.uid),profile)
-            setResult(profile)
-        }catch(err){
-            setError(err)
-            throw err
-        }finally{
-            setLoading(false)
-        }
-    }   
-    return {
-        result,
-        loading,
-        error,
-        mutate
-    }
-}
+
 
 export const CreateUser = ()=>{
 
@@ -354,7 +309,6 @@ export const SignInUser = ()=>{
         try{
             auth.setPersistence(inMemoryPersistence)
             const user_snap = await signInWithEmailAndPassword(auth,email,password)
-            const profile = await getProfileInfo(user_snap.user.uid,db)
             const token = await user_snap.user.getIdToken(true)
             await mutateAsync(token)
 
@@ -438,44 +392,6 @@ export const GetAuthState = ()=>{
     }
 }
 
-export const SendPasswordResetEmail = ()=>{
-    const [result,setResult] = useState(null)
-    const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
-
-    const auth = getAuth()
-    const send_reset = async (email)=>{
-        try{
-            setLoading(true)
-            await sendPasswordResetEmail(auth,email)
-            setResult(email)
-        }catch(err){
-            setError(err)
-            throw err
-        }finally{
-            setLoading(false)
-        }
-    }   
-    const verify = async (code,new_password)=>{
-        try{
-            setLoading(true)
-            await confirmPasswordReset(auth,code,new_password)
-            setResult(true)
-        }catch(err){
-            setError(err)
-            throw err
-        }finally{
-            setLoading(false)
-        }
-    }
-    return {
-        result,
-        loading,
-        error,
-        send_reset,
-        verify
-    }
-}
 
 export const VerifyEmailForUser = ()=>{
 

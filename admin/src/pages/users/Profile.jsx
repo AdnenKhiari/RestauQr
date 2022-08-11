@@ -12,7 +12,7 @@ const Profile = ()=>{
 
     const {userid} = useParams()
     const {result: profile,error,loading} = GetProfile(userid)
-    console.log(profile,error,loading)
+    console.log("PR that you see",profile,error,loading)
     if(error)
         return <Error  error={error} msg="Could Not Retrieve User Profile" />
     if(loading)
@@ -22,7 +22,7 @@ const Profile = ()=>{
         return  <ProfileSettings me={true} profile={user.profile} />
     if(!user.profile.permissions.users.read)
         return <Navigate to={ROUTES.ORDERS.ALL} />  
-    return  <ProfileSettings me={false} profile={profile} />
+    return  <ProfileSettings me={false} profile={profile.profile} />
 
 }
 export default Profile

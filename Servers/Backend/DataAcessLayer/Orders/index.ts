@@ -163,7 +163,7 @@ const GetOrders =  async (searchData: any)=>{
             query = query.startAfter(starting)
 
     }
-    query = query.limit(2)
+    query = query.limit(10)
     const data = await query.get()
     return data.docs.map((order)=>{return{ id:order.id,...order.data()}})
 }

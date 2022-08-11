@@ -76,6 +76,7 @@ const ProfileSettings = ({profile,me = false})=>{
     const profileUpdate = UpdateProfile()
     const accountRemove = RemoveAccount()
 
+    console.warn(profile,user)
     const usenav = useNavigate()
     const submit = (data)=>{
         setConfirm(data)
