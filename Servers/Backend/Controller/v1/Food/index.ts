@@ -28,7 +28,8 @@ router.get('/',async (req,res,next)=>{
 router.post('/',async (req,res,next)=>{
     const data = req.body
     try{
-        const result = await Food.AddUpdateFood(data)
+        console.log("Creating Food",data)
+        const result = await Food.AddUpdateFood(data,undefined)
         return res.send({
             data: result
         })
@@ -36,10 +37,11 @@ router.post('/',async (req,res,next)=>{
         return next(err)
     }
 })
-router.put('/',async (req,res,next)=>{
+router.put('/:id',async (req,res,next)=>{
     const data = req.body
+    const {id} = req.params
     try{
-        const result = await Food.AddUpdateFood(data)
+        const result = await Food.AddUpdateFood(data,id)
         return res.send({
             data: result
         })

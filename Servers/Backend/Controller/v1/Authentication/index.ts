@@ -112,6 +112,7 @@ router.post("/sendValidateEmail",OAuth.SignedIn,async (req,res,next)=>{
 
 router.get("/logout",OAuth.SignedIn,async (req,res,next)=>{
     try{
+        console.log("You SIgned Out")
         const auth = admin.auth()
         await auth.revokeRefreshTokens(req.decodedtoken.uid)
         clearCookie(res)

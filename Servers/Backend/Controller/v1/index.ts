@@ -1,11 +1,13 @@
+
+import Express, { Router } from "express"
+
 import Food from "./Food"
 import Tables from "./Tables"
 import Orders from "./Orders"
 import Products from "./Inventory/Products"
 import Auth from "./Authentication"
-
-import Express, { Router } from "express"
 import Users from "./Users"
+
 const router = Router()
 
 router.use("/food",Food)

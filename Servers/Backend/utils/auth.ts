@@ -4,12 +4,12 @@ import axios from "axios"
 const cookieOpt = {
     httpOnly: true,
     secure: false,
-    maxAge: 1000*60*10
+    maxAge: 1000*60*60*10
 }
 export const IssueCookie = async (tokenid: string,res: Express.Response)=>{
     const auth = admin.auth()
     const ck = await auth.createSessionCookie(tokenid,{
-        expiresIn: 1000*60*10
+        expiresIn: cookieOpt.maxAge
     })
     console.log("Issued Cookie",ck)
     return res.cookie('restau-admin-sess',ck,cookieOpt)
@@ -21,7 +21,6 @@ export const clearCookie = (res: Express.Response)=>{
 
 export const DecodeCookie = async (req: Express.Request,res: Express.Response)=>{
     const auth = admin.auth()
-    console.log("CKS",req.cookies)
     if(!req.cookies)
         return null
     const cookie = req.cookies['restau-admin-sess']

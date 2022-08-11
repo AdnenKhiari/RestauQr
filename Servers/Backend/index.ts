@@ -5,11 +5,16 @@ import bodyParser from "body-parser"
 import { InitFirebase } from "./lib/firebase";
 import cookieparser from "cookie-parser"
 import ErrHandler from "./ErrHandler"
+import cors from "cors"
 const app = express()
 
 if(process.env.NODE_ENV !== 'production'){
     dotenv.config()    
 }
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}))
 
 //to parse body from requests
 app.use(bodyParser.json());

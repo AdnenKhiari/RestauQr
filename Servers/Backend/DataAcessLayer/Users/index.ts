@@ -13,7 +13,8 @@ const GetUserById = async (id: string)=>{
     const user = await user_doc.get()
     if(!user.exists)
         throw Error("User Do Not Exists")
-    return {id: user.id,...user.data()}
+    const user_auth = await admin.auth().getUser(id)
+    return {id: user.id,emailVerified : user_auth.emailVerified,email: user_auth.email,profile: user.data()}
 }
 const GetUserByIdIfExists = async (id: string)=>{
     const db = admin.firestore()
