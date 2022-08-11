@@ -1,11 +1,10 @@
 import { useState } from "react"
-import {getAuth,updateEmail,EmailAuthProvider,reauthenticateWithCredential,signOut,onAuthStateChanged,createUserWithEmailAndPassword,sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, updatePassword, deleteUser} from "firebase/auth"
+import {getAuth,inMemoryPersistence,updateEmail,EmailAuthProvider,reauthenticateWithCredential,signOut,onAuthStateChanged,createUserWithEmailAndPassword,sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset, updatePassword, deleteUser} from "firebase/auth"
 import { useEffect } from "react"
 import * as ROUTES from "../ROUTES"
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from "firebase/firestore"
 import { useContext } from "react"
 import { UserContext } from "../contexts"
-
 const getProfileInfo = async (id,db)=>{
     const user_col = collection(db,'users')
     const profile_snap = await getDoc(doc(user_col,id))
@@ -15,7 +14,6 @@ const getProfileInfo = async (id,db)=>{
         return null
     }
 }
-
 export const UpdateProfile = ()=>{
     const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
@@ -265,8 +263,12 @@ export const CreateUser = ()=>{
     const mutate = async (email,password)=>{
         try{
             setLoading(true)
+            auth.setPersistence(inMemoryPersistence)
             const user_snap = await createUserWithEmailAndPassword(auth,email,password)
             await sendEmailVerification(auth.currentUser)
+            const token = await user_snap.user.getIdToken()
+            //Sends Request To User , now it's gonna be just a console.log for postman 
+            console.warn("TOKEN FROM FIREBASE ",token)
             setResult(user_snap.user)
             return user_snap.user
         }catch(err){
@@ -296,14 +298,19 @@ export const SignInUser = ()=>{
     const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
     const [loading,setLoading] = useState(null)
-
+    
     const auth = getAuth()
     const db = getFirestore()
     const signIn = async (email,password)=>{
         try{
             setLoading(true)
+            auth.setPersistence(inMemoryPersistence)
             const user_snap = await signInWithEmailAndPassword(auth,email,password)
             const profile = await getProfileInfo(user_snap.user.uid,db)
+            const token = await user_snap.user.getIdToken(true)
+            //Sends Request To User , now it's gonna be just a console.log for postman 
+            console.warn("TOKEN FROM FIREBASE ",token)
+
             const user = {...user_snap.user,profile}
             setResult(user)
             return user
