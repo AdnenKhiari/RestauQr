@@ -9,7 +9,6 @@ import { useContext } from "react"
 import { UserContext } from "../contexts"
 import * as Query from "@tanstack/react-query"
 import axios from "axios"
-import { QueryClient } from "@tanstack/react-query"
 
 
 const axios_inst = axios.create({
@@ -17,115 +16,155 @@ const axios_inst = axios.create({
 })
 
 export const CreateProfile = ()=>{
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
-    const user = useContext(UserContext)
-    const db = getFirestore()
+    const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (all)=>{
+       //console.warn(all)
+      const res = await axios_inst.post(APIROUTES.AUTH.CREATE_PROFILE,all.data)
+      return res.data
+    },{
+        retry: 0
+    })
+
     const mutate = async (data)=>{
         try{
-            setLoading(true)
-            if(!user)
-                throw Error("No User Is Logged In")
-            const profile = {name: data.name,permissions: {
-                food: {manage:false},
-                orders: {manage: false},
-                tables: {manage:false},
-                categories: {manage:false},
-                users: {read:false,manage:false}
-            }}
-            await setDoc(doc(collection(db,'users'),user.uid),profile)
-            setResult(profile)
+            await send({name: data.name})
         }catch(err){
             setError(err)
             throw err
-        }finally{
-            setLoading(false)
         }
-    }   
+    }
+    console.log("Create profile",result,isLoading,error)
+
+    useEffect(()=>{
+        setError(query_err)
+    },[query_err])
+
     return {
         result,
-        loading,
         error,
+        loading: isLoading,
         mutate
     }
 }
 
 export const SendPasswordResetEmail = ()=>{
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
 
-    const auth = getAuth()
+    const {data: senddata,isLoading: sendLoading,error :quer_err,mutateAsync: sendmail} = Query.useMutation(async (email)=>{
+        const res = await axios_inst.post(APIROUTES.AUTH.RECOVER_PASSWORD,{
+            email: email
+        })
+        return res.data
+    })
+
+    const {data: confirmdata,isLoading: confirmLoading,error :confirm_err,mutateAsync: confirm} = Query.useMutation(async (dt)=>{
+        const res = await axios_inst.post(APIROUTES.AUTH.CONFIRM_VALID_PASSWORD,dt)
+        return res.data
+    })
+
+    useEffect(()=>{
+        setError([quer_err,confirm_err])
+    },[quer_err,confirm_err])
+
+
     const send_reset = async (email)=>{
         try{
-            setLoading(true)
-            await sendPasswordResetEmail(auth,email)
-            setResult(email)
+            
+            await sendmail({email: email})
+            
         }catch(err){
             setError(err)
             throw err
-        }finally{
-            setLoading(false)
         }
     }   
     const verify = async (code,new_password)=>{
         try{
-            setLoading(true)
-            await confirmPasswordReset(auth,code,new_password)
-            setResult(true)
+            
+            await confirm({oobCode: code,newPassword: new_password})
+            
         }catch(err){
             setError(err)
             throw err
-        }finally{
-            setLoading(false)
         }
     }
     return {
-        result,
-        loading,
-        error,
+        result: confirmdata | senddata,
+        loading: confirmLoading | sendLoading,
+        err : error,
         send_reset,
         verify
     }
 }
 
 
-
-export const RemoveAccount = ()=>{
+export const DeleteCurrent = ()=>{
     const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
-
-    const db = getFirestore()
-    const auth = getAuth()
-    const deleteAccount = async ()=>{
-        setLoading(true)
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-user','user'],async ()=>{
+        const res = await axios_inst.delete(APIROUTES.USERS.DELETE_CURRENT)
+        return res.data
+    },{
+        retry: 0,
+        enabled: false,
+        refetchOnWindowFocus: false
+    })
+    const fetch = async ()=>{
         try{
-            const id = auth.currentUser.uid
-            await deleteUser(auth.currentUser)
-            await deleteDoc(doc(collection(db,'users'),id))
+            await refetch()
         }catch(err){
             setError(err)
-            throw err
-        }finally{
-            setLoading(false)
         }
-    }   
+    }
+    console.log("Delete account",data,isLoading,error)
+    useEffect(()=>{
+        setError(quer_err)
+    },[quer_err])
+    
     return {
-        loading,
+        result : data && data.data,
         error,
-        deleteAccount
+        loading: isLoading,
+        deleteAccount: fetch
+    }
+}
+
+export const RemoveAccount = (id)=>{
+    const [error,setError] = useState(null)
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-user','user'],async ()=>{
+        const res = await axios_inst.delete(APIROUTES.USERS.REMOVE_USER_BY_ID(id))
+        return res.data
+    },{
+        retry: 0,
+        enabled: false,
+        refetchOnWindowFocus: false
+    })
+    const fetch = async ()=>{
+        try{
+            await refetch()
+        }catch(err){
+            setError(err)
+        }
+    }
+    console.log("Delete account",data,isLoading,error)
+    useEffect(()=>{
+        setError(quer_err)
+    },[quer_err])
+    
+    return {
+        result : data && data.data,
+        error,
+        loading: isLoading,
+        deleteAccount: fetch
     }
 }
 
 
-//??
+
 export const ConfirmIdentity = ()=>{
 
     const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
     const [loading,setLoading] = useState(null)
-
+    const user = useContext(UserContext)
     const auth = getAuth()
 
     const confirm = async (email,password)=>{
@@ -134,8 +173,15 @@ export const ConfirmIdentity = ()=>{
             //here 
             // BUGGED 
             const cred = EmailAuthProvider.credential(email,password)
-            const user_cred = await reauthenticateWithCredential(auth.currentUser,cred)
-            setResult(user_cred.user)
+            const user_cred = await signInWithCredential(auth,cred)
+            
+            if(user_cred.user.uid === user.id){
+                setResult(true)
+                await signOut(auth)
+            }else{
+                await signOut(auth)
+                throw Error("Could Not Confirm Identity")
+            }
         }catch(err){
             if(err.code==="auth/user-not-found"){
                 err.msg = "Email Do not exist"
@@ -161,8 +207,8 @@ export const ConfirmIdentity = ()=>{
 }
 
 export const VerifyEmailCode = ()=>{
-    const {data,isLoading,error,mutateAsync} = Query.useMutation(['reset-email-confirmation'],async (oobCode)=>{
-        const res = await axios_inst.post(APIROUTES.AUTH.CONFIRM_VALID,{
+    const {data,isLoading,error,mutateAsync} = Query.useMutation(async (oobCode)=>{
+        const res = await axios_inst.post(APIROUTES.AUTH.CONFIRM_VALID_EMAIL,{
             oobCode: oobCode
         })
         return res.data
@@ -232,8 +278,6 @@ export const GetProfile = (id)=>{
     }
 }
 
-
-
 export const CreateUser = ()=>{
 
 
@@ -302,7 +346,6 @@ const LogUser = ()=>{
 
 export const SignInUser = ()=>{
     const auth = getAuth()
-    const db = getFirestore()
     const {user,loading,error,mutateAsync} = LogUser()
 
     const signIn = async (email,password)=>{
@@ -368,7 +411,6 @@ const getLoggedUserInfo = async ()=> {
 
 export const GetAuthState = ()=>{
     const client = Query.useQueryClient()
-    const auth = getAuth()
   //  const [loading,setLoading ] = useState(null)
     const {data: user,isLoading,error} = Query.useQuery(['current_user'],getLoggedUserInfo,{
         retry: 2,
@@ -396,7 +438,7 @@ export const GetAuthState = ()=>{
 export const VerifyEmailForUser = ()=>{
 
     const user = useContext(UserContext)
-    const {data,isLoading,error,refetch} = Query.useQuery(['validte-email'],async()=>{
+    const {data,isLoading,error,refetch} = Query.useQuery(['validate-email'],async()=>{
         const res = axios_inst.post(APIROUTES.AUTH.VALIDATE_EMAIL,{
             email: user.email
         })
@@ -419,5 +461,22 @@ export const VerifyEmailForUser = ()=>{
         error,
         loading: isLoading,
         mutate
+    }
+}
+
+
+export const UpdateProfile  = (id)=>{
+    const {data,isLoading,error,mutateAsync} = Query.useMutation(async (data)=>{
+        const res = await axios_inst.put(APIROUTES.USERS.UPDATE_USER(id),data)
+        return res.data
+    })
+    const mutate = async (data)=>{
+        await mutateAsync(data)
+    }
+    return {
+        data,
+        loading: isLoading,
+        err : error,
+        updateprofile : mutate
     }
 }

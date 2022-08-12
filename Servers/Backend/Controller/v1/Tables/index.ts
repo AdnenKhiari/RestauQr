@@ -14,6 +14,9 @@ router.get('/:id',async (req,res,next)=>{
         return next(err)
     }
 })
+
+
+
 router.get('/',
 (req,res,next)=>{
     const schema  = joi.object({
@@ -44,23 +47,59 @@ router.get('/',
         return next(err)
     }
 })
-router.post('/',async (req,res,next)=>{
+router.post('/',
+(req,res,next)=>{
+
+    const schema = joi.object({
+        id: joi.string().required().label("Table Id"),
+        placesNum: joi.number().min(1).required().label('Table Capacity'),
+        disabled: joi.bool().required().label('Disabled'),
+        time: joi.date().required().label('Pushase Date')
+    })
+    const {value,error} = (schema.validate(req.body))
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+}
+,
+async (req,res,next)=>{
     const data = req.body
     try{
-        const result = await Tables.AddUpdateTable(data)
+        const result = await Tables.AddUpdateTable(data.id,data)
         return res.send({
-            data: result
+            data: {
+                id: result
+            }
         })
     }catch(err){
         return next(err)
     }
 })
-router.put('/',async (req,res,next)=>{
+router.put('/:id',
+(req,res,next)=>{
+
+    const schema = joi.object({
+        id: joi.string().optional().label("Table Id"),
+        placesNum: joi.number().min(1).optional().label('Table Capacity'),
+        disabled: joi.bool().optional().label('Disabled'),
+        time: joi.date().optional().label('Pushase Date')
+    })
+    const {value,error} = (schema.validate(req.body))
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+}
+,async (req,res,next)=>{
     const data = req.body
+    const id = req.params.id
     try{
-        const result = await Tables.AddUpdateTable(data)
+        const result = await Tables.AddUpdateTable(id,data)
         return res.send({
-            data: result
+            data: {
+                id: result
+            }
         })
     }catch(err){
         return next(err)

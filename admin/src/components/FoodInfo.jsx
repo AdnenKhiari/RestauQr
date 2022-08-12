@@ -21,6 +21,7 @@ const productSchema = joi.object({
     name : joi.string().required().label("Name"),
     quantity : joi.number().required().label("Quantity"),
     unit: joi.string(),
+//    price: joi.optional().number().label("Price"),
     sellingUnitPrice: joi.number(),
     unitQuantity: joi.number()
 }).optional()
@@ -61,6 +62,7 @@ const schema = joi.object({
 const schem = joi.any()
 
 const FoodDetails = ({defaultVals = undefined})=>{
+    console.warn(defaultVals)
     const formOptions = useForm({
         defaultValues: defaultVals || {
             title: '',
@@ -76,7 +78,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
     const food_uploader = AddUpdateFood(!defaultVals)
     const usenav = useNavigate() 
     const {result : categories,loading: categoriesLoading,error : errorCategories} = GetCategories()
-
+    console.log(watch())
     const SubmitForm = async (data)=>{
         
         try{
@@ -307,6 +309,7 @@ const SelectionTable = ({root,popActive,popLabel})=>{
         }]
     },[])
     const arr = watch(path)
+    console.log(arr)
     const tb = useTable({data: arr  || [],columns: columns})
 
     const addProduct = (prod,index)=>{
@@ -355,7 +358,7 @@ const SelectionTable = ({root,popActive,popLabel})=>{
                                 type="number" 
                                 {...register(`${path}.${rowidx}.quantity`)} />
                             ) : cell.column.Header === "Price" ? (
-                                row.original.sellingUnitPrice * 1.0 * row.original.quantity / row.original.unitQuantity
+                               <b>{row.original.sellingUnitPrice * 1.0 * row.original.quantity / row.original.unitQuantity}</b> 
                             ) : (
                                 cell.render("Cell") 
                             )

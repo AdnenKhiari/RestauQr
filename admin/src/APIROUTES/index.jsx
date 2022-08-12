@@ -1,12 +1,16 @@
 const baseurl = "http://localhost:8080/v1/"
 export const AUTH = {
     SIGN_IN: baseurl+"auth/signin/",
-    CONFIRM_VALID: baseurl+"auth/verifyEmailCode/",
+    CREATE_PROFILE: baseurl+"auth/createProfile/",
+    RECOVER_PASSWORD: baseurl+"auth/sendRecoverPassword",
+    CONFIRM_VALID_EMAIL: baseurl+"auth/verifyEmailCode/",
+    CONFIRM_VALID_PASSWORD: baseurl+"auth/verifyPasswordCode/",
     VALIDATE_EMAIL:  baseurl+"auth/sendValidateEmail/",
     LOGOUT: baseurl+"auth/logout/",
 
 }
 export const USERS = {
+    DELETE_CURRENT :  baseurl+"users/current",
     GET_CURRENT_USER: baseurl+"users/current",
     GET_USERS : baseurl+"users/",
     GET_USER_BY_ID : (id)=> baseurl+"users/"+id,
@@ -19,6 +23,13 @@ export const FOOD = {
     ADD_FOOD: baseurl+"food/",
     UPDATE_FOOD: (id)=> baseurl+"food/"+id,
     REMOVE_FOOD: (id)=> baseurl+"food/"+id,
+}
+export const TABLES = {
+    GET_TABLES: baseurl+"tables/",
+    GET_TABLE_BY_ID : (id)=> baseurl+"tables/"+id,
+    ADD_TABLE: baseurl+"tables/",
+    UPDATE_TABLE: (id)=> baseurl+"tables/"+id,
+    REMOVE_TABLE: (id)=> baseurl+"tables/"+id,
 }
 export const ORDERS = {
     GET_ORDERS: baseurl+"orders/",

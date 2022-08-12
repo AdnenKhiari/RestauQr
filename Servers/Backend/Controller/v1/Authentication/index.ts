@@ -4,6 +4,7 @@ import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 import { clearCookie, DecodeCookie, IssueCookie, validateEmailOobCode, validatePasswordOobCode } from "../../../utils/auth"
 import Users from "../../../DataAcessLayer/Users"
 import OAuth from "../Authorisation"
+import mailtransport from "../../../utils/transportmail"
 const router = Router()
 
 
@@ -78,7 +79,7 @@ router.post("/verifyEmailCode",OAuth.SignedIn,async (req,res,next)=>{
     try{
         const auth = admin.auth()
         const {oobCode}  = req.body
-        const validation = await  validateEmailOobCode(oobCode)
+        const validation = await validateEmailOobCode(oobCode)
         await Users.VerifyUserById(req.decodedtoken.uid)
         return res.send(validation)
     }catch(err){
@@ -91,7 +92,16 @@ router.post("/sendRecoverPassword",OAuth.SignedIn,async (req,res,next)=>{
         const {email}  = req.body
         const auth = admin.auth()
         const link = await auth.generatePasswordResetLink(email)
-        //Use Node Mailer
+        const mail = await mailtransport.sendMail({
+            from: '"Fred Foo 👻" <foo@example.com>',
+            to: "bar@example.com, baz@example.com",
+            subject: "Recover Password Mail",
+            text: `
+                Forgot your password ?
+                <b>${link}<b/>
+            `
+        })
+        console.log(mail)
         return res.send(link)
     }catch(err){
         return next(err)
@@ -103,7 +113,16 @@ router.post("/sendValidateEmail",OAuth.SignedIn,async (req,res,next)=>{
         const {email}  = req.body
         const auth = admin.auth()
         const link = await auth.generateEmailVerificationLink(email)
-        //Use Node Mailer
+        const mail = await mailtransport.sendMail({
+            from: '"Fred Foo 👻" <foo@example.com>',
+            to: "bar@example.com, baz@example.com",
+            subject: "Validate Account",
+            text: `
+                Validate your account !!
+                <b>${link}<b/>
+            `
+        })
+        console.log(mail)        
         return res.send(link)
     }catch(err){
         return next(err)

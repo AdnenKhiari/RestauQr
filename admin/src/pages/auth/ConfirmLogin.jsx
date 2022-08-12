@@ -24,7 +24,7 @@ const ConfirmLogin = ({callback ,cancel})=>{
         try{
             console.log(data)
             await confirm(data.email,data.password)
-            callback()
+            await callback()
         }catch(err){
             console.error(err)
         }

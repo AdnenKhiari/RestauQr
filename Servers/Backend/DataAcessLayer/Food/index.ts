@@ -34,12 +34,13 @@ const AddUpdateFood = async (data: any,id: string | undefined)=>{
     if(id){
         ref = db.doc('food/'+id)
         const foodid = id+""
-        ref.update(data)
+        await ref.update(data)
+        return ref.id
     }else{
         ref = db.collection('food')
-        ref.add(data)
+        return (await ref.add(data)).id
     }
-    return data
+
 }
 
 export default {

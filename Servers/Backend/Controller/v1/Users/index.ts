@@ -60,7 +60,7 @@ router.put('/:id',async (req,res,next)=>{
             await Users.UpdatePassword(id,body.password)
             body.password = undefined
         }
-        await Users.UpdateUserInfo(id,body)
+        await Users.UpdateUserInfo(id,{permissions: body.permissions,name: body.name})
 
         return res.json("Ok")
     }catch(err){

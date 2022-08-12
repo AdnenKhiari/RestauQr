@@ -17,7 +17,7 @@ import { useRef } from "react"
 const ReviewTable =()=>{
     const {tableid} = useParams()
     const {result : table,loading,error} = GetTableById(tableid)
-    const {deleteTable} = DeleteTableById()
+    const {deleteTable} = DeleteTableById(tableid)
     const user = useContext(UserContext)
     const usenav = useNavigate()
     const [qrImg,setQrImg] = useState(undefined)

@@ -10,6 +10,7 @@ const axios_inst = axios.create({
 export const AddUpdateFood = (add = false)=>{
 
     const [error,setError] = useState(null)
+    const client = Query.useQueryClient()
     const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (all)=>{
        //console.warn(all)
         const res = add ?  await axios_inst.post(APIROUTES.FOOD.ADD_FOOD,all.data) : await axios_inst.put(APIROUTES.FOOD.UPDATE_FOOD(all.id),all.data)
@@ -25,7 +26,9 @@ export const AddUpdateFood = (add = false)=>{
                 delete data.id
            // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
 
-            await send({id: id,data})
+            const result  = await send({id: id,data})
+            client.invalidateQueries(['food',id])
+            return result.data && result.data.id
         }catch(err){
             setError(err)
             throw err
@@ -38,7 +41,7 @@ export const AddUpdateFood = (add = false)=>{
     },[query_err])
 
     return {
-        result,
+        result: result && result.data && result.data.id,
         error,
         loading: isLoading,
         mutate
@@ -49,7 +52,7 @@ export const DeleteFoodById =  (foodid)=>{
 
     const [error,setError] = useState(null)
     const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-food',foodid],async ()=>{
-        const res = await axios_inst.get(APIROUTES.FOOD.REMOVE_FOOD(foodid))
+        const res = await axios_inst.delete(APIROUTES.FOOD.REMOVE_FOOD(foodid))
         return res.data
     },{
         retry: 0,
@@ -76,15 +79,16 @@ export const DeleteFoodById =  (foodid)=>{
     }
 }
 
-export const GetFoodById = (id)=>{
+export const GetFoodById = (id,forceUpdate = true)=>{
 
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['food',id],async ()=>{
+    const client = Query.useQueryClient()
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['food',`food:${id}`],async ()=>{
         const res = await axios_inst.get(APIROUTES.FOOD.GET_FOOD_BY_ID(id))
         return res.data
     },{
         retry: 0,
-        refetchOnWindowFocus: false
+        refetchOnWindowFocus: false,
     })
     const fetch = async ()=>{
         try{
@@ -93,6 +97,10 @@ export const GetFoodById = (id)=>{
             setError(err)
         }
     }
+    useEffect(()=>{
+        console.info("REMOVING NOWW")
+        client.removeQueries([`food:${id}`,'food'])
+    },[])
     //console.log("Dt",data,isLoading,error)
     useEffect(()=>{
         setError(quer_err)
