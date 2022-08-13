@@ -4,6 +4,7 @@ import * as ROUTES from "../../ROUTES"
 import { useNavigate } from "react-router-dom"
 import PaginatedUniversalTable from "../UniversalTable/PaginatedUniversalTable"
 import joi from "joi"
+import * as APIROUTES from "../../APIROUTES"
 
 const schema  = joi.object({
     highersellingUnitPrice: joi.number().allow('').required().label("Price/U: min"),
@@ -91,52 +92,12 @@ const ProductsTables = ({queryConstraints,title,oncl = undefined})=>{
 
     const onDataQueried = (col)=>{
         let res = []
-        if(col.docs.length > 0){
-            res = col.docs.map((item)=>{
-                return {...item.data(),id: item.id}
+        if(col.length > 0){
+            res = col.map((item)=>{
+                return {...item,id: item.id}
             })
         }
         return res
-    }
-
-    const filterData = (searchdata,cst)=>{
-        
-        if(searchdata.name){
-            cst.push(where('name','>=',searchdata.name))
-            cst.push(orderBy('name'))
-        }
-
-        if(searchdata.higherstockQuantity){
-            cst.push(where('stockQuantity','>=',searchdata.higherstockQuantity))
-        }
-        if(searchdata.lowerstockQuantity){
-            cst.push(where('stockQuantity','<=',searchdata.lowerstockQuantity))
-        }
-
-        //unit quantity
-        if(searchdata.higherunitQuantity){
-            cst.push(where('unitQuantity','>=',searchdata.higherunitQuantity))
-        }
-        if(searchdata.lowerunitQuantity){
-            cst.push(where('unitQuantity','<=',searchdata.lowerunitQuantity))
-        }
-
-        if(searchdata.lowerunitQuantity || searchdata.higherunitQuantity)
-        cst.push(orderBy('unitQuantity'))
-
-        //selling unit price
-        if(searchdata.highersellingUnitPrice){
-            cst.push(where('sellingUnitPrice','>=',searchdata.highersellingUnitPrice))
-        }
-        if(searchdata.lowersellingUnitPrice){
-            cst.push(where('sellingUnitPrice','<=',searchdata.lowersellingUnitPrice))
-        }
-
-        if(searchdata.lowersellingUnitPrice || searchdata.highersellingUnitPrice)
-            cst.push(orderBy('sellingUnitPrice'))
-
-
-        return null
     }
 
     const defaultCl = (row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(row.id))
@@ -148,7 +109,7 @@ const ProductsTables = ({queryConstraints,title,oncl = undefined})=>{
     pagname="stockQuantity" 
     rows={rows}  
     title={title} 
-    filterData={filterData} 
+    cs_query={APIROUTES.PRODUCTS.GET_PRODUCTS} 
     onDataQueried={onDataQueried} 
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   

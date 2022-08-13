@@ -12,14 +12,17 @@ import axios from "axios"
 
 
 const axios_inst = axios.create({
-    withCredentials: true
+    withCredentials: true,
+    headers: {
+        "Content-Type" : "application/json"
+    }
 })
 
 export const CreateProfile = ()=>{
     const [error,setError] = useState(null)
-    const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (all)=>{
+    const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (data)=>{
        //console.warn(all)
-      const res = await axios_inst.post(APIROUTES.AUTH.CREATE_PROFILE,all.data)
+      const res = await axios_inst.post(APIROUTES.AUTH.CREATE_PROFILE,data)
       return res.data
     },{
         retry: 0
@@ -51,9 +54,7 @@ export const SendPasswordResetEmail = ()=>{
     const [error,setError] = useState(null)
 
     const {data: senddata,isLoading: sendLoading,error :quer_err,mutateAsync: sendmail} = Query.useMutation(async (email)=>{
-        const res = await axios_inst.post(APIROUTES.AUTH.RECOVER_PASSWORD,{
-            email: email
-        })
+        const res = await axios_inst.post(APIROUTES.AUTH.RECOVER_PASSWORD,email)
         return res.data
     })
 
@@ -213,6 +214,7 @@ export const VerifyEmailCode = ()=>{
         })
         return res.data
     })
+    console.log("Verifying,",data,isLoading,error)
     return {
         data,
         loading: isLoading,
@@ -288,9 +290,7 @@ export const CreateUser = ()=>{
         try{
             auth.setPersistence(inMemoryPersistence)
             const user_snap = await createUserWithEmailAndPassword(auth,email,password)
-            await sendEmailVerification(auth.currentUser)
             const token = await user_snap.user.getIdToken(true)
-            
             await mutateAsync(token)
             console.warn("TOKEN FROM FIREBASE ",token)
             return user_snap.user
@@ -389,12 +389,13 @@ export const LogOut = ()=>{
     })
     const logout = async ()=>{
         try{
-            refetch()
+           await refetch()
         }catch(err){
             throw err
         }
     }   
     return {
+        data,
         loading: isLoading,
         error,
         logout
@@ -415,6 +416,7 @@ export const GetAuthState = ()=>{
     const {data: user,isLoading,error} = Query.useQuery(['current_user'],getLoggedUserInfo,{
         retry: 2,
         refetchOnWindowFocus: false,
+        cacheTime: 0,
         onSuccess : (dt)=>{
             console.log("User FOund",dt)
          //   setLoading(false)
@@ -438,13 +440,17 @@ export const GetAuthState = ()=>{
 export const VerifyEmailForUser = ()=>{
 
     const user = useContext(UserContext)
-    const {data,isLoading,error,refetch} = Query.useQuery(['validate-email'],async()=>{
+    console.warn({
+        email: user
+    })
+    const {data,isLoading,error,refetch} = Query.useQuery(['verify-email'],async()=>{
         const res = axios_inst.post(APIROUTES.AUTH.VALIDATE_EMAIL,{
             email: user.email
         })
         return res.data
     },{
         retry: 0,
+        cacheTime: 0,
         refetchOnMount: false,
         refetchOnWindowFocus: false
     })

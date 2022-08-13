@@ -12,7 +12,7 @@ import { motion } from "framer-motion"
 import * as Query from "@tanstack/react-query"
 import axios from "axios"
 
-const PaginatedUniversalTable = ({queryConstraints = [],cs_query,group=false,title,colors,onDataSubmit,schema,structure,rows,onDataQueried,oncl,subscribe = false,page_lim= 10})=>{
+const PaginatedUniversalTable = ({queryConstraints = {},custom_key,custom_val,cs_query,group=false,title,colors,onDataSubmit,schema,structure,rows,onDataQueried,oncl,subscribe = false,page_lim= 10})=>{
     //for the table of orders
     const [table_data,setTable_Data] = useState([])
     const [table_data_ref,setTable_Data_Ref] = useState([])
@@ -27,7 +27,8 @@ const PaginatedUniversalTable = ({queryConstraints = [],cs_query,group=false,tit
 
     const {isLoading,error: result_error,refetch} = Query.useQuery([title,searchdata],async ()=>(await axios.get(cs_query,{
         params : {
-            ...searchdata
+            ...searchdata,
+            ...queryConstraints
         }
     })).data,{
         retry : false,
@@ -59,26 +60,34 @@ const PaginatedUniversalTable = ({queryConstraints = [],cs_query,group=false,tit
         if(!table_data_ref.length)
         return
         
-        var index = table_data_ref.length - 1
+        var index = 0
         if( last_nav !== "prev"  )
-            index = 0
+            index = table_data_ref.length - 1
         setLast_nav('prev')   
         
         const last = table_data_ref[index]
-        setSearchData({...searchdata,lastRef: last.id,dir: 'asc',swapped:  last_nav !== "prev" })
+        const nw = {...searchdata,lastRef: last.id,dir: 'asc',swapped:  last_nav !== "prev" }
+        if(custom_key)
+            nw[custom_key] = last[custom_val]
+        setSearchData(nw)
     },[table_data_ref,searchdata,last_nav])
 
     const next = useCallback(()=> {
         if(!table_data_ref.length)
             return
         console.log(table_data_ref)
-        var index = table_data_ref.length - 1
+        var index = 0
         if( last_nav !== "next"  )
-            index = 0
+            index = table_data_ref.length - 1
 
         setLast_nav('next')
         const first = table_data_ref[index]
-        setSearchData({...searchdata,lastRef: first.id,dir: 'desc',swapped: last_nav !== "next"    })
+
+        const nw = {...searchdata,lastRef: first.id,dir: 'desc',swapped: last_nav !== "next"    }
+        if(custom_key)
+            nw[custom_key] = first[custom_val]
+        setSearchData(nw)
+
     },[table_data_ref,searchdata,last_nav])
 
     const ProcessDocuments = useCallback( (col)=>{

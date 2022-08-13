@@ -8,7 +8,7 @@ import mailtransport from "../../../utils/transportmail"
 const router = Router()
 
 
-router.post('/createProfile',async (req,res,next)=>{
+router.post('/createProfile',OAuth.SignedIn,async (req,res,next)=>{
     try{
         const decoded = await DecodeCookie(req,res)
         req.decodedtoken = decoded
@@ -29,11 +29,34 @@ router.post('/createProfile',async (req,res,next)=>{
 },async (req,res,next)=>{
     const data = req.body
     const auth = admin.auth()
+    console.log(data)
     try{
         const decodedtoken = req.decodedtoken
-        await auth.setCustomUserClaims(decodedtoken.uid,data.permissions)
-        //Add To Db
+        data.permissions = {
+            "food": {
+                "manage": true
+            },
+            "categories": {
+                "manage": true
+            },
+            "tables": {
+                "manage": true
+            },
+            "orders": {
+                "manage": true
+            },
+            "inventory": {
+                "manage": true,
+                "read": true
+            },
+            "users": {
+                "manage": true,
+                "read": true
+            }
+        }
         const id = await Users.AddUpdateUser(decodedtoken.uid,data)
+        await auth.setCustomUserClaims(decodedtoken.uid,data.permissions)
+        clearCookie(res)
         return res.send(id)
     }catch(err){
         return next(err)
@@ -81,7 +104,8 @@ router.post("/verifyEmailCode",OAuth.SignedIn,async (req,res,next)=>{
         const {oobCode}  = req.body
         const validation = await validateEmailOobCode(oobCode)
         await Users.VerifyUserById(req.decodedtoken.uid)
-        return res.send(validation)
+        clearCookie(res)
+        return res.send("Ok")
     }catch(err){
         return next(err)
     }
@@ -110,7 +134,7 @@ router.post("/sendRecoverPassword",async (req,res,next)=>{
     }
 })
 
-router.post("/sendValidateEmail",async (req,res,next)=>{
+router.post("/sendValidateEmail",OAuth.SignedIn,async (req,res,next)=>{
     try{
         const {email}  = req.body
         const auth = admin.auth()

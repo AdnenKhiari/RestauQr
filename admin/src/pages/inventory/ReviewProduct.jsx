@@ -86,9 +86,11 @@ const ReviewProduct =()=>{
             </div>
         </div>
     </motion.div >
-    <ProductOrdersTable title={'All Orders'} parentid={productid}  />
+    <ProductOrdersTable  title={'All Orders'} parentid={productid}  />
 
     </>
+        //queryConstraints={{order_ref: productid }}
+            
 }
 
 export default ReviewProduct

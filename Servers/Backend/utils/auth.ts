@@ -37,12 +37,16 @@ export const DecodeCookie = async (req: Express.Request,res: Express.Response)=>
 }
 
 export const validateEmailOobCode = async (oobcode: string)=>{
+    console.log(process.env.FIREBASE_API_KEY,oobcode)
     const codevalidation = await axios.post('https://identitytoolkit.googleapis.com/v1/accounts:update',{
         oobCode: oobcode
     },{
     params: {
         key: process.env.FIREBASE_API_KEY
-    } 
+    },
+    headers: {
+        "Content-Type" : "application/json"
+    }
     })
     return codevalidation.data
 }

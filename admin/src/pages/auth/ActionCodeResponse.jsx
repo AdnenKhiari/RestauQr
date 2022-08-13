@@ -36,7 +36,6 @@ const VerifyMail = ({oobCode,mode})=>{
     const verifyEmail = async ()=>{
         try{
            await validateMail(oobCode)
-           usenav(0)
         }catch(err){
             setError(err)
             console.error(err)
@@ -46,8 +45,8 @@ const VerifyMail = ({oobCode,mode})=>{
     useEffect(()=>{
         if(mode === 'verifyEmail')
             verifyEmail()
-    },[oobCode])
-    if(error === null)
+    },[])
+    if(loading)
         return <h1>Verifying</h1>
     if(error)
         return <Error error={error}  msg="Error , Could Not Verify Request" />

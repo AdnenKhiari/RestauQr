@@ -5,16 +5,16 @@ import { useContext } from "react"
 import {UserContext} from "../../contexts"
 import BackgroundAuth from "../../components/BackgroundAuth"
 import { useState } from "react"
-import {Navigate} from "react-router-dom"
+import {Navigate, useNavigate} from "react-router-dom"
 import * as ROUTES from "../../ROUTES"
 
 const ValidateEmailContent = ()=>{
     const {result,mutate,error} = VerifyEmailForUser()
     const [text,setText] = useState("Send")
     const {logout} = LogOut()
-
-    const submit = ()=>{
-        mutate()
+const usenav = useNavigate()
+    const submit = async ()=>{
+       await mutate()
     }
 
     if(error)
@@ -27,8 +27,9 @@ const ValidateEmailContent = ()=>{
             setText("Resend")
             submit()
         }}>{text} !</button>
-        <button onClick={(e)=>{
-            logout()
+        <button onClick={async (e)=>{
+            await logout()
+            usenav(0)
         }}>Log Out !</button>
             </div>
 

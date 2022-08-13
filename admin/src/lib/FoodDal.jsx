@@ -79,7 +79,7 @@ export const DeleteFoodById =  (foodid)=>{
     }
 }
 
-export const GetFoodById = (id,forceUpdate = true)=>{
+export const GetFoodById = (id,forceUpdate = false)=>{
 
     const [error,setError] = useState(null)
     const client = Query.useQueryClient()
@@ -107,7 +107,7 @@ export const GetFoodById = (id,forceUpdate = true)=>{
     },[quer_err])
     
     return {
-        result : data && data.data,
+        result : data && structuredClone(data.data),
         error,
         loading: isLoading,
         fetch
