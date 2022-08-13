@@ -180,7 +180,8 @@ const GetSubOrders =  async (orderid: string | undefined,searchData: any)=>{
         query = query.where('tableid','==',(searchData.tableid))
     if(searchData.endDate)
         query = query.where('time','<=',(moment(searchData.endDate).toDate()))
-    
+    if(searchData.status)
+        query = query.where('status','==',(searchData.status))
     if(searchData.lastRef){
         const starting = await db.doc(orderid ? path+"/"+searchData.lastRef : "orders/"+searchData.lastOrderRef+"/sub_orders/"+searchData.lastRef ).get()
         if(!starting.exists)

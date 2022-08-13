@@ -24,6 +24,7 @@ router.get('/',
         highertime: joi.date().allow('').optional().label('Purshase Time : min'),
         lowertime: joi.date().allow('').optional().label('Purshase Time : max'),
         lastRef : joi.string().optional().label("Last Reference"),
+        lastProductRef : joi.string().optional().label("Last Product Reference"),
         swapped: joi.boolean().optional().default(false).label("Swapped"),
         dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
     })

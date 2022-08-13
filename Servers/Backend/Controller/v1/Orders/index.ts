@@ -42,6 +42,7 @@ router.get('/suborders',
         startDate: joi.date().allow('').optional().label('Start Order Date'),
         endDate: joi.date().allow('').optional().label('End Order Date'),
         lastRef : joi.string().optional().label("Last Reference"),
+        status: joi.string().optional().label("Status"),
         lastOrderRef : joi.string().optional().label("Last Order Reference"),
         swapped: joi.boolean().optional().default(false).label("Swapped"),
         dir: joi.allow('desc','asc').default('desc').optional().label("Direction")

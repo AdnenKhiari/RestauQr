@@ -38,7 +38,8 @@ const RemoveUser = async (id: string)=>{
 const UpdateEmail = async (id: string,email: string)=>{
     const auth = admin.auth()
     await auth.updateUser(id,{
-        email: email
+        email: email,
+        emailVerified: false
     })
 }
 

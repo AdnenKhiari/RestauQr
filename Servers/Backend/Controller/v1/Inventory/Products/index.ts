@@ -90,7 +90,9 @@ router.post('/',async (req,res,next)=>{
     try{
         const result = await Inventory.Products.AddUpdateProduct(data,undefined)
         return res.send({   
-            data: result
+            data: {
+                id: result
+            }
         })
     }catch(err){
         return next(err)
@@ -102,7 +104,9 @@ router.put('/:id',async (req,res,next)=>{
     try{
         const result = await Inventory.Products.AddUpdateProduct(data,id)
         return res.send({   
-            data: result
+            data: {
+                id: result
+            }
         })
     }catch(err){
         return next(err)

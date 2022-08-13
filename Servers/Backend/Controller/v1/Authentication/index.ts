@@ -64,7 +64,7 @@ async (req,res,next)=>{
     }
 })
 
-router.post("/verifyPasswordCode",OAuth.SignedIn,async (req,res,next)=>{
+router.post("/verifyPasswordCode",async (req,res,next)=>{
     try{
         const auth = admin.auth()
         const {oobCode,newPassword}  = req.body
@@ -87,14 +87,16 @@ router.post("/verifyEmailCode",OAuth.SignedIn,async (req,res,next)=>{
     }
 })
 
-router.post("/sendRecoverPassword",OAuth.SignedIn,async (req,res,next)=>{
+router.post("/sendRecoverPassword",async (req,res,next)=>{
     try{
         const {email}  = req.body
         const auth = admin.auth()
+        console.log(req.body)
+
         const link = await auth.generatePasswordResetLink(email)
         const mail = await mailtransport.sendMail({
             from: '"Fred Foo 👻" <foo@example.com>',
-            to: "bar@example.com, baz@example.com",
+            to: email,
             subject: "Recover Password Mail",
             text: `
                 Forgot your password ?
@@ -108,10 +110,11 @@ router.post("/sendRecoverPassword",OAuth.SignedIn,async (req,res,next)=>{
     }
 })
 
-router.post("/sendValidateEmail",OAuth.SignedIn,async (req,res,next)=>{
+router.post("/sendValidateEmail",async (req,res,next)=>{
     try{
         const {email}  = req.body
         const auth = admin.auth()
+        console.log(email)
         const link = await auth.generateEmailVerificationLink(email)
         const mail = await mailtransport.sendMail({
             from: '"Fred Foo 👻" <foo@example.com>',
