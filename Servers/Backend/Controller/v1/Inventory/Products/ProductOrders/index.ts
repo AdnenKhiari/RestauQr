@@ -3,6 +3,31 @@ import Inventory from "../../../../../DataAcessLayer/Inventory"
 import joi from "joi"
 const router = Router()
 
+const fetchProductOrdersSchema  = joi.object({
+    name: joi.string().allow('').optional().label("Item Name"),
+    higherexpiresIn: joi.date().allow('').optional().label('Expires In : min'),
+    lowerexpiresIn: joi.date().allow('').optional().label('Expires In : max'),
+    highertime: joi.date().allow('').optional().label('Purshase Time : min'),
+    lowertime: joi.date().allow('').optional().label('Purshase Time : max'),
+    lastRef : joi.string().optional().label("Last Reference"),
+    lastProductRef : joi.string().optional().label("Last Product Reference"),
+    swapped: joi.boolean().optional().default(false).label("Swapped"),
+    dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
+})
+const consumeSchema = joi.object({
+    used: joi.number().empty('').default(0).required(),
+    wasted: joi.number().empty('').default(0).required(),
+    updateGlobally: joi.number().empty('').default(0).required()
+})
+
+const productOrderSchema = joi.object({
+    name: joi.string().required().label('Item Name'),
+    productQuantity: joi.number().min(0).required().label('Item Quantity :'),
+    unitQuantity: joi.number().min(0).required().label('Quantity/U'),
+    unitPrice: joi.number().min(0).required().label('Price/U'),
+    time: joi.date().required().label('Time'),
+    expiresIn: joi.date().required().label('Expires In')
+})
 router.get('/:subid',async (req,res,next)=>{
     const subid: string = req.params.subid
     const productid: string = <string>req.productid
@@ -17,18 +42,8 @@ router.get('/:subid',async (req,res,next)=>{
 })
 router.get('/',
 (req,res,next)=>{
-    const schema  = joi.object({
-        name: joi.string().allow('').optional().label("Item Name"),
-        higherexpiresIn: joi.date().allow('').optional().label('Expires In : min'),
-        lowerexpiresIn: joi.date().allow('').optional().label('Expires In : max'),
-        highertime: joi.date().allow('').optional().label('Purshase Time : min'),
-        lowertime: joi.date().allow('').optional().label('Purshase Time : max'),
-        lastRef : joi.string().optional().label("Last Reference"),
-        lastProductRef : joi.string().optional().label("Last Product Reference"),
-        swapped: joi.boolean().optional().default(false).label("Swapped"),
-        dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
-    })
-    const {value,error} = (schema.validate(req.query))
+
+    const {value,error} = (fetchProductOrdersSchema.validate(req.query))
     if(error)
         return next(error)
     req.query = value
@@ -48,7 +63,15 @@ router.get('/',
     }
 })
 
-router.post('/',async (req,res,next)=>{
+router.post('/',
+(req,res,next)=>{
+
+    const {value,error} = (productOrderSchema.validate(req.body))
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     const data = req.body
     const productid: string = <string>req.productid
     try{
@@ -61,7 +84,15 @@ router.post('/',async (req,res,next)=>{
     }
 })
 
-router.put('/:subid',async (req,res,next)=>{
+router.put('/:subid',
+(req,res,next)=>{
+
+    const {value,error} = (productOrderSchema.validate(req.body))
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     const data = req.body
     const productid: string = <string>req.productid
     const subid = req.params.subid
@@ -74,7 +105,15 @@ router.put('/:subid',async (req,res,next)=>{
         return next(err)
     }
 })
-router.post('/consume/:subid',async (req,res,next)=>{
+router.post('/consume/:subid',
+(req,res,next)=>{
+
+    const {value,error} = (consumeSchema.validate(req.body))
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     const {subid} = req.params
     const productid: string = <string>req.productid
 
