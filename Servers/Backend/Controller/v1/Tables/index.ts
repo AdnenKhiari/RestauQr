@@ -4,7 +4,7 @@ import joi from "joi"
 import OAuth from "../Authorisation"
 const router = Router()
 
-router.get('/:id',OAuth.HasAccess({tables: "read"}),async (req,res,next)=>{
+router.get('/:id',async (req,res,next)=>{
     const id: string = req.params.id
     try{
         const data = await Tables.GetTableById(id)
@@ -18,7 +18,7 @@ router.get('/:id',OAuth.HasAccess({tables: "read"}),async (req,res,next)=>{
 
 
 
-router.get('/',OAuth.HasAccess({tables: "read"}),
+router.get('/',
 (req,res,next)=>{
     const schema  = joi.object({
         disabled: joi.bool().allow('').optional().label("Disabled Only"),

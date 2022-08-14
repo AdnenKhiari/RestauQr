@@ -1,32 +1,24 @@
 import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import {collection, getDoc, doc, getFirestore, query, where} from "firebase/firestore"
+import {useQuery} from "react-query"
+import APIROUTES from "../Routes/API"
+import axios from "axios"
+
 const GetFoodById = (id)=>{
-    const [results,setResults] = useState(null)
-    const [error,setError] = useState(null)
-    const db = getFirestore()
-    const getData = useCallback(async ()=>{
-        try{
-            let dc = await getDoc(doc(collection(db,'food'),id))
-            setResults({id: dc.id,...dc.data()})
-            console.log("cat",id,dc)
-        }catch(err){
-            console.log("ERR",err)
-            setError(err)
-        }
-    },[id,db])
+    const {data,isLoading,query_error} = useQuery(["food",id], async ()=>{
+        const result = await axios.get(APIROUTES.GET_FOOD_BY_ID(id))
+        return result.data
+    },{
+        refetchOnWindowFocus: false,
+        retry: 2
+    })
 
-    useEffect(()=>{
-        setResults(null)
-        setError(null)
-        getData()
-    },[getData])
-
-    console.log("RES",results,id)
+    console.log("RES ALL FOOD",data,isLoading,query_error)
     return {
-        data: results,
-        error: error,
-        loading: error === null &&  results === null
+        data: (data && data.data) || [],
+        error: query_error,
+        loading: isLoading
     }
 }
 export default GetFoodById

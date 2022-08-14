@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+/*import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import {collection, getDoc, getDocs, getFirestore, query, where} from "firebase/firestore"
 const GetByCategories = (categories)=>{
@@ -34,4 +34,4 @@ const GetByCategories = (categories)=>{
         loading: error === null &&  results === null
     }
 }
-export default GetByCategories
+export default GetByCategories*/

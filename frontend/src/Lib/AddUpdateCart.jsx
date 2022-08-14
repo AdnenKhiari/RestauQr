@@ -110,7 +110,8 @@ const AddUpdateCart = ()=>{
     })
     const updateOrder  = async (cartitem,ordernum = 0)=>{
 //        console.log("The Cart on server will be ",structuredClone(cartitem))
-
+        const sub_doc = null
+        const result = null
 
         try{
 

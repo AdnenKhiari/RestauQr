@@ -18,7 +18,7 @@ const DeleteFoodById =  async (id: string)=>{
 const GetFoods =  async (categories: string[])=>{
     const db = admin.firestore()
     let ref : FirebaseFirestore.CollectionReference | FirebaseFirestore.Query | null = null
-    if(categories && categories.length === 0)
+    if(!categories || categories.length === 0)
         ref = db.collection("food")
     else 
         ref = db.collection("food").where('category','in',categories)

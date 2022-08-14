@@ -14,8 +14,9 @@ const MenuItems = ({categories})=>{
     if(error){
         return "error"
     }
+    console.warn("HERE",menuData)
     return <div className="menu-items-container">
-        {(categories.length > 0 ?menuData.filter(fd => categories.indexOf(fd.category) !== -1) : menuData).map((food,index) => <div key={index+100} className="food-item" onClick={()=>{
+        {(categories && categories.length > 0 ? menuData.filter(fd => categories.indexOf(fd.category) !== -1) : menuData).map((food,index) => <div key={index+100} className="food-item" onClick={()=>{
             usenav(ROUTES.GET_FOOD_DETAILS(tableid,food.id))
         }}>
            <img src={food.img} alt={food.title} />
