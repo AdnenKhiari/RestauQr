@@ -3,6 +3,52 @@ import  Food from "../../../DataAcessLayer/Food"
 const router = Router()
 import joi from "joi"
 
+const  FetchFoodSchema = joi.object({
+    categories : joi.alternatives(joi.string().optional(),joi.array().items(joi.string().optional()).optional())
+})
+
+const productSchema = joi.object({
+    id: joi.string().optional() ,
+    name : joi.string().required().label("Name"),
+    quantity : joi.number().required().label("Quantity"),
+    unit: joi.string(),
+    sellingUnitPrice: joi.number(),
+    unitQuantity: joi.number()
+}).optional()
+
+const ingredientsSchema = joi.object({
+    options: joi.array().optional().items(
+    joi.object({
+        msg: joi.string().required().label('Item Message'),
+        type: joi.allow('check').required(),
+        price: joi.number().min(0).required().label('Item Price'),
+        ingredients: joi.link('#ingr').optional()
+    }).optional()
+    , 
+    joi.object({
+        msg: joi.string().required().label('Item Message'),
+        type: joi.allow('select').required(),
+        choices: joi.array().optional().items(joi.object({
+            msg: joi.string().required().label('Item Selection Message'),
+            price: joi.number().min(0).label('Item Selection Price'),
+            ingredients: joi.link('#ingr').optional()
+        }))
+    }).optional()),
+    products: joi.array().items(productSchema).label("Products")
+
+}).id("ingr")
+
+
+const Foodschema = joi.object({
+    title: joi.string().required().label('Food Name'),
+    description: joi.string().required().label('Food Description'),
+    category: joi.string().required().label('Food Category'),
+    img: joi.any().required().label('Food Image'),
+    price: joi.number().min(0).required().label('Food Price'),
+    ingredients: ingredientsSchema
+})
+
+
 router.get('/:id',async (req,res,next)=>{
     const id: string = req.params.id
     try{
@@ -14,7 +60,13 @@ router.get('/:id',async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',async (req,res,next)=>{
+router.get('/',(req,res,next)=>{
+    const {value,error} = FetchFoodSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     const categories : string[] | string = <string[] | string>req.query.categories
     console.log(categories)
     try{
@@ -29,48 +81,9 @@ router.get('/',async (req,res,next)=>{
 router.post('/',
 (req,res,next)=>{
 
-    const productSchema = joi.object({
-        id: joi.string().optional() ,
-        name : joi.string().required().label("Name"),
-        quantity : joi.number().required().label("Quantity"),
-        unit: joi.string(),
-        sellingUnitPrice: joi.number(),
-        unitQuantity: joi.number()
-    }).optional()
-    
-    const ingredientsSchema = joi.object({
-        options: joi.array().optional().items(
-        joi.object({
-            msg: joi.string().required().label('Item Message'),
-            type: joi.allow('check').required(),
-            price: joi.number().min(0).required().label('Item Price'),
-            ingredients: joi.link('#ingr').optional()
-        }).optional()
-        , 
-        joi.object({
-            msg: joi.string().required().label('Item Message'),
-            type: joi.allow('select').required(),
-            choices: joi.array().optional().items(joi.object({
-                msg: joi.string().required().label('Item Selection Message'),
-                price: joi.number().min(0).label('Item Selection Price'),
-                ingredients: joi.link('#ingr').optional()
-            }))
-        }).optional()),
-        products: joi.array().items(productSchema).label("Products")
-    
-    }).id("ingr")
-    
-    
-    const schema = joi.object({
-        title: joi.string().required().label('Food Name'),
-        description: joi.string().required().label('Food Description'),
-        category: joi.string().required().label('Food Category'),
-        img: joi.any().required().label('Food Image'),
-        price: joi.number().min(0).required().label('Food Price'),
-        ingredients: ingredientsSchema
-    })
 
-    const {value,error} = (schema.validate(req.body))
+
+    const {value,error} = (Foodschema.validate(req.body))
     if(error)
         return next(error)
     req.body = value
@@ -91,49 +104,7 @@ router.post('/',
 })
 router.put('/:id',
 (req,res,next)=>{
-
-    const productSchema = joi.object({
-        id: joi.string().optional() ,
-        name : joi.string().required().label("Name"),
-        quantity : joi.number().required().label("Quantity"),
-        unit: joi.string(),
-        sellingUnitPrice: joi.number(),
-        unitQuantity: joi.number()
-    }).optional()
-    
-    const ingredientsSchema = joi.object({
-        options: joi.array().optional().items(
-        joi.object({
-            msg: joi.string().required().label('Item Message'),
-            type: joi.allow('check').required(),
-            price: joi.number().min(0).required().label('Item Price'),
-            ingredients: joi.link('#ingr').optional()
-        }).optional()
-        , 
-        joi.object({
-            msg: joi.string().required().label('Item Message'),
-            type: joi.allow('select').required(),
-            choices: joi.array().optional().items(joi.object({
-                msg: joi.string().required().label('Item Selection Message'),
-                price: joi.number().min(0).label('Item Selection Price'),
-                ingredients: joi.link('#ingr').optional()
-            }))
-        }).optional()),
-        products: joi.array().items(productSchema).label("Products")
-    
-    }).id("ingr")
-    
-    
-    const schema = joi.object({
-        title: joi.string().required().label('Food Name'),
-        description: joi.string().required().label('Food Description'),
-        category: joi.string().required().label('Food Category'),
-        img: joi.any().required().label('Food Image'),
-        price: joi.number().min(0).required().label('Food Price'),
-        ingredients: ingredientsSchema
-    })
-
-    const {value,error} = (schema.validate(req.body))
+    const {value,error} = (Foodschema.validate(req.body))
     if(error)
         return next(error)
     req.body = value
