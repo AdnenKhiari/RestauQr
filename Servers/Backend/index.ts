@@ -3,16 +3,24 @@ import dotenv from "dotenv"
 import V1 from "./Controller/v1"
 import bodyParser from "body-parser"
 import { InitFirebase } from "./lib/firebase";
-
+import cookieparser from "cookie-parser"
 import ErrHandler from "./ErrHandler"
+import cors from "cors"
 const app = express()
 
 if(process.env.NODE_ENV !== 'production'){
-    dotenv.config()
+    dotenv.config()    
 }
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}))
 
 //to parse body from requests
 app.use(bodyParser.json());
+
+//cookie parser for cookies
+app.use(cookieparser())
 
 //Init firbase admin    
 InitFirebase()
@@ -24,6 +32,7 @@ app.get("/",(req,res)=>{
 })
 
 app.use(ErrHandler.HandleHttpErrors)
+
 
 app.listen((process.env.SERVER_PORT),()=>{
     console.log('Serving at port',process.env.SERVER_PORT)

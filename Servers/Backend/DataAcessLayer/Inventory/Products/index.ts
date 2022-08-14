@@ -77,36 +77,38 @@ const GetProducts = async (searchData: any)=>{
     let query  = col.orderBy(pagname,searchData.dir || 'desc');
 
     if(searchData.name)
-        query = query.orderBy('name',searchData.dir || 'desc').where('name','>=',searchData.name)
+        query = col.orderBy('name',searchData.dir || 'desc').where('name','>=',searchData.name)
+    else{
+    
+        if(searchData.higherstockQuantity || searchData.lowerstockQuantity){
+            query = query.orderBy('stockQuantity',searchData.dir || 'desc')
+            
+            if(searchData.higherstockQuantity)
+                query = query.where('stockQuantity','>=',searchData.higherstockQuantity)
+            if(searchData.lowerstockQuantity)
+                query = query.where('stockQuantity','<=',searchData.lowerstockQuantity)
+        }
+    
+        if(searchData.higherunitQuantity || searchData.lowerunitQuantity){
+            query = query.orderBy('unitQuantity',searchData.dir || 'desc')
+            
+            if(searchData.higherunitQuantity)
+                query = query.where('unitQuantity','>=',searchData.higherunitQuantity)
+            if(searchData.lowerunitQuantity)
+                query = query.where('unitQuantity','<=',searchData.lowerunitQuantity)
+        }
     
     
-    if(searchData.higherstockQuantity || searchData.lowerstockQuantity){
-        query = query.orderBy('stockQuantity',searchData.dir || 'desc')
-        
-        if(searchData.higherstockQuantity)
-            query = query.where('stockQuantity','>=',searchData.higherstockQuantity)
-        if(searchData.lowerstockQuantity)
-            query = query.where('stockQuantity','<=',searchData.lowerstockQuantity)
+        if(searchData.highersellingUnitPrice || searchData.lowersellingUnitPrice){
+            query = query.orderBy('sellingUnitPrice',searchData.dir || 'desc')
+            
+            if(searchData.highersellingUnitPrice)
+                query = query.where('sellingUnitPrice','>=',searchData.highersellingUnitPrice)
+            if(searchData.lowersellingUnitPrice)
+                query = query.where('sellingUnitPrice','<=',searchData.lowersellingUnitPrice)
+        }
     }
 
-    if(searchData.higherunitQuantity || searchData.lowerunitQuantity){
-        query = query.orderBy('unitQuantity',searchData.dir || 'desc')
-        
-        if(searchData.higherunitQuantity)
-            query = query.where('unitQuantity','>=',searchData.higherunitQuantity)
-        if(searchData.lowerunitQuantity)
-            query = query.where('unitQuantity','<=',searchData.lowerunitQuantity)
-    }
-
-
-    if(searchData.highersellingUnitPrice || searchData.lowersellingUnitPrice){
-        query = query.orderBy('sellingUnitPrice',searchData.dir || 'desc')
-        
-        if(searchData.highersellingUnitPrice)
-            query = query.where('sellingUnitPrice','>=',searchData.highersellingUnitPrice)
-        if(searchData.lowersellingUnitPrice)
-            query = query.where('sellingUnitPrice','<=',searchData.lowersellingUnitPrice)
-    }
     
     if(searchData.lastRef){
         const starting = await db.doc("products/"+searchData.lastRef).get()

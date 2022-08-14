@@ -6,7 +6,7 @@ import Error from "../../components/Error"
 
 const UpdateFood = ()=>{
     const {foodid} = useParams()
-    const {result,error,loading} = GetFoodById(foodid)
+    const {result,error,loading} = GetFoodById(foodid,true)
     console.log(result,error,loading)
     if(loading)
         return <Loading  />

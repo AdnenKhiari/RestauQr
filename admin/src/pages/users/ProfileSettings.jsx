@@ -3,7 +3,7 @@ import { useState } from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 import { Navigate, useNavigate } from "react-router-dom"
 import { UserContext } from "../../contexts"
-import { RemoveAccount, UpdateEmail, UpdatePassword, UpdateProfile } from "../../lib/Auth"
+import { LogOut, RemoveAccount, UpdateProfile } from "../../lib/Auth"
 
 import * as ROUTES from "../../ROUTES"
 import ConfirmLogin from "../auth/ConfirmLogin"
@@ -66,16 +66,15 @@ const Infos = ({profile})=>{
     </div>
 }
 
-const ProfileSettings = ({profile,me = false})=>{
+const ProfileSettings = ({accountid,profile,me = false})=>{
 
     const user = useContext(UserContext)
     const [confirm,setConfirm] = useState(null)
     const ctx = useForm({defaultValues: {name: profile.name,permissions: profile.permissions}})
-    const mailUpdater = UpdateEmail()
-    const passwordUpdate = UpdatePassword()
-    const profileUpdate = UpdateProfile()
-    const accountRemove = RemoveAccount()
-
+    const profileUpdate = UpdateProfile(accountid)
+    const accountRemove = RemoveAccount(accountid)
+    const logout = LogOut()
+    console.warn(profile,user)
     const usenav = useNavigate()
     const submit = (data)=>{
         setConfirm(data)
@@ -88,6 +87,7 @@ const ProfileSettings = ({profile,me = false})=>{
             if(me){
                 try{
                     await accountRemove.deleteAccount()
+                    await logout.logout()
                     usenav(ROUTES.AUTH.SINGIN)
                 }catch(err){
                     console.log(err)
@@ -95,37 +95,25 @@ const ProfileSettings = ({profile,me = false})=>{
             }
         }else{
             if(me){
-
                 try{
-                    if(confirm.email)
-                    await mailUpdater.updateemail(confirm.email)
+                    await profileUpdate.updateprofile({password: confirm.password,
+                        email : confirm.email,
+                        permissions:confirm.permissions,
+                        name: confirm.name})
                 }catch(err){
                     console.log(err)
                 }
-    
-                try{
-                    if(confirm.password)
-                    await passwordUpdate.updatepassword(confirm.password)
-                }catch(err){
-                    console.log(err)
-                }
-    
-                try{
-                    await profileUpdate.updateprofile(user.uid,{permissions:confirm.permissions,name: confirm.name})
-                }catch(err){
-                    console.log(err)
-                }
-    
             }else{
                 try{
                     if(user.profile.permissions.users.manage && !profile.permissions.users.manage){
-                        await profileUpdate.updateprofile(profile.id,{permissions:confirm.permissions})
+                        await profileUpdate.updateprofile({permissions:confirm.permissions})
                     }
                 }catch(err){
                     console.log(err)
                 }
             }
             setConfirm(null)
+            usenav(0)
         }
     }
 
@@ -156,10 +144,13 @@ const ProfileSettings = ({profile,me = false})=>{
                         <button type="submit">Update</button>
                         <button type="reset">Reset</button>
                 </div>  }
-                {mailUpdater.error && <p className="error">{mailUpdater.error}</p>}
-                {passwordUpdate.error && <p className="error">{passwordUpdate.error}</p>}
-                {profileUpdate.error && <p className="error">{profileUpdate.error}</p>}
+{
+    /*
+                    {profileUpdate.err && <p className="error">{profileUpdate.err}</p>}
                 {accountRemove.error && <p className="error">{accountRemove.error}</p>}
+                 */
+}
+
 
             </form>
         </motion.div>

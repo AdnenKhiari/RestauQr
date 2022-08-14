@@ -45,21 +45,16 @@ const GetTables =  async (searchData: any)=>{
     }
     query = query.limit(2)
     const data = await query.get()
+    console.log(data.docs.map((table)=>{return{ id:table.id,...table.data()}}))
     return data.docs.map((table)=>{return{ id:table.id,...table.data()}})
 }
 
 
-const AddUpdateTable = async (data: any)=>{
+const AddUpdateTable = async (id:string | undefined,data: any)=>{
     const db = admin.firestore()
-    var ref = null
-    const id = data.id
-    ref = db.doc('tables/'+id)
-    data.time = moment(data.time)
-
-    delete data.id
+    const ref =  db.doc('tables/'+id)
     ref.set(data)
-    
-    return data
+    return ref.id
 }
 
 export default {

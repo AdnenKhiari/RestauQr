@@ -6,5 +6,6 @@ export const InitFirebase = ()=>{
     const fb_app = admin.initializeApp({credential: admin.credential.cert(ServiceAccount)})
     const firestore = admin.firestore(fb_app)
     const storage = admin.storage(fb_app)
+    const auth = admin.auth(fb_app)
 
 }

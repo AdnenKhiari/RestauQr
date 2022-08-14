@@ -12,7 +12,7 @@ import {useTable,useSortBy} from "react-table"
 const ReviewFood =()=>{
     const {foodid} = useParams()
     const {result : food,loading,error} = GetFoodById(foodid)
-    const {deleteFood} = DeleteFoodById()
+    const {deleteFood} = DeleteFoodById(foodid)
     const user = useContext(UserContext)
     const usenav = useNavigate()
     if( error)
@@ -28,9 +28,9 @@ const ReviewFood =()=>{
                 {user.profile.permissions.food.manage && <><button onClick={(e)=>{
                     usenav(ROUTES.FOOD.GET_UPDATE(food.id))
                 }}>Update</button>
-                <button onClick={(e)=>{
+                <button onClick={async (e)=>{
                     try{
-                        deleteFood(food.id)
+                        await deleteFood(food.id)
                         usenav(ROUTES.FOOD.ALL)
                     }catch(err){
                         console.log(err)

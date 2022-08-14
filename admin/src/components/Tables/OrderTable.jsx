@@ -4,6 +4,8 @@ import { useEffect } from "react"
 import moment from "moment"
 import {formatFbDate, map_order_status_to_priority, map_status_to_priority} from "../../lib/utils"
 import * as ROUTES from "../../ROUTES"
+import * as APIROUTES from "../../APIROUTES"
+
 import { useNavigate } from "react-router-dom"
 import { FadeIn } from "../../animations"
 import { motion } from "framer-motion"
@@ -64,10 +66,8 @@ const customOptions = {
     }
 
     const onDataQueried = (col)=>{
-        const new_table_data = col.docs.length > 0 && col.docs.map((document)=>{
-            const id = document.id
-            const data = document.data()
-            return {id: id,time: data.time,tableid: data.tableid,price: data.price,status: data.status.toUpperCase()}
+        const new_table_data = col.length > 0 && col.map((data)=>{
+            return {id: data.id,time: data.time,tableid: data.tableid,price: data.price,status: data.status.toUpperCase()}
         }) 
         if(new_table_data)
             new_table_data.sort((a,b)=> {
@@ -82,21 +82,11 @@ const customOptions = {
         return new_table_data
     }
 
-    const filterData = (searchdata,cst)=>{
-
-        if(searchdata.tableid)
-            cst.push()
-        if(searchdata.startDate)
-            cst.push(where('time','>=',(moment(searchdata.startDate).toDate())))
-        if(searchdata.endDate)
-            cst.push(where('time','<=',(moment(searchdata.endDate).toDate())))
-        return null
-    }
     const usenav = useNavigate()
     return <PaginatedUniversalTable colname={'orders'} pagname="time" 
     rows={rows}  
     title={title} 
-    filterData={filterData} 
+    cs_query={APIROUTES.ORDERS.GET_ORDERS}
     onDataQueried={onDataQueried} 
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   

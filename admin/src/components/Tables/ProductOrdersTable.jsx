@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import PaginatedUniversalTable from "../UniversalTable/PaginatedUniversalTable"
 import joi from "joi"
 import { formatFbDate } from "../../lib/utils"
+import * as APIROUTES from "../../APIROUTES"
 
 const schema  = joi.object({
     name: joi.string().allow('').required().label("Item Name"),
@@ -81,43 +82,16 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
 
     const onDataQueried = (col)=>{
         let res = []
-        if(col.docs.length > 0){
-            const alldata = col.docs.map((item)=>{
-                return {...item.data(),id: item.id,product_id: parentid ? parentid : item.ref.parent.parent.id}
+        if(col.length > 0){
+            const alldata = col.map((item)=>{
+                return {...item,id: item.id,product_id: parentid ? parentid : item.product_ref}
             })
             res = alldata
         }
         return res
     }
 
-    const filterData = (searchdata,cst)=>{
-        
-        if(searchdata.name){
-            cst.push(where('name','>=',searchdata.name))
-            cst.push(orderBy('name'))
-        }
-
-        if(searchdata.higherexpiresIn){
-            cst.push(where('expiresIn','>=',searchdata.higherexpiresIn))
-        }
-        if(searchdata.lowerexpiresIn){
-            cst.push(where('expiresIn','<=',searchdata.lowerexpiresIn))
-        }
-
-
-        if(searchdata.lowerexpiresIn || searchdata.higherexpiresIn)
-            cst.push(orderBy('expiresIn'))
-
-        //expires In
-        if(searchdata.highertime){
-            cst.push(where('time','>=',searchdata.highertime))
-        }
-        if(searchdata.lowertime){
-            cst.push(where('time','<=',searchdata.lowertime))
-        }
-
-        return null
-    }
+    console.log(APIROUTES.PRODUCTS.GET_PRODUCTS,"URL")
 
     const usenav = useNavigate()
     return <PaginatedUniversalTable 
@@ -125,7 +99,9 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
     pagname="time" 
     rows={rows}  
     title={title} 
-    filterData={filterData} 
+    custom_key="lastProductRef"
+    custom_val="product_ref"
+    cs_query={parentid ? APIROUTES.PRODUCTS.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_OF_PRODUCT(parentid) :  APIROUTES.PRODUCTS.PRODUCT_ORDERS.GET_PRODUCT_ORDERS}
     onDataQueried={onDataQueried} 
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   

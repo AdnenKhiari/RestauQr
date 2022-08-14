@@ -1,128 +1,142 @@
 import { useCallback, useEffect, useState } from "react"
 import {getFirestore,doc, updateDoc, addDoc, collection, getDoc, setDoc, getDocs, query, where, deleteDoc} from "firebase/firestore"
-export const AddUpdateFood = ()=>{
+import * as  Query  from "@tanstack/react-query"
+import axios from "axios"
+import * as APIROUTES from "../APIROUTES"
 
-    const [result,setResult] = useState(null)
+const axios_inst = axios.create({
+    withCredentials: true
+})
+export const AddUpdateFood = (add = false)=>{
+
     const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
-    const db = getFirestore()
+    const client = Query.useQueryClient()
+    const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (all)=>{
+       //console.warn(all)
+        const res = add ?  await axios_inst.post(APIROUTES.FOOD.ADD_FOOD,all.data) : await axios_inst.put(APIROUTES.FOOD.UPDATE_FOOD(all.id),all.data)
+      return res.data
+    },{
+        retry: 0
+    })
+
     const mutate = async (data)=>{
-        setLoading(true)
         try{
-            var ref = null
-            if(data.id){
-                ref = doc(db,'food',(data.id))
-                const foodid = data.id+""
+            const id = data.id
+            if(data.id)
                 delete data.id
-                await updateDoc(ref,data)
-                setResult(foodid)
-                return foodid
-            }else{
-                const snap = await addDoc(collection(db,'food'),data)
-                setResult(snap.id)
-                return snap.id  
-            }
+           // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
+
+            const result  = await send({id: id,data})
+            client.invalidateQueries(['food',id])
+            return result.data && result.data.id
         }catch(err){
             setError(err)
             throw err
-        }finally{
-            setLoading(false)
         }
     }
+    console.log(result,isLoading,error)
+
+    useEffect(()=>{
+        setError(query_err)
+    },[query_err])
 
     return {
-        result,
+        result: result && result.data && result.data.id,
         error,
-        loading,
+        loading: isLoading,
         mutate
     }
 }
 
-export const DeleteFoodById =  ()=>{
+export const DeleteFoodById =  (foodid)=>{
 
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const db = getFirestore()
-
-    const del = async (id)=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-food',foodid],async ()=>{
+        const res = await axios_inst.delete(APIROUTES.FOOD.REMOVE_FOOD(foodid))
+        return res.data
+    },{
+        retry: 0,
+        enabled: false,
+        refetchOnWindowFocus: false
+    })
+    const fetch = async ()=>{
         try{
-            await deleteDoc(doc(db,'food',id))
-            setResult(id)
-            return id
+            await refetch()
         }catch(err){
             setError(err)
         }
     }
-
+    //console.log("Dt",data,isLoading,error)
+    useEffect(()=>{
+        setError(quer_err)
+    },[quer_err])
+    
     return {
-        deleteFood : del,
-        result,
+        result : data && data.data,
         error,
-        loading: !result && !error
+        loading: isLoading,
+        deleteFood: fetch
     }
 }
 
-export const GetFoodById = (id)=>{
+export const GetFoodById = (id,forceUpdate = false)=>{
 
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const db = getFirestore()
-
+    const client = Query.useQueryClient()
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['food',`food:${id}`],async ()=>{
+        const res = await axios_inst.get(APIROUTES.FOOD.GET_FOOD_BY_ID(id))
+        return res.data
+    },{
+        retry: 0,
+        refetchOnWindowFocus: false,
+    })
     const fetch = async ()=>{
         try{
-            const food = await getDoc(doc(db,'food',id))
-            if(food.exists()){
-                const food_data = food.data()
-                const id = food.id
-                setResult({id,...food_data})
-            }else{
-                throw new Error('Invalid Id')
-            }
+            await refetch()
         }catch(err){
             setError(err)
         }
     }
     useEffect(()=>{
-        fetch()
-    },[db])
+        console.info("REMOVING NOWW")
+        client.removeQueries([`food:${id}`,'food'])
+    },[])
+    //console.log("Dt",data,isLoading,error)
+    useEffect(()=>{
+        setError(quer_err)
+    },[quer_err])
     
     return {
-        result,
+        result : data && structuredClone(data.data),
         error,
-        loading: !result && !error
+        loading: isLoading,
+        fetch
     }
 }
 
 export const GetByCategories = (categories)=>{
-    const [results,setResults] = useState(null)
+
     const [error,setError] = useState(null)
-    const db = getFirestore()
-    const getData = useCallback(async ()=>{
-        try{
-            let results_snapshot = null
-
-            if(!categories || categories.length === 0)
-                results_snapshot = await getDocs(collection(db,'food'))
-            else
-                results_snapshot = await  getDocs(query(collection(db,'food'),where('category','in',categories)))
-            setResults(results_snapshot.docs.map((doc)=>{return {id: doc.id,...doc.data()}}))
-            console.log("cat",categories,results_snapshot)
-        }catch(err){
-            console.log("ERR",err)
-            setError(err)
-        }
-    },[categories,db])
-
+    console.warn(categories)
+    const {data,isLoading,error: quer_err} = Query.useQuery(['food'],async ()=>{
+        const res = await axios_inst.get(APIROUTES.FOOD.GET_FOODS,{
+            params: {
+                categories: categories
+            }
+        })
+        return res.data
+    },{
+        retry: 0,
+        refetchOnWindowFocus: false
+    })
+    console.log("Dt",data,isLoading,error)
     useEffect(()=>{
-        setResults(null)
-        setError(null)
-        getData()
-    },[categories])
-
-    console.log("RES",results,categories)
+        setError(quer_err)
+    },[quer_err])
+    
     return {
-        data: results,
-        error: error,
-        loading: error === null &&  results === null
+        data : data && data.data,
+        error,
+        loading: isLoading
     }
 }

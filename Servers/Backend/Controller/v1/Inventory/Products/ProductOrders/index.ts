@@ -24,6 +24,7 @@ router.get('/',
         highertime: joi.date().allow('').optional().label('Purshase Time : min'),
         lowertime: joi.date().allow('').optional().label('Purshase Time : max'),
         lastRef : joi.string().optional().label("Last Reference"),
+        lastProductRef : joi.string().optional().label("Last Product Reference"),
         swapped: joi.boolean().optional().default(false).label("Swapped"),
         dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
     })
@@ -69,6 +70,21 @@ router.put('/:subid',async (req,res,next)=>{
         return res.send({
             data: result
         })
+    }catch(err){
+        return next(err)
+    }
+})
+router.post('/consume/:subid',async (req,res,next)=>{
+    const {subid} = req.params
+    const productid: string = <string>req.productid
+
+    const data : {used:number,wasted:number,updateGlobally : boolean} = req.body
+    try{
+        const result = await Inventory.ProductOrders.ConsumeProductOrder(productid,subid,data)
+        return res.send({
+            data: result
+        })
+
     }catch(err){
         return next(err)
     }

@@ -59,7 +59,7 @@ const ReviewProductOrder =()=>{
         </div>
         <div className="data-review-body secondary-form">
             <h2><span>Purshase Time:</span> {formatFbDate(product.time,true)}</h2>
-            <h2><span>Expires In :</span> {formatFbDate(product.expiresIn,true)} : {moment(product.expiresIn.toDate()).fromNow()}</h2>
+            <h2><span>Expires In :</span> {formatFbDate(product.expiresIn,true)} : {moment(product.expiresIn._seconds*1000 + product.expiresIn._nanoseconds / 1000).fromNow()}</h2>
             <h2><span>Price/U:</span> {product.unitPrice} Millime</h2>
             <h2><span>Quantity/U:</span> {product.unitQuantity}</h2>  
             <h2><span>Purshase Quantity:</span> {product.productQuantity}</h2>

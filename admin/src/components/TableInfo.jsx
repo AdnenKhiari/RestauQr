@@ -30,7 +30,7 @@ const TableDetails = ({defaultVals = undefined})=>{
     })
     console.log(defaultVals)
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
-    const tablemutator = AddUpdateTable()
+    const tablemutator = AddUpdateTable(!defaultVals)
     const usenav = useNavigate() 
 
     const SubmitForm = async (data)=>{

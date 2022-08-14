@@ -1,89 +1,101 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
+import * as  Query  from "@tanstack/react-query"
+import axios from "axios"
+import * as APIROUTES from "../APIROUTES"
 
+const axios_inst = axios.create({
+    withCredentials: true
+})
 export const GetTableById = (id)=>{
 
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const db = getFirestore()
-
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['tables',id],async ()=>{
+        const res = await axios_inst.get(APIROUTES.TABLES.GET_TABLE_BY_ID(id))
+        return res.data
+    },{
+        retry: 0,
+        refetchOnWindowFocus: false
+    })
     const fetch = async ()=>{
         try{
-            const table = await getDoc(doc(db,'tables',id))
-            if(table.exists()){
-                const food_data = table.data()
-                const id = table.id
-                setResult({id,...food_data})
-            }else{
-                throw new Error('Invalid Table Id')
-            }
+            await refetch()
         }catch(err){
             setError(err)
         }
     }
+    //console.log("Dt",data,isLoading,error)
     useEffect(()=>{
-        fetch()
-    },[db])
+        setError(quer_err)
+    },[quer_err])
     
     return {
-        result,
+        result : data && data.data,
         error,
-        loading: !result && !error
+        loading: isLoading,
+        fetch
     }
 }
-export const AddUpdateTable = ()=>{
+export const AddUpdateTable = (add)=>{
 
-    const [result,setResult] = useState(null)
     const [error,setError] = useState(null)
-    const [loading,setLoading] = useState(null)
-    const db = getFirestore()
+    const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (all)=>{
+       //console.warn(all)
+        const res = add ?  await axios_inst.post(APIROUTES.TABLES.ADD_TABLE,all.data) : await axios_inst.put(APIROUTES.TABLES.UPDATE_TABLE(all.id),all.data)
+      return res.data
+    },{
+        retry: 0
+    })
+
     const mutate = async (data)=>{
-        setLoading(true)
-        console.log(data)
         try{
-            const id = data.id
-            delete data.id
-            const snap = await setDoc(doc(db,'tables/'+id),data)
-            console.log(snap)
-            setResult(id    )
-            return id  
-            
+            const data_result =  await send({id: data.id,data})
+            return data_result.data.id
         }catch(err){
             setError(err)
             throw err
-        }finally{
-            setLoading(false)
         }
     }
+    console.log(result,isLoading,error)
+
+    useEffect(()=>{
+        setError(query_err)
+    },[query_err])
 
     return {
-        result,
+        result: result && result.data && result.id,
         error,
-        loading,
+        loading: isLoading,
         mutate
     }
 }
 
-export const DeleteTableById =  ()=>{
-
-    const [result,setResult] = useState(null)
+export const DeleteTableById =  (id)=>{
     const [error,setError] = useState(null)
-    const db = getFirestore()
-
-    const del = async (id)=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-table',id],async ()=>{
+        const res = await axios_inst.delete(APIROUTES.TABLES.REMOVE_TABLE(id))
+        return res.data
+    },{
+        retry: 0,
+        enabled: false,
+        refetchOnWindowFocus: false
+    })
+    const fetch = async ()=>{
         try{
-            await deleteDoc(doc(db,'tables',id))
-            setResult(id)
-            return id
+            await refetch()
         }catch(err){
             setError(err)
         }
     }
-
+    //console.log("Dt",data,isLoading,error)
+    useEffect(()=>{
+        setError(quer_err)
+    },[quer_err])
+    
     return {
-        deleteTable : del,
-        result,
+        result : data && data.data,
         error,
-        loading: !result && !error
+        loading: isLoading,
+        deleteTable: fetch
     }
 }

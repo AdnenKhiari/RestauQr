@@ -7,7 +7,7 @@ import {GetProfile} from "../../lib/Auth"
 import ProfileSettings from "./ProfileSettings"
 const Profile = ()=>{
     const user = useContext(UserContext)
-    console.log("Found",user)
-    return <ProfileSettings me={true} profile={user.profile} />
+    console.log("Found EZZ",user)
+    return <ProfileSettings accountid={user.id} me={true} profile={user.profile} />
 }
 export default Profile

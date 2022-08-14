@@ -64,7 +64,9 @@ const GetProductOrders = async (searchData: any,productid: string | undefined)=>
     if(searchData.name)
         query = query.orderBy('name',searchData.dir || 'desc').where('name','>=',searchData.name)
     
-    
+    if(searchData.order_ref)
+        query = query.where("order_ref",'==',searchData.order_ref)
+        
     if(searchData.higherexpiresIn || searchData.lowerexpiresIn){
         query = query.orderBy('expiresIn',searchData.dir || 'desc')
         

@@ -9,7 +9,7 @@ const UpdateTable = ()=>{
     const {tableid} = useParams()
     const {result,error,loading} = GetTableById(tableid)
     const format_result = (res)=>{
-        return {...res,time: moment((res.time).toDate()).format("YYYY-MM-DD")}
+        return {...res,time: moment(formatFbDate(res.time)).format("YYYY-MM-DD")}
     }
 
     if(loading)

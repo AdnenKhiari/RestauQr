@@ -4,6 +4,7 @@ import {  documentId, where } from "firebase/firestore"
 import moment from "moment"
 import { useNavigate } from "react-router-dom"
 import * as ROUTES from "../../ROUTES"
+import * as APIROUTES from "../../APIROUTES"
 import { formatFbDate } from "../../lib/utils"
 const schema  = joi.object({
     disabled: joi.bool().allow('').required().label("Disabled Only"),
@@ -69,40 +70,17 @@ const TablesTable = ()=>{
     }
 
     const onDataQueried = (col)=>{
-        const res = []
-        if(col.docs.length > 0){
-            col.docs.forEach((table)=>{
-                const table_data =  {
-                    ...table.data(),
-                    id: table.id
-                }
-                res.push(table_data)
-            })
-        }
-        return res
+        return col
     }
 
-    const filterdata=(searchData,cst)=>{
-        if(searchData.id){
-            return [where(documentId(),'==',searchData.id)]
-        }
-        if(searchData.startDate)
-            cst.push(where('time','>=',(moment(searchData.startDate).toDate())))
-        if(searchData.endDate)
-            cst.push(where('time','<=',(moment(searchData.endDate).toDate())))
-        if(searchData.disabled)
-            cst.push(where('disabled','==',true))
-        if(searchData.placesNum)
-            cst.push(where('placesNum','==',parseInt(searchData.placesNum)))
-        return null
-    }
 
     return <PaginatedUniversalTable colname={colname} 
         title='Tables' 
         rows={rows}
+        cs_query={APIROUTES.TABLES.GET_TABLES}
+
         structure ={customOptions.structure} 
         onDataSubmit={customOptions.submit}
-        filterData={filterdata}
         pagname = {'time'}
         subscribe={false}
         schema={schema}

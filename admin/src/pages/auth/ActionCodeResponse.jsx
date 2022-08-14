@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { UserContext } from "../../contexts";
 import { useState } from "react";
 import Error from "../../components/Error"
-import {SendPasswordResetEmail} from "../../lib/Auth"
+import {SendPasswordResetEmail, VerifyEmailCode} from "../../lib/Auth"
 import { useForm } from "react-hook-form";
 
 
@@ -31,12 +31,11 @@ const VerifyMail = ({oobCode,mode})=>{
     const auth = getAuth()
     const user = useContext(UserContext)
     const [error,setError] = useState(null)
+    const {data,loading,err,validateMail} = VerifyEmailCode()
     const usenav = useNavigate()
     const verifyEmail = async ()=>{
         try{
-           await applyActionCode(auth,oobCode)
-           setError(false)
-           usenav(0)
+           await validateMail(oobCode)
         }catch(err){
             setError(err)
             console.error(err)
@@ -46,8 +45,8 @@ const VerifyMail = ({oobCode,mode})=>{
     useEffect(()=>{
         if(mode === 'verifyEmail')
             verifyEmail()
-    },[oobCode])
-    if(error === null)
+    },[])
+    if(loading)
         return <h1>Verifying</h1>
     if(error)
         return <Error error={error}  msg="Error , Could Not Verify Request" />

@@ -28,19 +28,19 @@ const GetFoods =  async (categories: string[])=>{
 }
 
 
-const AddUpdateFood = async (data: any)=>{
+const AddUpdateFood = async (data: any,id: string | undefined)=>{
     const db = admin.firestore()
     var ref = null
-    if(data.id){
-        ref = db.doc('food/'+data.id)
-        const foodid = data.id+""
-        delete data.id
-        ref.update(data)
+    if(id){
+        ref = db.doc('food/'+id)
+        const foodid = id+""
+        await ref.update(data)
+        return ref.id
     }else{
         ref = db.collection('food')
-        ref.add(data)
+        return (await ref.add(data)).id
     }
-    return data
+
 }
 
 export default {

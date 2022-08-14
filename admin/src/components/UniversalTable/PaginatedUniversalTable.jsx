@@ -4,15 +4,15 @@ import moment from "moment"
 import {map_status_to_priority} from "../../lib/utils"
 import UniversalTable  from "."
 import * as ROUTES from "../../ROUTES"
+import * as APIROUTES from "../../APIROUTES"
+
 import { useNavigate } from "react-router-dom"
 import { FadeIn } from "../../animations"
 import { motion } from "framer-motion"
-import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,documentId, FieldPath, getDoc, getDocs, collectionGroup} from "firebase/firestore"
+import * as Query from "@tanstack/react-query"
+import axios from "axios"
 
-
-
-const PaginatedUniversalTable = ({queryConstraints = [],group=false,title,colors,onDataSubmit,schema,structure,rows,filterData,onDataQueried,colname,pagname,oncl,subscribe = false,page_lim= 10})=>{
-    const db = getFirestore()
+const PaginatedUniversalTable = ({queryConstraints = {},custom_key,custom_val,cs_query,group=false,title,colors,onDataSubmit,schema,structure,rows,onDataQueried,oncl,subscribe = false,page_lim= 10})=>{
     //for the table of orders
     const [table_data,setTable_Data] = useState([])
     const [table_data_ref,setTable_Data_Ref] = useState([])
@@ -25,91 +25,85 @@ const PaginatedUniversalTable = ({queryConstraints = [],group=false,title,colors
     //for navigation
     const usenav = useNavigate()
 
-    //returns a custom query according to the search options
-    const getBaseQuery = useCallback((customq = [orderBy(pagname,'desc')])=>{
-        let cst = []
-        if(searchdata){
-            const res = filterData(searchdata,cst)
-            if(res)
-                return [(group ? collectionGroup(db,colname): collection(db,colname)),...res]
+    const {isLoading,error: result_error,refetch} = Query.useQuery([title,searchdata],async ()=>(await axios.get(cs_query,{
+        params : {
+            ...searchdata,
+            ...queryConstraints
         }
-        return ([(group ? collectionGroup(db,colname): collection(db,colname)),...queryConstraints,...cst,...customq,limit(page_lim)])
+    })).data,{
+        retry : false,
+        enabled: true,
+        refetchOnWindowFocus:false,
+        onSuccess : (result)=>{
+            console.log("FOUND NOW IN SUCCESS",result)
+            console.log("FOUND NOW Treated",onDataQueried(result.data))
+            ProcessDocuments(result.data)
+        },
+        onError : (err)=>{
+            console.log("FOUND NOW IN ERR",err)
+        },
+        onSettled: (data,err)=>console.warn(data,err)
+    })
 
-    },[queryConstraints,db,searchdata])
-    //TODO add usecallback
+    console.log(last_nav)
 
-    //for the query of orders
-    const [Query,setQuery] = useState(getBaseQuery())
-
-    const customOptions = useCallback({
+    const customOptions = {
         submit :  (data)=>{
-            setSearchData({...data})
+            setSearchData({...searchdata,...data})
             setLast_nav('next')
-            setQuery(getBaseQuery())
             onDataSubmit(data)
         },
         structure : structure
-    },[getBaseQuery])
+    }
 
-    const prev =useCallback(()=>{
+    const prev = useCallback(()=>{
         if(!table_data_ref.length)
         return
         
-        var index = table_data_ref.length - 1
-        if(last_nav !== 'prev')
-            index = 0
+        var index = 0
+        if( last_nav !== "prev"  )
+            index = table_data_ref.length - 1
         setLast_nav('prev')   
-
+        
         const last = table_data_ref[index]
-        setQuery(getBaseQuery([orderBy(pagname,'asc'),startAfter(last)]))
-    },[getBaseQuery])
+        const nw = {...searchdata,lastRef: last.id,dir: 'asc',swapped:  last_nav !== "prev" }
+        if(custom_key)
+            nw[custom_key] = last[custom_val]
+        setSearchData(nw)
+    },[table_data_ref,searchdata,last_nav])
 
     const next = useCallback(()=> {
         if(!table_data_ref.length)
             return
         console.log(table_data_ref)
-        var index = table_data_ref.length - 1
-        if(last_nav !== 'next')
-            index = 0
+        var index = 0
+        if( last_nav !== "next"  )
+            index = table_data_ref.length - 1
+
         setLast_nav('next')
         const first = table_data_ref[index]
-        setQuery(getBaseQuery([orderBy(pagname,'desc'),startAfter(first)]))
-    },[getBaseQuery])
 
-    const ProcessDocuments = useCallback(async (col)=>{
-        const new_table_data = await onDataQueried(col)
+        const nw = {...searchdata,lastRef: first.id,dir: 'desc',swapped: last_nav !== "next"    }
+        if(custom_key)
+            nw[custom_key] = first[custom_val]
+        setSearchData(nw)
+
+    },[table_data_ref,searchdata,last_nav])
+
+    const ProcessDocuments = useCallback( (col)=>{
+        const new_table_data =  onDataQueried(col)
         setErrorMsg(null)
         if(new_table_data.length > 0)
             setTable_Data(new_table_data)
-        if(col.docs.length > 0)
-            setTable_Data_Ref(col.docs)
+        if(col.length > 0)
+            setTable_Data_Ref(col)
         else
             setErrorMsg({err: null,msg: "No Documents Found for the given query"})
     },[])
 
     useEffect(()=>{
-        if(subscribe){
-            const unsub = onSnapshot(query(...Query),async (col)=>{ 
-                try{
-                    await ProcessDocuments(col)
-                }catch(err){
-                    setErrorMsg({err:err,msg: "An Error Occured , Could Not Retrieve The Information Requested"})
-                }
-            })
-            return unsub
-        }else{
-            const fts = async ()=>{
-                try{
-                    const col = await getDocs(query(...Query))
-                    ProcessDocuments(col)
-                }catch(err){
-                    setErrorMsg({err:err,msg: "An Error Occured , Could Not Retrieve The Information Requested"})
-                }
-            }
-            fts()
-        }
-
-    },[db,Query])
+        refetch()
+    },[searchdata])
 
     return <motion.div variants={FadeIn()}className="orders-table">
         <UniversalTable head={rows} body={table_data} 

@@ -90,7 +90,9 @@ router.post('/',async (req,res,next)=>{
     try{
         const result = await Inventory.Products.AddUpdateProduct(data,undefined)
         return res.send({   
-            data: result
+            data: {
+                id: result
+            }
         })
     }catch(err){
         return next(err)
@@ -102,7 +104,9 @@ router.put('/:id',async (req,res,next)=>{
     try{
         const result = await Inventory.Products.AddUpdateProduct(data,id)
         return res.send({   
-            data: result
+            data: {
+                id: result
+            }
         })
     }catch(err){
         return next(err)
@@ -114,6 +118,19 @@ router.delete('/:id',async (req,res,next)=>{
         const data = await Inventory.Products.DeleteProduct(id)
         return res.send({
             data: data
+        })
+
+    }catch(err){
+        return next(err)
+    }
+})
+router.post('/consume/:id',async (req,res,next)=>{
+    const {id} = req.params
+    const data : {used:number,wasted:number} = req.body
+    try{
+        const result = await Inventory.Products.ConsumeProductItem(id,data)
+        return res.send({
+            data: result
         })
 
     }catch(err){
