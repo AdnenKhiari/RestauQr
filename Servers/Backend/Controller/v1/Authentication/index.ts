@@ -5,10 +5,32 @@ import { clearCookie, DecodeCookie, IssueCookie, validateEmailOobCode, validateP
 import Users from "../../../DataAcessLayer/Users"
 import OAuth from "../Authorisation"
 import mailtransport from "../../../utils/transportmail"
+import joi from "joi"
 const router = Router()
 
-
-router.post('/createProfile',OAuth.SignedIn,async (req,res,next)=>{
+const schemaPasswordSchema  = joi.object({
+    oobCode: joi.string().required(),
+    newPassword: joi.string().required()
+})
+const validateOobcodeSchema  = joi.object({
+    oobCode: joi.string().required()
+})
+const createProfileSchema  = joi.object({
+    name: joi.string().required()
+})
+const validateEmailSchema  = joi.object({
+    email: joi.string().required()
+})
+const tokenSchema = joi.object({
+    tokenid: joi.string().label("token id")
+})
+router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
+    const {value,error} = createProfileSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     try{
         const decoded = await DecodeCookie(req,res)
         req.decodedtoken = decoded
@@ -33,26 +55,12 @@ router.post('/createProfile',OAuth.SignedIn,async (req,res,next)=>{
     try{
         const decodedtoken = req.decodedtoken
         data.permissions = {
-            "food": {
-                "manage": true
-            },
-            "categories": {
-                "manage": true
-            },
-            "tables": {
-                "manage": true
-            },
-            "orders": {
-                "manage": true
-            },
-            "inventory": {
-                "manage": true,
-                "read": true
-            },
-            "users": {
-                "manage": true,
-                "read": true
-            }
+            "food":"read",
+            "categories":"read",
+            "tables":"read",
+            "orders":"read",
+            "inventory":"read",
+            "users": "none"
         }
         const id = await Users.AddUpdateUser(decodedtoken.uid,data)
         await auth.setCustomUserClaims(decodedtoken.uid,data.permissions)
@@ -63,7 +71,13 @@ router.post('/createProfile',OAuth.SignedIn,async (req,res,next)=>{
     }
 })
 
-router.post('/signin',
+router.post('/signin',(req,res,next)=>{
+    const {value,error} = tokenSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},
 async (req,res,next)=>{
     try{
         const decoded = await DecodeCookie(req,res)
@@ -87,7 +101,13 @@ async (req,res,next)=>{
     }
 })
 
-router.post("/verifyPasswordCode",async (req,res,next)=>{
+router.post("/verifyPasswordCode",(req,res,next)=>{
+    const {value,error} = schemaPasswordSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     try{
         const auth = admin.auth()
         const {oobCode,newPassword}  = req.body
@@ -98,7 +118,13 @@ router.post("/verifyPasswordCode",async (req,res,next)=>{
     }
 })
 
-router.post("/verifyEmailCode",OAuth.SignedIn,async (req,res,next)=>{
+router.post("/verifyEmailCode",(req,res,next)=>{
+    const {value,error} = validateOobcodeSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     try{
         const auth = admin.auth()
         const {oobCode}  = req.body
@@ -111,7 +137,13 @@ router.post("/verifyEmailCode",OAuth.SignedIn,async (req,res,next)=>{
     }
 })
 
-router.post("/sendRecoverPassword",async (req,res,next)=>{
+router.post("/sendRecoverPassword",(req,res,next)=>{
+    const {value,error} = validateEmailSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     try{
         const {email}  = req.body
         const auth = admin.auth()
@@ -134,7 +166,13 @@ router.post("/sendRecoverPassword",async (req,res,next)=>{
     }
 })
 
-router.post("/sendValidateEmail",OAuth.SignedIn,async (req,res,next)=>{
+router.post("/sendValidateEmail",OAuth.SignedIn,(req,res,next)=>{
+    const {value,error} = validateEmailSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     try{
         const {email}  = req.body
         const auth = admin.auth()

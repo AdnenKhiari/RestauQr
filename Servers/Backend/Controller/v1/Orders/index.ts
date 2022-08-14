@@ -3,11 +3,34 @@ import Orders from "../../../DataAcessLayer/Orders"
 import SubOrders from "./SubOrders"
 import { Request } from "express"
 import joi from "joi"
+import OAuth from "../Authorisation"
+
 const router = Router()
+
+const fetchOrdersSchema  = joi.object({
+    tableid: joi.number().allow('').optional().label("Table Id"),
+    startDate: joi.date().allow('').optional().label('Start Order Date'),
+    endDate: joi.date().allow('').optional().label('End Order Date'),
+    lastRef : joi.string().optional().label("Last Reference"),
+    swapped: joi.boolean().optional().default(false).label("Swapped"),
+    dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
+})
+const fetchSubOrdersSchema  = joi.object({
+    tableid: joi.string().allow('').optional().label("Table Id"),
+    startDate: joi.date().allow('').optional().label('Start Order Date'),
+    endDate: joi.date().allow('').optional().label('End Order Date'),
+    lastRef : joi.string().optional().label("Last Reference"),
+    status: joi.string().optional().label("Status"),
+    lastOrderRef : joi.string().optional().label("Last Order Reference"),
+    swapped: joi.boolean().optional().default(false).label("Swapped"),
+    dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
+})
+const orderSchema = joi.object({
+    status: joi.string().allow("paid","unpaid")
+})
 
 
 router.post('/clientOrder',async (req,res,next)=>{
-
     try{
         const {order,cartitem} = req.body
         await Orders.AddUpdateClientSubOrder(order,cartitem)
@@ -35,19 +58,11 @@ router.put('/clientOrder',async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/suborders',
+
+router.get('/suborders',OAuth.HasAccess({orders: "read"}),
 (req,res,next)=>{
-    const schema  = joi.object({
-        tableid: joi.string().allow('').optional().label("Table Id"),
-        startDate: joi.date().allow('').optional().label('Start Order Date'),
-        endDate: joi.date().allow('').optional().label('End Order Date'),
-        lastRef : joi.string().optional().label("Last Reference"),
-        status: joi.string().optional().label("Status"),
-        lastOrderRef : joi.string().optional().label("Last Order Reference"),
-        swapped: joi.boolean().optional().default(false).label("Swapped"),
-        dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
-    })
-    const {value,error} = (schema.validate(req.query))
+
+    const {value,error} = (fetchSubOrdersSchema.validate(req.query))
     if(error)
         return next(error)
     req.query = value
@@ -66,7 +81,7 @@ async (req,res,next)=>{
     }
 })
 
-router.get('/:id',async (req,res,next)=>{
+router.get('/:id',OAuth.HasAccess({orders: "read"}),async (req,res,next)=>{
     const id: string = req.params.id
     try{
         const data = await Orders.GetOrderById(id)
@@ -77,17 +92,10 @@ router.get('/:id',async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',
+router.get('/',OAuth.HasAccess({orders: "read"}),
 (req,res,next)=>{
-    const schema  = joi.object({
-        tableid: joi.number().allow('').optional().label("Table Id"),
-        startDate: joi.date().allow('').optional().label('Start Order Date'),
-        endDate: joi.date().allow('').optional().label('End Order Date'),
-        lastRef : joi.string().optional().label("Last Reference"),
-        swapped: joi.boolean().optional().default(false).label("Swapped"),
-        dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
-    })
-    const {value,error} = (schema.validate(req.query))
+
+    const {value,error} = (fetchOrdersSchema.validate(req.query))
     if(error)
         return next(error)
     req.query = value
@@ -106,7 +114,14 @@ router.get('/',
     }
 })
 
-router.put('/:orderid',async (req,res,next)=>{
+router.put('/:orderid',OAuth.HasAccess({orders: "manage"}),
+(req,res,next)=>{
+    const {value,error} = (orderSchema.validate(req.body))
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     const data = req.body
     const orderid = req.params.orderid
     try{
@@ -118,7 +133,7 @@ router.put('/:orderid',async (req,res,next)=>{
         return next(err)
     }
 })
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Orders.DeleteOrderById(id)
