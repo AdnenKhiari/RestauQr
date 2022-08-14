@@ -2,6 +2,24 @@ import {Router} from "express"
 import Orders from "../../../../DataAcessLayer/Orders"
 import joi from "joi"
 const router = Router()
+const productsOrderInfoSchema = joi.object({
+    id: joi.string().optional().label('Item Id'),
+    name: joi.string().required().label('Item Name'),
+    productQuantity: joi.number().min(0).required().label('Item Quantity :'),
+    unitQuantity: joi.number().min(0).required().label('Quantity/U'),
+    unitPrice: joi.number().min(0).required().label('Price/U'),
+    time: joi.date().required().label('Time'),
+    expiresIn: joi.date().required().label('Expires In')
+})
+
+const fetchSubOrders  = joi.object({
+    tableid: joi.number().allow('').optional().label("Table Id"),
+    startDate: joi.date().allow('').optional().label('Start Order Date'),
+    endDate: joi.date().allow('').optional().label('End Order Date'),
+    lastRef : joi.string().optional().label("Last Reference"),
+    swapped: joi.boolean().optional().default(false).label("Swapped"),
+    dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
+})
 
 router.get('/:subid',async (req,res,next)=>{
     const subid: string = req.params.subid
@@ -18,15 +36,8 @@ router.get('/:subid',async (req,res,next)=>{
 })
 router.get('/',
 (req,res,next)=>{
-    const schema  = joi.object({
-        tableid: joi.number().allow('').optional().label("Table Id"),
-        startDate: joi.date().allow('').optional().label('Start Order Date'),
-        endDate: joi.date().allow('').optional().label('End Order Date'),
-        lastRef : joi.string().optional().label("Last Reference"),
-        swapped: joi.boolean().optional().default(false).label("Swapped"),
-        dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
-    })
-    const {value,error} = (schema.validate(req.query))
+
+    const {value,error} = (fetchSubOrders.validate(req.query))
     if(error)
         return next(error)
     req.query = value
@@ -46,7 +57,14 @@ router.get('/',
     }
 })
 
-router.put('/:subid',async (req,res,next)=>{
+router.put('/:subid',(req,res,next)=>{
+
+    const {value,error} = (productsOrderInfoSchema.validate(req.body))
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     const data = req.body
     const orderid: string = <string>req.orderid
     const subid = req.params.subid
