@@ -42,7 +42,6 @@ const GetOrder = ()=>{
             }else{
                 setOrder({cart:[{food: []}],tokens: []})
             }
-
         }catch(err){
             setError(err)
         }

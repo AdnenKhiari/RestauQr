@@ -8,7 +8,6 @@ const ValidateTableId = (id)=>{
     const getData = useCallback(async ()=>{
         try{
             setResults(true)
-            return;
             if(isNaN(id)){
                 throw Error("Invalid Table Id")   
             }

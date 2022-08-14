@@ -9,6 +9,15 @@ import {getMessaging} from "firebase/messaging"
 import {GetToken,GetPushMessages} from  "./Lib/PushNotifications"
 import { useState } from "react";
 import { NotificationsContext } from "./Components/Contexts";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from 'react-query'
+const queryClient = new QueryClient()
+
 function App() {
   const app = initializeApp(firebaseConfig)
   const db = getFirestore(app)
@@ -21,6 +30,7 @@ function App() {
   //console.log = ()=>{}
   return (
     <NotificationsContext.Provider value={[notifications,setNotifications]}>
+     <QueryClientProvider client={queryClient}>
 
     <BrowserRouter >
     <Routes>
@@ -28,6 +38,7 @@ function App() {
       <Route path="*" element={<h1>Not Found</h1> }/>
     </Routes>
     </BrowserRouter>
+    </QueryClientProvider>
     </NotificationsContext.Provider>
 
   );

@@ -9,6 +9,7 @@ export const GetToken = ()=>{
     const db = getFirestore()
     const [order,setOrder] = useContext(OrderContext)
     const addTokenToServer = async (token)=>{
+        //change this to react query 
         const ref = doc(db,'orders/'+order.id+"")
         await updateDoc(ref,{
             tokens: arrayUnion(token)   
