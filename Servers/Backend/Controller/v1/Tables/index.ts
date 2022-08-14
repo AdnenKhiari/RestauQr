@@ -1,9 +1,10 @@
 import {Router} from "express"
 import  Tables from "../../../DataAcessLayer/Tables"
 import joi from "joi"
+import OAuth from "../Authorisation"
 const router = Router()
 
-router.get('/:id',async (req,res,next)=>{
+router.get('/:id',OAuth.HasAccess({tables: "read"}),async (req,res,next)=>{
     const id: string = req.params.id
     try{
         const data = await Tables.GetTableById(id)
@@ -17,7 +18,7 @@ router.get('/:id',async (req,res,next)=>{
 
 
 
-router.get('/',
+router.get('/',OAuth.HasAccess({tables: "read"}),
 (req,res,next)=>{
     const schema  = joi.object({
         disabled: joi.bool().allow('').optional().label("Disabled Only"),
@@ -47,7 +48,7 @@ router.get('/',
         return next(err)
     }
 })
-router.post('/',
+router.post('/',OAuth.HasAccess({tables: "manage"}),
 (req,res,next)=>{
 
     const schema = joi.object({
@@ -76,7 +77,7 @@ async (req,res,next)=>{
         return next(err)
     }
 })
-router.put('/:id',
+router.put('/:id',OAuth.HasAccess({tables: "manage"}),
 (req,res,next)=>{
 
     const schema = joi.object({
@@ -105,7 +106,7 @@ router.put('/:id',
         return next(err)
     }
 })
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',OAuth.HasAccess({tables: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Tables.DeleteTableById(id)

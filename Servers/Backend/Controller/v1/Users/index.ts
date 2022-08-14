@@ -3,8 +3,21 @@ import Users from "../../../DataAcessLayer/Users"
 import OAuth from "../Authorisation"
 import * as admin from "firebase-admin"
 import { clearCookie } from "../../../utils/auth"
+import joi from "joi"
 const router = Router()
 
+const userUpdateSchema  = joi.object({
+    email: joi.string().optional(),
+    password: joi.string().optional(),
+    name: joi.string().required(),
+    permissions: joi.object({
+        users: joi.allow('manage','read','none'),
+        tables: joi.allow('manage','read','none'),
+        inventory: joi.allow('manage','read','none'),
+        food: joi.allow('manage','read','none'),
+        orders: joi.allow('manage','read','none')
+    }).required()
+})
 
 router.get('/current',OAuth.SignedIn,async (req,res,next)=>{
     try{
@@ -32,7 +45,7 @@ router.get('/current',OAuth.SignedIn,async (req,res,next)=>{
     }
 })
 
-router.get('/',async (req,res,next)=>{
+router.get('/',OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
     try{
         const data = await Users.GetAllUsers()
         return res.json({
@@ -43,7 +56,7 @@ router.get('/',async (req,res,next)=>{
     }
 })
 
-router.get('/:id',async (req,res,next)=>{
+router.get('/:id',OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
     try{
         const id: string = req.params.id
         const data = await Users.GetUserById(id)
@@ -56,7 +69,7 @@ router.get('/:id',async (req,res,next)=>{
 })
 
 
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',OAuth.HasAccess({users: "manage"}),async (req,res,next)=>{
     try{
         const id: string = req.params.id
         const data = await Users.RemoveUser(id)
@@ -66,7 +79,13 @@ router.delete('/:id',async (req,res,next)=>{
     }
 })
 
-router.put('/:id',async (req,res,next)=>{
+router.put('/:id',OAuth.HasAccess({users: "manage"}),(req,res,next)=>{
+    const {value,error} = userUpdateSchema.validate(req.body)
+    if(error)
+        return next(error)
+    req.body = value
+        return next()
+},async (req,res,next)=>{
     try{
         const {id} = req.params
         const body = req.body

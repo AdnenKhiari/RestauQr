@@ -55,26 +55,12 @@ router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
     try{
         const decodedtoken = req.decodedtoken
         data.permissions = {
-            "food": {
-                "manage": true
-            },
-            "categories": {
-                "manage": true
-            },
-            "tables": {
-                "manage": true
-            },
-            "orders": {
-                "manage": true
-            },
-            "inventory": {
-                "manage": true,
-                "read": true
-            },
-            "users": {
-                "manage": true,
-                "read": true
-            }
+            "food":"read",
+            "categories":"read",
+            "tables":"read",
+            "orders":"read",
+            "inventory":"read",
+            "users": "none"
         }
         const id = await Users.AddUpdateUser(decodedtoken.uid,data)
         await auth.setCustomUserClaims(decodedtoken.uid,data.permissions)
@@ -132,7 +118,7 @@ router.post("/verifyPasswordCode",(req,res,next)=>{
     }
 })
 
-router.post("/verifyEmailCode",OAuth.SignedIn,(req,res,next)=>{
+router.post("/verifyEmailCode",(req,res,next)=>{
     const {value,error} = validateOobcodeSchema.validate(req.body)
     if(error)
         return next(error)

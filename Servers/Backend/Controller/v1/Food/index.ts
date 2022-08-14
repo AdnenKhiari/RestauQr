@@ -1,7 +1,8 @@
 import {Router} from "express"
 import  Food from "../../../DataAcessLayer/Food"
-const router = Router()
 import joi from "joi"
+import OAuth from "../Authorisation"
+const router = Router()
 
 const  FetchFoodSchema = joi.object({
     categories : joi.alternatives(joi.string().optional(),joi.array().items(joi.string().optional()).optional())
@@ -78,7 +79,7 @@ router.get('/',(req,res,next)=>{
         return next(err)
     }
 })
-router.post('/',
+router.post('/',OAuth.HasAccess({food:"manage"}),
 (req,res,next)=>{
 
 
@@ -102,7 +103,7 @@ router.post('/',
         return next(err)
     }
 })
-router.put('/:id',
+router.put('/:id',OAuth.HasAccess({food:"manage"}),
 (req,res,next)=>{
     const {value,error} = (Foodschema.validate(req.body))
     if(error)
@@ -124,7 +125,7 @@ async (req,res,next)=>{
         return next(err)
     }
 })
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',OAuth.HasAccess({food:"manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Food.DeleteFoodById(id)

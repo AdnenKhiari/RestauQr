@@ -1,6 +1,7 @@
 import {Router} from "express"
 import Orders from "../../../../DataAcessLayer/Orders"
 import joi from "joi"
+import OAuth from "../../Authorisation"
 const router = Router()
 const productsOrderInfoSchema = joi.object({
     id: joi.string().optional().label('Item Id'),
@@ -21,7 +22,7 @@ const fetchSubOrders  = joi.object({
     dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
 })
 
-router.get('/:subid',async (req,res,next)=>{
+router.get('/:subid',OAuth.HasAccess({orders: "read"}),async (req,res,next)=>{
     const subid: string = req.params.subid
     const orderid: string = <string>req.orderid
     console.log(subid,orderid)
@@ -34,7 +35,7 @@ router.get('/:subid',async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',
+router.get('/',OAuth.HasAccess({orders: "read"}),
 (req,res,next)=>{
 
     const {value,error} = (fetchSubOrders.validate(req.query))
@@ -57,7 +58,7 @@ router.get('/',
     }
 })
 
-router.put('/:subid',(req,res,next)=>{
+router.put('/:subid',OAuth.HasAccess({orders: "manage"}),(req,res,next)=>{
 
     const {value,error} = (productsOrderInfoSchema.validate(req.body))
     if(error)
@@ -77,7 +78,7 @@ router.put('/:subid',(req,res,next)=>{
         return next(err)
     }
 })
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     const orderid: string = <string>req.orderid
 

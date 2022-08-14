@@ -1,6 +1,8 @@
 import {Router} from "express"
 import Inventory from "../../../../../DataAcessLayer/Inventory"
 import joi from "joi"
+import OAuth from "../../../Authorisation"
+
 const router = Router()
 
 const fetchProductOrdersSchema  = joi.object({
@@ -28,7 +30,7 @@ const productOrderSchema = joi.object({
     time: joi.date().required().label('Time'),
     expiresIn: joi.date().required().label('Expires In')
 })
-router.get('/:subid',async (req,res,next)=>{
+router.get('/:subid',OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
     const subid: string = req.params.subid
     const productid: string = <string>req.productid
     try{
@@ -40,7 +42,7 @@ router.get('/:subid',async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',
+router.get('/',OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 
     const {value,error} = (fetchProductOrdersSchema.validate(req.query))
@@ -63,7 +65,7 @@ router.get('/',
     }
 })
 
-router.post('/',
+router.post('/',OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (productOrderSchema.validate(req.body))
@@ -84,7 +86,7 @@ router.post('/',
     }
 })
 
-router.put('/:subid',
+router.put('/:subid',OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (productOrderSchema.validate(req.body))
@@ -105,7 +107,7 @@ router.put('/:subid',
         return next(err)
     }
 })
-router.post('/consume/:subid',
+router.post('/consume/:subid',OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (consumeSchema.validate(req.body))
@@ -128,7 +130,7 @@ router.post('/consume/:subid',
         return next(err)
     }
 })
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     const productid: string = <string>req.productid
 

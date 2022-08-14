@@ -3,6 +3,8 @@ import Orders from "../../../DataAcessLayer/Orders"
 import SubOrders from "./SubOrders"
 import { Request } from "express"
 import joi from "joi"
+import OAuth from "../Authorisation"
+
 const router = Router()
 
 const fetchOrdersSchema  = joi.object({
@@ -26,6 +28,8 @@ const fetchSubOrdersSchema  = joi.object({
 const orderSchema = joi.object({
     status: joi.string().allow("paid","unpaid")
 })
+
+
 router.post('/clientOrder',async (req,res,next)=>{
     try{
         const {order,cartitem} = req.body
@@ -55,7 +59,7 @@ router.put('/clientOrder',async (req,res,next)=>{
     }
 })
 
-router.get('/suborders',
+router.get('/suborders',OAuth.HasAccess({orders: "read"}),
 (req,res,next)=>{
 
     const {value,error} = (fetchSubOrdersSchema.validate(req.query))
@@ -77,7 +81,7 @@ async (req,res,next)=>{
     }
 })
 
-router.get('/:id',async (req,res,next)=>{
+router.get('/:id',OAuth.HasAccess({orders: "read"}),async (req,res,next)=>{
     const id: string = req.params.id
     try{
         const data = await Orders.GetOrderById(id)
@@ -88,7 +92,7 @@ router.get('/:id',async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',
+router.get('/',OAuth.HasAccess({orders: "read"}),
 (req,res,next)=>{
 
     const {value,error} = (fetchOrdersSchema.validate(req.query))
@@ -110,7 +114,7 @@ router.get('/',
     }
 })
 
-router.put('/:orderid',
+router.put('/:orderid',OAuth.HasAccess({orders: "manage"}),
 (req,res,next)=>{
     const {value,error} = (orderSchema.validate(req.body))
     if(error)
@@ -129,7 +133,7 @@ router.put('/:orderid',
         return next(err)
     }
 })
-router.delete('/:id',async (req,res,next)=>{
+router.delete('/:id',OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Orders.DeleteOrderById(id)
