@@ -4,16 +4,20 @@ import {arrayUnion, doc, getFirestore, updateDoc} from "firebase/firestore"
 import { useContext } from "react"
 import { useEffect } from "react"
 import {NotificationsContext, OrderContext} from "../Components/Contexts"
+import {useMutation, useQuery} from "react-query"
+import axios from "axios"
+import {useParams} from "react-router-dom"
+import APIROUTES from "../Routes/API"
 export const GetToken = ()=>{
     const msg = getMessaging()
-    const db = getFirestore()
     const [order,setOrder] = useContext(OrderContext)
+    const mutator = useMutation(async (data)=>{
+        const res = await axios.put(APIROUTES.ADD_TOKEN_TO_CURRENT(data.orderid),{token: data.token})
+        return res.data
+    })
     const addTokenToServer = async (token)=>{
-        //change this to react query 
-        const ref = doc(db,'orders/'+order.id+"")
-        await updateDoc(ref,{
-            tokens: arrayUnion(token)   
-        })
+        console.log("VASP TOKEN ",token)
+        await mutator.mutateAsync({token,orderid: order.id})
     }
     const loadToken = async ()=>{
         try{
