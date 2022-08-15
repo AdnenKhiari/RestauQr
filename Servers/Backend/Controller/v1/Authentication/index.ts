@@ -138,6 +138,7 @@ router.post("/verifyEmailCode",(req,res,next)=>{
 })
 
 router.post("/sendRecoverPassword",(req,res,next)=>{
+    console.log(req.body,"RESET PASSWORD")
     const {value,error} = validateEmailSchema.validate(req.body)
     if(error)
         return next(error)

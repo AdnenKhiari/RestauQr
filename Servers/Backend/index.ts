@@ -12,7 +12,9 @@ if(process.env.NODE_ENV !== 'production'){
     dotenv.config()    
 }
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: (origin,callback)=>{
+        return callback(null,true)
+    },
     credentials: true
 }))
 

@@ -1,6 +1,26 @@
 import * as admin from "firebase-admin"
 import moment from "moment"
 
+
+
+
+const GetCurrentOrderInTable = async (tableid: string)=>{
+    const db = admin.firestore()
+    const current_ref = db.collection('orders').where('status',"==","unpaid").where('tableid','==',tableid)
+    const current = await current_ref.get()
+    if(current.docs.length === 0){
+        return {order: null,suborders: []}
+    }else{
+        const order_ref = current.docs[0]
+        const order = {id: order_ref.id,...order_ref.data()}
+        const sub_ref = db.collection("orders/"+order.id+"/sub_orders")
+        const sub_orders_snaps = await sub_ref.get()
+        const sub_orders = sub_orders_snaps.docs.map((snap)=>{
+           return {id: snap.id,...snap.data()}
+        }) || []
+        return {order,sub_orders: sub_orders}
+    }
+}
 const RemoveClientSubOrder = async (orderid: string,subid: string)=>{
     const db = admin.firestore()
     let toremove = false
@@ -37,8 +57,8 @@ const RemoveClientSubOrder = async (orderid: string,subid: string)=>{
 const AddUpdateClientSubOrder = async (order: any,cartitem: any) => {
     const db = admin.firestore()
 
-    let sub_doc = null
-
+        let sub_doc : admin.firestore.DocumentReference<admin.firestore.DocumentData>  | null = null
+        let sub_id = ''
         let order_doc = db.collection('orders').doc()
         await db.runTransaction(async tr =>{
             if(!order.id){
@@ -68,6 +88,7 @@ const AddUpdateClientSubOrder = async (order: any,cartitem: any) => {
                     price:  admin.firestore.FieldValue.increment(cartitem.price),
                     foodcount: admin.firestore.FieldValue.increment(cartitem.food.reduce((init: number,fd: any)=>fd.count + init,0))
                 })
+                sub_id = sub_doc.id
             }else{
                 sub_doc = db.doc('orders/'+order_doc.id+"/sub_orders/"+cartitem.id)
                 const old = await tr.get(sub_doc)
@@ -89,8 +110,10 @@ const AddUpdateClientSubOrder = async (order: any,cartitem: any) => {
                 }else{
                     throw Error("Command Already Processed, You Cannot Cancel Now !")
                 }
+                sub_id = sub_doc.id
             }
         })
+        return {id: order_doc.id,sub_id: sub_id }
 }
 const GetOrderById =  async (id: string)=>{
     const db = admin.firestore()
@@ -130,13 +153,29 @@ const DeleteOrderById =  async (id: string)=>{
 const DeleteSubOrderById =  async (orderid: string,subid: string)=>{
     const db = admin.firestore()
     const ref = db.doc(`orders/${orderid}/sub_orders/${subid}`)
+    const order_ref = db.doc(`orders/${orderid}`)
     await db.runTransaction(async tr=>{
+        const order_snap = await order_ref.get()
+        if(!order_snap.exists)
+            throw Error("Order Do Not Exists") 
+        const order : any= {id: order_snap.id,...order_snap.data()}
         const sub_snap = await tr.get(ref)
         if(!sub_snap.exists)
             throw Error("Sub Orders Do Not Exists")
         if(sub_snap.data()?.status !== 'waiting')
             throw Error("Order Is currently being processed or has been processed")
         tr.delete(ref)
+        const old_sub = sub_snap.data()
+        if(order?.price > old_sub?.price){
+            tr.update(order_ref,{
+                price: admin.firestore.FieldValue.increment(-old_sub?.price),
+                foodcount: admin.firestore.FieldValue.increment(-old_sub?.food.reduce((init: number,fd: any)=>fd.count + init,0))
+            })
+            return false
+        }else{
+            tr.delete(order_ref)
+            return true
+        }
     })
 }
 
@@ -363,5 +402,6 @@ export default {
     GetOrders,
     GetSubOrders,
     AddUpdateClientSubOrder,
-    RemoveClientSubOrder
+    RemoveClientSubOrder,
+    GetCurrentOrderInTable
 }

@@ -30,6 +30,26 @@ const orderSchema = joi.object({
 })
 
 
+router.get("/clientOrder/:tableid",
+(req,res,next)=>{
+
+    const {value,error} = (joi.object({tableid: joi.number().required()}).validate(req.params))
+    if(error)
+        return next(error)
+    req.params = value
+        return next()
+},async (req,res,next)=>{
+    try{
+        const {tableid} = req.params
+        const data = await Orders.GetCurrentOrderInTable(tableid)
+        return res.json({
+            data: data
+        })
+    }catch(err){
+        return next(err)
+    }
+})
+
 router.post('/clientOrder',async (req,res,next)=>{
     try{
         const {order,cartitem} = req.body
@@ -53,6 +73,18 @@ router.put('/clientOrder',async (req,res,next)=>{
                 order: order,
                 cartitem: cartitem
             }
+        })
+    }catch(err){
+        return next(err)
+    }
+})
+
+router.delete('/clientOrder/:orderid/:subid',async (req,res,next)=>{
+    try{
+        const {orderid,subid} = req.params
+        const data = await Orders.RemoveClientSubOrder(orderid,subid)
+        return res.json({
+            data: data
         })
     }catch(err){
         return next(err)

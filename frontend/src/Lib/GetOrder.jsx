@@ -4,26 +4,34 @@ import { useState } from "react"
 import { useParams } from "react-router"
 import { computePrice, hashFood } from "./util"
 import hash from "object-hash"
-
+import {useQuery} from "react-query"
+import axios from "axios"
+import APIROUTES from "../Routes/API"
 const GetOrder = ()=>{
-    const db = getFirestore()
     const [order,setOrder] = useState(null)
     const [error,setError] = useState(null)
     const {tableid} = useParams()
+    const {data:result,isLoading,error: query_error,refetch} = useQuery(["current-order"],async ()=>{
+        const res = await axios.get(APIROUTES.GET_CURRENT_ORDER_BY_TABLE(tableid))
+        return res.data
+    },{
+        retry: 4,
+        enabled: false,
+        refetchOnWindowFocus: false
+    })
+    console.warn("Current Order",result,isLoading,query_error)
     const getOrder = async ()=>{
         if(isNaN(parseInt(tableid)))
             setError({error: "Invalid Table Id"})
         try{
-            const qr = query(collection(db,'orders'),where("tableid","==",parseInt(tableid)),where("status","==","unpaid")) 
-            const all_dt = (await getDocs(qr))
-            if(all_dt.docs.length > 0){
-                const rr = all_dt.docs[0]
-                const order_data = {id: rr.id,...rr.data()}
-                const sub_orders  = await getDocs(collection(db,`orders/${order_data.id}/sub_orders`))
-                if(sub_orders.docs.length === 0)
+           const result =  (await refetch())
+            const order_info =result.data.data
+            if(order_info.order){
+                const order_data = order_info.order
+                const sub_orders  = order_info.sub_orders
+                if(sub_orders.length === 0)
                     throw Error("Sub Orders Not Found")
-                order_data.cart = sub_orders.docs.map((sub,index)=>{
-                    const sub_data = {...sub.data(),id: sub.id}
+                order_data.cart = sub_orders.map((sub_data,index)=>{
                     return {
                     food: sub_data.food.map((fd)=>{return{
                         ...fd,
@@ -40,7 +48,7 @@ const GetOrder = ()=>{
                 setOrder(order_data)
                 console.log(order_data)
             }else{
-                setOrder({cart:[{food: []}],tokens: []})
+                setOrder({cart:[{food: []}],tokens: [],tableid: tableid})
             }
         }catch(err){
             setError(err)
@@ -48,8 +56,11 @@ const GetOrder = ()=>{
     }
     useEffect(()=>{
         getOrder()
-    },[tableid])
-    console.log(order)
+    },[])
+    useEffect(()=>{
+        setError(query_error)
+    },[query_error])
+    
     return {order,setOrder,loading : !order && !error,error,getOrder}
 }
 export default GetOrder

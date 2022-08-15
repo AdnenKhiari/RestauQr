@@ -5,8 +5,8 @@ const APIROUTES = {
     GET_TABLE_BY_ID: (id)=> base_url+"tables/" + id,
     GET_FOOD_BY_ID : (id) => base_url+"food/"+id,
     GET_ORDER_BY_ID : (id) => base_url+"orders/"+id,
-    GET_CURRENT_ORDER_BY_TABLE : (tableid) => base_url+"orders/table/"+tableid,
-    REMOVE_CURRENT_ORDER_BY_TABLE : (tableid) => base_url+"orders/table/"+tableid,
+    GET_CURRENT_ORDER_BY_TABLE : (tableid) => base_url+"orders/clientOrder/"+tableid,
+    REMOVE_ORDER : (orderid,subid) => base_url+"orders/clientOrder/"+orderid+"/"+subid,
     ADD_TOKEN_TO_CURRENT: (tableid) => base_url+"tokens/table/"+tableid,
     GET_TOKEN_TO_CURRENT: (tableid) => base_url+"tokens/table/"+tableid,
 }

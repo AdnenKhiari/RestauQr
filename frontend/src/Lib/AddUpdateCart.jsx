@@ -12,6 +12,7 @@ import {
     QueryClient,
     QueryClientProvider,
   } from 'react-query'
+import APIROUTES from "../Routes/API"
 /*
 const AddUpdateCart = ()=>{
     const db = getFirestore()
@@ -104,21 +105,14 @@ const AddUpdateCart = ()=>{
 */
 const AddUpdateCart = ()=>{
     const [order,setOrder,getOrder] = useContext(OrderContext)
-    const {tableid} = useParams()
-    const dt = useMutation(async (data)=>{
-        const res = await axios.post()
+    //const {tableid} = useParams()
+    const mutator = useMutation(async (data)=>{
+        const res = order.id ? await axios.put(APIROUTES.ADD_UPDATE_ORDER,data) : await axios.post(APIROUTES.ADD_UPDATE_ORDER,data)
+        return res.data
     })
     const updateOrder  = async (cartitem,ordernum = 0)=>{
-//        console.log("The Cart on server will be ",structuredClone(cartitem))
-        const sub_doc = null
-        const result = null
-
         try{
-
-            if(!order.id)
-                //create order
-            //addupdate the sub order
-
+            const new_order = (await mutator.mutateAsync({order,cartitem})).data
             // End of the API part
             // More Than Optimistic Update
             if(!order.id)
@@ -129,7 +123,7 @@ const AddUpdateCart = ()=>{
                 order.price += -order.cart[ordernum].price + cartitem.price   
             }
             order.cart[ordernum] = {
-                id: sub_doc.id,
+                id: new_order.sub_id,
                 food: cartitem.food.map((fd)=>{
                     fd.cartid= hashFood(fd.id,fd.options)
                     return fd
@@ -137,10 +131,11 @@ const AddUpdateCart = ()=>{
                 price: cartitem.price,
                 status: cartitem.status ? cartitem.status : "waiting",
             }
-            setOrder({...order,id: result.id})
+            setOrder({...order,id: new_order.id})
         }catch(err){
             console.log(err)
         }
     }
+    return updateOrder
 }
 export default AddUpdateCart

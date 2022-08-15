@@ -17,8 +17,8 @@ const ResetPasswordContent = ()=>{
     const {result,error,loading,send_reset} = SendPasswordResetEmail()
     const [text,setText] = useState("Send")
 
-    const submit = (data)=>{
-        send_reset(data.email)
+    const submit = async (data)=>{
+        await send_reset(data.email)
     }
 
     const formdata = [{type: "email",name: "email",label:'Email'}]

@@ -2,39 +2,26 @@ import { collection, deleteDoc, doc, getFirestore, increment, runTransaction, up
 import { useCallback, useContext } from "react"
 import { useParams } from "react-router"
 import { OrderContext } from "../Components/Contexts"
-
+import {useMutation, useQuery} from "react-query"
+import axios from "axios"
+import APIROUTES from "../Routes/API"
 const RemoveOrder = ()=>{
     const db = getFirestore()
     const [order,setOrder] = useContext(OrderContext)
     const {tableid} = useParams()
+
+    const {data:result,isLoading,error: query_error,mutateAsync} = useMutation(async (data)=>{
+        const res = await axios.delete(APIROUTES.REMOVE_ORDER(data.orderid,data.subid))
+        return res.data
+    },{
+        retry: 0
+    })
+
     const removeOrder = useCallback(async (ordernum)=>{
-        const order_col = collection(db,'orders')
         try{
-            let toremove = false
-            await runTransaction(db,async tr =>{
-                const orderdoc = doc(order_col,order.id)
-                const dd = doc(order_col,`${order.id}/sub_orders/${order.cart[ordernum].id}`)
-                const dt = await tr.get(dd)
-                if(!dt.exists())
-                    throw Error("Could not retrieve cart information")
-                const oldorder_data = dt.data()
-                const status = oldorder_data.status
-                const oldprice = oldorder_data.price
-                if(status !== "waiting")
-                    throw Error("Request Already Running")
-                tr.delete(dd)
-                if(order.price > oldprice){
-                    tr.update(orderdoc,{
-                        price: increment(-oldprice),
-                        foodcount: increment(-oldorder_data.food.reduce((init,fd)=>fd.count + init,0))
-                    })
-                }else{
-                    tr.delete(orderdoc)
-                    toremove= true
-                }
-            })
+            const toremove = await (await mutateAsync({orderid: order.id,subid: order.cart[ordernum].id})).data.data
             if(toremove){
-                setOrder({cart: [{food: []}],tokens:[]})
+                setOrder({cart: [{food: []}],tokens:[],tableid: tableid})
             }else{
                 order.price -= order.cart[ordernum].price
                 order.cart.splice(ordernum,1)
@@ -43,7 +30,9 @@ const RemoveOrder = ()=>{
         }catch(err){
             console.log(err)
         }
-    },[order,db,setOrder,tableid])
+    },[mutateAsync,order,setOrder])
+
+
     return removeOrder
 }
 export default RemoveOrder
