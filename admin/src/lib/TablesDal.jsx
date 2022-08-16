@@ -7,6 +7,21 @@ import * as APIROUTES from "../APIROUTES"
 const axios_inst = axios.create({
     withCredentials: true
 })
+export const GetTables = ()=>{
+    
+    const {data: result,isLoading,error} = Query.useQuery(["tables"],async ()=>{
+        const res = await axios_inst.get(APIROUTES.TABLES.GET_TABLES)
+        return res.data
+    },{
+        refetchOnWindowFocus: false
+    })
+    console.warn("DT",result)
+    return {
+        result: result && result.data,
+        error,
+        loading: isLoading
+    }
+}
 export const GetTableById = (id)=>{
 
     const [error,setError] = useState(null)
