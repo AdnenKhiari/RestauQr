@@ -8,6 +8,7 @@ import { UserContext } from "../../contexts"
 import {motion} from "framer-motion"
 import { FadeIn } from "../../animations"
 import {useTable,useSortBy} from "react-table"
+import { getLevel } from "../../lib/utils"
 
 const ReviewFood =()=>{
     const {foodid} = useParams()
@@ -25,7 +26,7 @@ const ReviewFood =()=>{
         <div className="data-review-header">
             <h1><span>{food.title}</span> : {food.price}$</h1>
             <div>
-                {user.profile.permissions.food.manage && <><button onClick={(e)=>{
+                {getLevel(user.profile.permissions.food)>=  getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.FOOD.GET_UPDATE(food.id))
                 }}>Update</button>
                 <button onClick={async (e)=>{

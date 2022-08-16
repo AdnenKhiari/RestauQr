@@ -11,6 +11,7 @@ import ConfirmLogin from "../auth/ConfirmLogin"
 
 import { FadeIn } from "../../animations"
 import {motion} from "framer-motion"
+import { getLevel } from "../../lib/utils"
 
 
 const Permissions = ({permissions,disabled = false})=>{
@@ -20,16 +21,36 @@ const Permissions = ({permissions,disabled = false})=>{
 
         <ul className="permissions-list">
             
-            {permissions && Object.keys(permissions).map((key,index)=><li key={100+index} className="permission-name">
-                <p>{key}</p>
+            {permissions  && Object.keys(permissions).map((key,index)=><li key={100+index} className="permission-name">
+                <p className="current-perm">{key} {<span> : {permissions[key]}</span> }</p>
                 <ul className="permissions">
-                {permissions[key] && Object.keys(permissions[key]).map((item,index2)=><li key={index2}>
-                    <label htmlFor={key+"."+item}><img  className={watch("permissions."+key+'.'+item) ? 'make-img-blue' : undefined} src="/checkbox.png" alt="" />{item}</label>
-                    { disabled  ? (
-                    <input disabled={disabled} type="checkbox" id={key+"."+item} />) : (
-                    <input disabled={disabled} type="checkbox" id={key+"."+item} { ...register("permissions."+key+"."+item)} />
+                {permissions[key] && <li>
+                    {/*<label htmlFor={key}><img  className={watch("permissions."+key) ? 'make-img-blue' : undefined} src="/radio.png" alt="" />{key}</label>*/}
+                    { !disabled  && (<>
+                    <div className="permission-choice">
+                        <input disabled={disabled} value="manage" type="radio" id={key+".manage"} { ...register("permissions."+key)} />
+                        <label htmlFor={key+".manage"}>
+                        <img className={watch("permissions."+key) ==="manage" ? 'make-img-blue' : undefined} src="/radio.png" alt="" />
+                            Manage
+                        </label>
+                    </div>
+                    <div className="permission-choice">
+                        <input disabled={disabled} value="read" type="radio" id={key+".read"} { ...register("permissions."+key)} />
+                        <label htmlFor={key+".read"}>
+                        <img className={watch("permissions."+key) ==="read" ? 'make-img-blue' : undefined} src="/radio.png" alt="" />
+                            Read
+                        </label>
+                    </div>
+                    <div className="permission-choice">
+                        <input disabled={disabled} value="none" type="radio" id={key+".none"} { ...register("permissions."+key)} />
+                        <label htmlFor={key+".none"}>
+                        <img className={watch("permissions."+key) ==="none" ? 'make-img-blue' : undefined} src="/radio.png" alt="" />
+                            None
+                        </label>
+                    </div>
+                    </>
                     )}
-                    </li> )
+                    </li> 
                 }
                 </ul>
                 </li>)}
@@ -134,7 +155,7 @@ const ProfileSettings = ({accountid,profile,me = false})=>{
                 <div className="content">
                     {me && <Infos  profile={profile}/>}
                     {me && <Credentials  />}    
-                    {<Permissions disabled={!( (me && profile.permissions.users.manage)  || (!profile.permissions.users.manage && user.profile.permissions.users.manage)) } permissions={profile.permissions} />}
+                    {<Permissions disabled={!( (me && getLevel(profile.permissions.users) >= getLevel("manage"))  || (!(getLevel(profile.permissions.users) >= getLevel("manage"))&& getLevel(user.profile.permissions.users) >= getLevel("manage"))) } permissions={profile.permissions} />}
                 </div>
                 {(me || (!profile.permissions.users.manage && user.profile.permissions.users.manage)) &&  <div className="submit-container">
                         {me &&                         <button onClick={(e)=>{

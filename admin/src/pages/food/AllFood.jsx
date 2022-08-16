@@ -1,5 +1,5 @@
 import {GetByCategories} from "../../lib/FoodDal"
-import {GetCategories} from "../../lib/Options"
+import {GetCategories} from "../../lib/Categories"
 import Error from "../../components/Error"
 import Loading from "../../components/Loading"
 import DropDown from "react-dropdown"

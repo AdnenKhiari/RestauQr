@@ -7,7 +7,7 @@ import { useContext } from "react"
 import { UserContext } from "../../../contexts"
 import {motion} from "framer-motion"
 import { FadeIn } from "../../../animations"
-import { formatFbDate } from "../../../lib/utils.js"
+import { formatFbDate, getLevel } from "../../../lib/utils.js"
 import {useForm} from "react-hook-form"
 import joi from "joi"
 import{joiResolver} from "@hookform/resolvers/joi"
@@ -42,7 +42,7 @@ const ReviewProductOrder =()=>{
             <h1><span>Name: </span>{product.name}</h1>
             <div>
                 
-                {user.profile.permissions.tables.manage && <><button onClick={(e)=>{
+                {getLevel(user.profile.permissions.tables) >=getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT_ORDER(productid,orderid))
                 }}>Update</button>
                 <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid))}>Related Product</button>

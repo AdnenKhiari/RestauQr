@@ -1,5 +1,14 @@
 import moment from "moment"
 
+export const getLevel = (scope: string)=>{
+    if(scope === "none")
+        return -1000
+    if(scope === "read")
+        return 0
+    if(scope === "manage")
+        return 1000
+    return - 100000
+}
 export const map_status_to_priority = (status)=>{
     status = status.toLowerCase()
     if(status === 'accomplished')

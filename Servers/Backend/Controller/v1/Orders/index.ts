@@ -91,7 +91,7 @@ router.delete('/clientOrder/:orderid/:subid',async (req,res,next)=>{
     }
 })
 
-router.get('/suborders',OAuth.HasAccess({orders: "read"}),
+router.get('/suborders',
 (req,res,next)=>{
 
     const {value,error} = (fetchSubOrdersSchema.validate(req.query))
@@ -113,7 +113,7 @@ async (req,res,next)=>{
     }
 })
 
-router.get('/:id',OAuth.HasAccess({orders: "read"}),async (req,res,next)=>{
+router.get('/:id',async (req,res,next)=>{
     const id: string = req.params.id
     try{
         const data = await Orders.GetOrderById(id)
@@ -124,7 +124,7 @@ router.get('/:id',OAuth.HasAccess({orders: "read"}),async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',OAuth.HasAccess({orders: "read"}),
+router.get('/',
 (req,res,next)=>{
 
     const {value,error} = (fetchOrdersSchema.validate(req.query))
@@ -146,7 +146,7 @@ router.get('/',OAuth.HasAccess({orders: "read"}),
     }
 })
 
-router.put('/:orderid',OAuth.HasAccess({orders: "manage"}),
+router.put('/:orderid',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),
 (req,res,next)=>{
     const {value,error} = (orderSchema.validate(req.body))
     if(error)
@@ -165,7 +165,7 @@ router.put('/:orderid',OAuth.HasAccess({orders: "manage"}),
         return next(err)
     }
 })
-router.delete('/:id',OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Orders.DeleteOrderById(id)

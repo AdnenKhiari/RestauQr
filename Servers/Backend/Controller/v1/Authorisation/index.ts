@@ -1,5 +1,5 @@
 import Express from "express"
-import { DecodeCookie } from "../../../utils/auth"
+import { DecodeCookie, getLevel } from "../../../utils/auth"
 import * as admin from"firebase-admin"
 
 interface permissions  {
@@ -28,9 +28,12 @@ const SignedIn = async (req: Express.Request,res: Express.Response,next: Express
     }
 }
 const HasAccess = (scopes : permissions) => (req : Express.Request,res : Express.Response,next : Express.NextFunction)=>{
+    console.warn("DECOED IN SCOPE",req.decodedtoken)
     Object.keys(scopes).forEach((scope: string)=>{
+        console.log("FOUND",scope,req.decodedtoken)
+
         const result : string = req.decodedtoken[scope]
-        if(!result || result  > <string>scopes[scope]){
+        if(!result || getLevel(result)  <  getLevel(<string>scopes[scope])){
             return next("Unauthorised 403")
         }
     })

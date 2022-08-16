@@ -8,7 +8,7 @@ import { UserContext } from "../../contexts"
 import {createDomMotionComponent, motion} from "framer-motion"
 import { FadeIn } from "../../animations"
 import { load } from "mime"
-import { formatFbDate } from "../../lib/utils"
+import { formatFbDate, getLevel } from "../../lib/utils"
 import qr from "qrcode"
 import { useState } from "react"
 import {useReactToPrint} from 'react-to-print';
@@ -34,7 +34,7 @@ const ReviewTable =()=>{
         <div className="data-review-header">
             <h1><span>Table: </span>{table.id}</h1>
             <div>
-                {user.profile.permissions.tables.manage && <><button onClick={(e)=>{
+                {getLevel(user.profile.permissions.tables) >= getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.TABLES.GET_UPDATE(table.id))
                 }}>Update</button>
                 <button onClick={(e)=>{

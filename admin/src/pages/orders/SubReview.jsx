@@ -9,7 +9,7 @@ import { UserContext } from "../../contexts"
 import { FadeIn } from "../../animations"
 import {motion} from "framer-motion"
 import * as ROUTES from "../../ROUTES"
-import {formatFbDate, getOptionsList} from "../../lib/utils"
+import {formatFbDate, getLevel, getOptionsList} from "../../lib/utils"
 import { useRef } from "react"
 const SubReviewOrder = ()=>
 {
@@ -61,7 +61,7 @@ export const SubReviewOrderUi = ({orderid,order})=>{
     return <motion.div variants={FadeIn()} className="order-review">
        <h1>#{formatFbDate(order.time)} <div>
         <button onClick={(e)=>usenav(ROUTES.ORDERS.GET_REVIEW(orderid))}>Order</button>
-         {user.profile.permissions.orders.manage &&  <button onClick={async (e)=> {
+         {getLevel(user.profile.permissions.orders) >= getLevel("manage") &&  <button onClick={async (e)=> {
             try{
                 await orderUpdate(states[stateidx],reasonref.current && reasonref.current.value);
                 usenav(0)
@@ -74,7 +74,7 @@ export const SubReviewOrderUi = ({orderid,order})=>{
        <div className="order-meta">
             <div><img src="/table-ronde.png" alt="" /><h2>#{order.tableid}</h2></div> 
             <div><img src="/remise.png" alt="" /><h2>{order && order.price}$</h2></div>
-            <div onClick={(e)=> user.profile.permissions.orders.manage && changeStatus() } className={states[stateidx].toLowerCase()}><img src={getImg(states[stateidx].toLowerCase())}
+            <div onClick={(e)=> getLevel(user.profile.permissions.orders) >= getLevel("manage") && changeStatus() } className={states[stateidx].toLowerCase()}><img src={getImg(states[stateidx].toLowerCase())}
             alt="" /><h2>{states[stateidx].toLowerCase()}</h2></div>
        </div>
        {states[stateidx] === 'canceled' && <div className="cancel-reason">

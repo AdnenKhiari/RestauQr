@@ -22,7 +22,7 @@ const fetchSubOrders  = joi.object({
     dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
 })
 
-router.get('/:subid',OAuth.HasAccess({orders: "read"}),async (req,res,next)=>{
+router.get('/:subid',async (req,res,next)=>{
     const subid: string = req.params.subid
     const orderid: string = <string>req.orderid
     console.log(subid,orderid)
@@ -35,7 +35,7 @@ router.get('/:subid',OAuth.HasAccess({orders: "read"}),async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',OAuth.HasAccess({orders: "read"}),
+router.get('/',
 (req,res,next)=>{
 
     const {value,error} = (fetchSubOrders.validate(req.query))
@@ -58,7 +58,7 @@ router.get('/',OAuth.HasAccess({orders: "read"}),
     }
 })
 
-router.put('/:subid',OAuth.HasAccess({orders: "manage"}),(req,res,next)=>{
+router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),(req,res,next)=>{
 
     const {value,error} = (productsOrderInfoSchema.validate(req.body))
     if(error)
@@ -78,7 +78,7 @@ router.put('/:subid',OAuth.HasAccess({orders: "manage"}),(req,res,next)=>{
         return next(err)
     }
 })
-router.delete('/:id',OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     const orderid: string = <string>req.orderid
 

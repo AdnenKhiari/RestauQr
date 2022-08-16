@@ -11,6 +11,7 @@ import ProductOrdersTable from "../../components/Tables/ProductOrdersTable.jsx"
 import joi from "joi"
 import { joiResolver } from "@hookform/resolvers/joi"
 import { useForm } from "react-hook-form"
+import { getLevel } from "../../lib/utils.js"
 
 
 const schema = joi.object({
@@ -43,7 +44,7 @@ const ReviewProduct =()=>{
         <div className="data-review-header">
             <h1><span>Name: </span>{product.name}</h1>
             <div>
-                {user.profile.permissions.tables.manage && <><button onClick={(e)=>{
+                {getLevel(user.profile.permissions.tables) >= getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT(productid))
                 }}>Update</button>
                 <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_ORDER(productid))}>New Order</button>

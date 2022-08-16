@@ -25,7 +25,7 @@ const CreateProfileUi = ()=>{
         console.log(data)
         try{
             await mutate(data)
-            usenav(ROUTES.ORDERS.ALL)
+            usenav(0)
         }
         catch(err){
             console.log(err)

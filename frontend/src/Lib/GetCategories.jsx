@@ -1,36 +1,22 @@
 import { useCallback, useState } from "react"
 import { useEffect } from "react"
 import {collection, doc, getDoc, getDocs, getFirestore, query, where} from "firebase/firestore"
-const GetCategories = (categories)=>{
-    const [results,setResults] = useState(null)
-    const [error,setError] = useState(null)
-    const db = getFirestore()
-    const getData = useCallback(async ()=>{
-        try{
-           /* setResults([])
-            return; */
-            let results_snapshot = await  getDoc(doc(db,'utils/menu'))
-            if(!results_snapshot.exists())
-                throw Error("No Categories Found")
-            setResults(results_snapshot.data().categories)
-            console.log("cat",categories,results_snapshot)
-        }catch(err){
-            console.log("ERR",err)
-            setError(err)
-        }
-    },[categories,db])
+import axios from 'axios'
+import  APIROUTES from "../Routes/API"
 
-    useEffect(()=>{
-        setResults(null)
-        setError(null)
-        getData()
-    },[getData])
+import {useQuery} from "react-query"
+export const GetCategories = ()=>{
 
-    console.log("RES",results,categories)
+    const {data: result,isLoading,error} = useQuery(["categories"],async ()=>{
+        const res = await axios.get(APIROUTES.GET_CATEGORIES)
+        return res.data
+    },{
+        refetchOnWindowFocus: false
+    })
     return {
-        data: results,
-        error: error,
-        loading: error === null &&  results === null
+        data: result && result.data.categories,
+        error,
+        loading: isLoading
     }
 }
 export default GetCategories

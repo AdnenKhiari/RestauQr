@@ -4,6 +4,7 @@ import Error from "../../components/Error"
 import Loading from "../../components/Loading"
 import { UserContext } from "../../contexts"
 import {GetProfile} from "../../lib/Auth"
+import { getLevel } from "../../lib/utils"
 import * as ROUTES from "../../ROUTES"
 import ProfileSettings from "./ProfileSettings"
 const Profile = ()=>{
@@ -20,7 +21,7 @@ const Profile = ()=>{
     console.log("i'm",userid,user.id)
     if(!userid || userid === user.id)
         return  <ProfileSettings accountid={user.id} me={true} profile={user.profile} />
-    if(!user.profile.permissions.users.read)
+    if(getLevel(user.profile.permissions.users) < getLevel("read"))
         return <Navigate to={ROUTES.ORDERS.ALL} />  
     return  <ProfileSettings accountid={userid} me={false} profile={profile.profile} />
 

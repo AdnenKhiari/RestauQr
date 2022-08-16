@@ -79,7 +79,7 @@ router.get('/',(req,res,next)=>{
         return next(err)
     }
 })
-router.post('/',OAuth.HasAccess({food:"manage"}),
+router.post('/',OAuth.SignedIn,OAuth.HasAccess({food:"manage"}),
 (req,res,next)=>{
 
 
@@ -103,7 +103,7 @@ router.post('/',OAuth.HasAccess({food:"manage"}),
         return next(err)
     }
 })
-router.put('/:id',OAuth.HasAccess({food:"manage"}),
+router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({food:"manage"}),
 (req,res,next)=>{
     const {value,error} = (Foodschema.validate(req.body))
     if(error)
@@ -125,7 +125,7 @@ async (req,res,next)=>{
         return next(err)
     }
 })
-router.delete('/:id',OAuth.HasAccess({food:"manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({food:"manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Food.DeleteFoodById(id)

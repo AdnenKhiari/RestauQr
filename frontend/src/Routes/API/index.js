@@ -2,6 +2,7 @@ const base_url = "http://localhost:8080/v1/"
 const APIROUTES = {
     ADD_UPDATE_ORDER : base_url+"orders/clientOrder",
     GET_FOOD : base_url+"food",
+    GET_CATEGORIES : base_url+"categories",
     GET_TABLE_BY_ID: (id)=> base_url+"tables/" + id,
     GET_FOOD_BY_ID : (id) => base_url+"food/"+id,
     GET_ORDER_BY_ID : (id) => base_url+"orders/"+id,

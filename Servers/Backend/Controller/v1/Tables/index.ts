@@ -48,7 +48,7 @@ router.get('/',
         return next(err)
     }
 })
-router.post('/',OAuth.HasAccess({tables: "manage"}),
+router.post('/',OAuth.SignedIn,OAuth.HasAccess({tables: "manage"}),
 (req,res,next)=>{
 
     const schema = joi.object({
@@ -77,7 +77,7 @@ async (req,res,next)=>{
         return next(err)
     }
 })
-router.put('/:id',OAuth.HasAccess({tables: "manage"}),
+router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({tables: "manage"}),
 (req,res,next)=>{
 
     const schema = joi.object({
@@ -106,7 +106,7 @@ router.put('/:id',OAuth.HasAccess({tables: "manage"}),
         return next(err)
     }
 })
-router.delete('/:id',OAuth.HasAccess({tables: "manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({tables: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Tables.DeleteTableById(id)

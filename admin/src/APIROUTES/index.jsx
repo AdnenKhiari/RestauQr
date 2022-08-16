@@ -17,6 +17,10 @@ export const USERS = {
     REMOVE_USER_BY_ID : (id)=> baseurl+"users/"+id,
     UPDATE_USER : (id)=> baseurl+"users/"+id,
 }
+export const CATEGORIES = {
+    GET_CATEGORIES: baseurl+"categories",
+    UPDATE_CATEGORIES : baseurl+"categories",
+}
 export const FOOD = {
     GET_FOODS: baseurl+"food/",
     GET_FOOD_BY_ID : (id)=> baseurl+"food/"+id,

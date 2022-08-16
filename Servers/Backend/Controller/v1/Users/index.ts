@@ -7,15 +7,17 @@ import joi from "joi"
 const router = Router()
 
 const userUpdateSchema  = joi.object({
-    email: joi.string().optional(),
-    password: joi.string().optional(),
+    email: joi.string().allow("").optional(),
+    password: joi.string().allow("").optional(),
     name: joi.string().required(),
     permissions: joi.object({
         users: joi.allow('manage','read','none'),
         tables: joi.allow('manage','read','none'),
         inventory: joi.allow('manage','read','none'),
         food: joi.allow('manage','read','none'),
-        orders: joi.allow('manage','read','none')
+        orders: joi.allow('manage','read','none'),
+        categories: joi.allow('manage','read','none')
+
     }).required()
 })
 
@@ -45,7 +47,7 @@ router.get('/current',OAuth.SignedIn,async (req,res,next)=>{
     }
 })
 
-router.get('/',OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
+router.get('/',OAuth.SignedIn,OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
     try{
         const data = await Users.GetAllUsers()
         return res.json({
@@ -56,7 +58,7 @@ router.get('/',OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
     }
 })
 
-router.get('/:id',OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
+router.get('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
     try{
         const id: string = req.params.id
         const data = await Users.GetUserById(id)
@@ -69,7 +71,7 @@ router.get('/:id',OAuth.HasAccess({users: "read"}),async (req,res,next)=>{
 })
 
 
-router.delete('/:id',OAuth.HasAccess({users: "manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "manage"}),async (req,res,next)=>{
     try{
         const id: string = req.params.id
         const data = await Users.RemoveUser(id)
@@ -79,7 +81,7 @@ router.delete('/:id',OAuth.HasAccess({users: "manage"}),async (req,res,next)=>{
     }
 })
 
-router.put('/:id',OAuth.HasAccess({users: "manage"}),(req,res,next)=>{
+router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "manage"}),(req,res,next)=>{
     const {value,error} = userUpdateSchema.validate(req.body)
     if(error)
         return next(error)

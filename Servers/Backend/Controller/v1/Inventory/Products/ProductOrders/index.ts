@@ -30,7 +30,7 @@ const productOrderSchema = joi.object({
     time: joi.date().required().label('Time'),
     expiresIn: joi.date().required().label('Expires In')
 })
-router.get('/:subid',OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
+router.get('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
     const subid: string = req.params.subid
     const productid: string = <string>req.productid
     try{
@@ -42,7 +42,7 @@ router.get('/:subid',OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>
         return next(err)
     }
 })
-router.get('/',OAuth.HasAccess({inventory: "read"}),
+router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 
     const {value,error} = (fetchProductOrdersSchema.validate(req.query))
@@ -65,7 +65,7 @@ router.get('/',OAuth.HasAccess({inventory: "read"}),
     }
 })
 
-router.post('/',OAuth.HasAccess({inventory: "manage"}),
+router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (productOrderSchema.validate(req.body))
@@ -86,7 +86,7 @@ router.post('/',OAuth.HasAccess({inventory: "manage"}),
     }
 })
 
-router.put('/:subid',OAuth.HasAccess({inventory: "manage"}),
+router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (productOrderSchema.validate(req.body))
@@ -107,7 +107,7 @@ router.put('/:subid',OAuth.HasAccess({inventory: "manage"}),
         return next(err)
     }
 })
-router.post('/consume/:subid',OAuth.HasAccess({inventory: "manage"}),
+router.post('/consume/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (consumeSchema.validate(req.body))
@@ -130,7 +130,7 @@ router.post('/consume/:subid',OAuth.HasAccess({inventory: "manage"}),
         return next(err)
     }
 })
-router.delete('/:id',OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     const productid: string = <string>req.productid
 

@@ -11,6 +11,7 @@ import {motion} from "framer-motion"
 import * as ROUTES from "../../ROUTES"
 import SubOrderTable from "../../components/Tables/SubOrderTable"
 import {where} from "firebase/firestore"
+import { getLevel } from "../../lib/utils"
 const ReviewOrder = ()=>
 {
     const {orderid} = useParams()
@@ -51,7 +52,7 @@ const ReviewOrder = ()=>
     if(error)
         return <Error error={error} msg={"Error ,Check the Id Or report the issue"} />
     return <motion.div variants={FadeIn()} className="order-review">
-        <h1>Order: {user.profile.permissions.orders.manage &&  <button onClick={async (e)=>{
+        <h1>Order: {getLevel(user.profile.permissions.orders) >= getLevel("manage") &&  <button onClick={async (e)=>{
             await orderUpdate(states[stateidx])
             usenav(0)
         }}>Save</button>}</h1>
@@ -59,7 +60,7 @@ const ReviewOrder = ()=>
        <div className="order-meta">
             <div><img src="/table-ronde.png" alt="" /><h2>#{order.tableid}</h2></div> 
             <div><img src="/remise.png" alt="" /><h2>{order && order.price}$</h2></div>
-            <div onClick={(e)=> user.profile.permissions.orders.manage && changeStatus() } className={(states[stateidx] && states[stateidx].toLowerCase()) === "unpaid" ? 'waiting' : (states[stateidx] && states[stateidx].toLowerCase()) === 'canceled' ? 'canceled' : 'accomplished'}><img src={getImg(states[stateidx].toLowerCase())}
+            <div onClick={(e)=> getLevel(user.profile.permissions.orders)  >= getLevel("manage") && changeStatus() } className={(states[stateidx] && states[stateidx].toLowerCase()) === "unpaid" ? 'waiting' : (states[stateidx] && states[stateidx].toLowerCase()) === 'canceled' ? 'canceled' : 'accomplished'}><img src={getImg(states[stateidx].toLowerCase())}
             alt="" /><h2>{states[stateidx].toLowerCase()}</h2></div>
        </div>
        <SubOrderTable title={"Related Sub Orders"} queryConstraints={[where('order_ref','==',orderid)]} />

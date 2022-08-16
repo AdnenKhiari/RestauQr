@@ -47,7 +47,7 @@ const ProductSchema =joi.object({
     unitQuantity: joi.number().min(0).required().label('Quantity/U'),
     unit : joi.string().required().label('Unit')
 })
-router.get('/product_orders',OAuth.HasAccess({inventory: "read"}),
+router.get('/product_orders',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 
     const {value,error} = (fetchProductOrderschema.validate(req.query))
@@ -70,7 +70,7 @@ async (req,res,next)=>{
     }
 })
 
-router.get('/:id',OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
+router.get('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
     const id: string = req.params.id
     try{
         const data = await Inventory.Products.GetProductById(id)
@@ -81,7 +81,7 @@ router.get('/:id',OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
         return next(err)
     }
 })
-router.get('/',OAuth.HasAccess({inventory: "read"}),
+router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 
     const {value,error} = (fetchProductschema.validate(req.query))
@@ -103,7 +103,7 @@ router.get('/',OAuth.HasAccess({inventory: "read"}),
     }
 })
 
-router.post('/',OAuth.HasAccess({inventory: "manage"}),
+router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (ProductSchema.validate(req.body))
@@ -124,7 +124,7 @@ router.post('/',OAuth.HasAccess({inventory: "manage"}),
         return next(err)
     }
 })
-router.put('/:id',OAuth.HasAccess({inventory: "manage"}),
+router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
 
     const {value,error} = (ProductSchema.validate(req.body))
@@ -146,7 +146,7 @@ router.put('/:id',OAuth.HasAccess({inventory: "manage"}),
         return next(err)
     }
 })
-router.delete('/:id',OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const {id} = req.params
     try{
         const data = await Inventory.Products.DeleteProduct(id)
@@ -158,7 +158,7 @@ router.delete('/:id',OAuth.HasAccess({inventory: "manage"}),async (req,res,next)
         return next(err)
     }
 })
-router.post('/consume/:id',OAuth.HasAccess({inventory: "manage"}),(req,res,next)=>{
+router.post('/consume/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),(req,res,next)=>{
 
     const {value,error} = (consumeSchema.validate(req.body))
     if(error)

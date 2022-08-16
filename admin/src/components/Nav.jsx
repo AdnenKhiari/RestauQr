@@ -3,6 +3,7 @@ import * as ROUTES from "../ROUTES"
 import {LogOut} from "../lib/Auth"
 import { useContext } from "react"
 import { UserContext } from "../contexts"
+import { getLevel } from "../lib/utils"
 const Nav = ()=>{
     const {error: logouterr,loading: loadingerr,logout} = LogOut()
     const user = useContext(UserContext)
@@ -25,7 +26,7 @@ const Nav = ()=>{
                     <h2>Food</h2>
                 </li>
                 <Link to={ROUTES.FOOD.ALL} ><li>All Food</li></Link>
-                {user.profile.permissions.food.manage && <Link to={ROUTES.FOOD.ADD}><li>New Food</li></Link>}
+                {getLevel(user.profile.permissions.food) >= getLevel("manage") && <Link to={ROUTES.FOOD.ADD}><li>New Food</li></Link>}
                 <li>
                     <img src="/options.png" alt="options" />
                     <h2>Categories</h2>
@@ -36,7 +37,7 @@ const Nav = ()=>{
                     <h2>Tables</h2>
                 </li>
                 <Link to={ROUTES.TABLES.ALL} ><li>All Tables</li></Link>
-                <Link to={ROUTES.TABLES.ADD} ><li>New Table</li></Link>
+                {getLevel(user.profile.permissions.tables) >= getLevel("manage") &&  <Link to={ROUTES.TABLES.ADD} ><li>New Table</li></Link>}
                 <li>
                     <img src="/inventaire.png" alt="inventory" />
                     <h2>Inventory</h2>
@@ -49,7 +50,7 @@ const Nav = ()=>{
                     <img src="/utilisateur.png" alt="users" />
                     <h2>Users</h2>
                 </li>
-                {user.profile.permissions.users.read &&  <Link to={ROUTES.USERS.ALL} ><li>All Users</li></Link>}
+                {getLevel(user.profile.permissions.users) >= getLevel("read") &&  <Link to={ROUTES.USERS.ALL} ><li>All Users</li></Link>}
                 <Link to={ROUTES.USERS.MY_PROFILE}><li>Profile</li></Link>
             </ul>
         </nav>

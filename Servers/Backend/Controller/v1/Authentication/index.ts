@@ -60,7 +60,7 @@ router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
             "tables":"read",
             "orders":"read",
             "inventory":"read",
-            "users": "none"
+            "users": "manage"
         }
         const id = await Users.AddUpdateUser(decodedtoken.uid,data)
         await auth.setCustomUserClaims(decodedtoken.uid,data.permissions)

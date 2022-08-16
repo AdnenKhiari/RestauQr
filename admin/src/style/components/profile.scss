@@ -31,6 +31,7 @@
         margin: 15px;
     }   
     form{
+        width: 100%;
         padding: 15px;
         background-color: Bright(1);
         width: 100%;
@@ -40,22 +41,22 @@
         align-items: flex-end;
         align-content: center;
         .content{
+ > * {
+    margin-bottom: 20px;
 
+ }
             width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-
             h1{
-
+                color: Secondary(1);
             }
             .input-form{
                 display: flex;
-                flex-direction: column;
-                justify-content: center;
+                flex-direction: row;
+                justify-content: flex-start;
                 align-items: flex-start;
                 align-content: center;
                 *{
-                    margin: 5px 5px    
+                    margin: 10px 5px    
                 }
                 font-size: $h2size;
                 input{
@@ -73,24 +74,30 @@
             }
             .permissions-container{ 
                 width: 100%;
-                .permissions-list{
+                .permissions-list{ 
                     padding: 10px;
                     width: 100%;
-
+                    display: grid;
+                    grid-template-columns:  1fr 1fr;
                     .permission-name{
-                        width: 100%;
                         text-transform: capitalize;
-    
                         p{
                             font-size: $h3size;
                             border-left: 4px solid Secondary(1);
                             padding: 10px;
                             margin: 5px 0px;
                         }
-    
+                        .current-perm{
+                            span{
+                                color: Secondary(1);
+                                font-weight: bold;
+                            }
+                        }
                         .permissions{
+
                             padding-left: 20px;
- 
+                            display: flex;
+                            flex-direction: row;
                             li{
                                 margin: 10px 0px;
                                 display: flex;
@@ -108,6 +115,10 @@
                                 input{
                                     display: none;
                                 }
+                            }
+
+                            .permission-choice{
+
                             }
                         }
                     }
