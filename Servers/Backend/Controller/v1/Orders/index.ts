@@ -22,6 +22,7 @@ const fetchSubOrdersSchema  = joi.object({
     lastRef : joi.string().optional().label("Last Reference"),
     status: joi.string().optional().label("Status"),
     lastOrderRef : joi.string().optional().label("Last Order Reference"),
+    order_ref: joi.string().optional(),
     swapped: joi.boolean().optional().default(false).label("Swapped"),
     dir: joi.allow('desc','asc').default('desc').optional().label("Direction")
 })
@@ -93,6 +94,7 @@ router.delete('/clientOrder/:orderid/:subid',async (req,res,next)=>{
 
 router.get('/suborders',
 (req,res,next)=>{
+    console.log("CHECKING DIS",req.query)
 
     const {value,error} = (fetchSubOrdersSchema.validate(req.query))
     if(error)
@@ -102,8 +104,8 @@ router.get('/suborders',
 },
 async (req,res,next)=>{
     try{
-        const search_params = req.query
-        const data = await Orders.GetSubOrders(undefined,search_params)
+        const search_params : any = req.query
+        const data = await Orders.GetSubOrders(search_params.order_ref || undefined,search_params)
         return res.send({
             data: data
         })

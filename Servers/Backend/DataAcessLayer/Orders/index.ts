@@ -310,7 +310,7 @@ const UpdateSubOrder = async (orderid: string,subid: string,data: any)=>{
 
     const current_order : any = {id : current_order_r.id,...current_order_r.data()}
 
-    if(current_order.status === data.status)
+    if(current_order.status === data.status && !data.reason)
         return;
 
     const cur_ord = db.doc('orders/'+orderid)
@@ -340,11 +340,8 @@ const UpdateSubOrder = async (orderid: string,subid: string,data: any)=>{
 
     await db.runTransaction(async tr =>{
 
-        if(current_order.status === 'paid' && data.status === 'canceled')
-            throw Error("Order Already Paid")
-
         tr.update(suborder_ref,dt)
-        if(data.status === 'canceled'){
+        if(data.status === 'canceled' && current_order.status !== "canceled"){
             if(current_order.price > order?.price){
                 tr.update(cur_ord,{
                     price: admin.firestore.FieldValue.increment(-current_order.price),
@@ -391,6 +388,7 @@ const UpdateSubOrder = async (orderid: string,subid: string,data: any)=>{
         }
     })
 }
+
 
 export default {
     GetOrderById,

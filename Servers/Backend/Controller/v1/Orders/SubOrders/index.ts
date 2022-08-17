@@ -2,15 +2,12 @@ import {Router} from "express"
 import Orders from "../../../../DataAcessLayer/Orders"
 import joi from "joi"
 import OAuth from "../../Authorisation"
+import {sendNotificationToOrder} from "../../../../DataAcessLayer/PushNotification"
+
 const router = Router()
-const productsOrderInfoSchema = joi.object({
-    id: joi.string().optional().label('Item Id'),
-    name: joi.string().required().label('Item Name'),
-    productQuantity: joi.number().min(0).required().label('Item Quantity :'),
-    unitQuantity: joi.number().min(0).required().label('Quantity/U'),
-    unitPrice: joi.number().min(0).required().label('Price/U'),
-    time: joi.date().required().label('Time'),
-    expiresIn: joi.date().required().label('Expires In')
+const subordersInfoSchema = joi.object({
+    status: joi.string().required().label('Status'),
+    reason: joi.string().allow("").optional().label('Reason to cancel'),
 })
 
 const fetchSubOrders  = joi.object({
@@ -37,7 +34,6 @@ router.get('/:subid',async (req,res,next)=>{
 })
 router.get('/',
 (req,res,next)=>{
-
     const {value,error} = (fetchSubOrders.validate(req.query))
     if(error)
         return next(error)
@@ -59,8 +55,7 @@ router.get('/',
 })
 
 router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),(req,res,next)=>{
-
-    const {value,error} = (productsOrderInfoSchema.validate(req.body))
+    const {value,error} = (subordersInfoSchema.validate(req.body))
     if(error)
         return next(error)
     req.body = value
@@ -71,6 +66,7 @@ router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),(req,res
     const subid = req.params.subid
     try{
         const result = await Orders.UpdateSubOrder(orderid,subid,data)
+        await sendNotificationToOrder({type: "food-status",status: data.status,orderid: orderid,subid: subid},orderid)
         return res.send({
             data: result
         })

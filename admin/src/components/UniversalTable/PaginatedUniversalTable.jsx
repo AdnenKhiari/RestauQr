@@ -25,12 +25,17 @@ const PaginatedUniversalTable = ({queryConstraints = {},custom_key,custom_val,cs
     //for navigation
     const usenav = useNavigate()
 
-    const {isLoading,error: result_error,refetch} = Query.useQuery([title,searchdata],async ()=>(await axios.get(cs_query,{
-        params : {
-            ...searchdata,
-            ...queryConstraints
-        }
-    })).data,{
+    const {isLoading,error: result_error,refetch} = Query.useQuery([title,searchdata],async ()=>{
+        console.warn("searchdata",searchdata,queryConstraints) 
+        const res = await axios.get(cs_query,{
+            params : {
+                ...searchdata,
+                ...queryConstraints
+            }
+        })
+        console.warn(res.data)
+        return res.data
+    },{
         retry : false,
         enabled: true,
         refetchOnWindowFocus:false,

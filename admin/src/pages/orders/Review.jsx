@@ -63,7 +63,7 @@ const ReviewOrder = ()=>
             <div onClick={(e)=> getLevel(user.profile.permissions.orders)  >= getLevel("manage") && changeStatus() } className={(states[stateidx] && states[stateidx].toLowerCase()) === "unpaid" ? 'waiting' : (states[stateidx] && states[stateidx].toLowerCase()) === 'canceled' ? 'canceled' : 'accomplished'}><img src={getImg(states[stateidx].toLowerCase())}
             alt="" /><h2>{states[stateidx].toLowerCase()}</h2></div>
        </div>
-       <SubOrderTable title={"Related Sub Orders"} queryConstraints={[where('order_ref','==',orderid)]} />
+       <SubOrderTable title={"Related Sub Orders"} queryConstraints={{order_ref: orderid}} />
     </motion.div>
 }
 export default ReviewOrder

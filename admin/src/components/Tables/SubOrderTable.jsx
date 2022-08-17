@@ -29,7 +29,6 @@ const SubOrderTable = ({queryConstraints,title})=>{
         {
             Header: 'Food Count',
             accessor: 'foodcount'
-  
         },
         {
             Header: 'Time',
@@ -70,7 +69,7 @@ const customOptions = {
 
     const onDataQueried = (col)=>{
         const new_table_data = col.length > 0 && col.map((data)=>{
-            return {id: data.id,orderid: data.order_ref,time: data.time,tableid: data.tableid,foodcount: (data.food && data.food.length) || 0,status: data.status.toUpperCase()}
+            return {id: data.id,orderid: data.order_ref,time: data.time,tableid: data.tableid,foodcount: data.food.reduce((init,dt)=> init + dt.count,0 ),status: data.status.toUpperCase()}
         }) 
         if(new_table_data)
             new_table_data.sort((a,b)=> {

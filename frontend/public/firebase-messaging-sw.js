@@ -20,21 +20,24 @@ importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js')
   };
 
 firebase.initializeApp(firebaseConfig);
+const ShowFoodStatusUpdate = (data)=>{
+  const notificationTitle = 'Status Update';
+  const notificationOptions = {
+    body: 'Your Order is now ' + data.status,
+    icon: '/menu.png'
+    };
+  console.log('reg',self.registration)
+  const not = new Notification(notificationTitle,notificationOptions);
+
+}
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.
-
-self.registration.showNotification("Hiii nen")
 const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    // Customize notification here
-    const notificationTitle = 'Background Message Title';
-    const notificationOptions = {
-      body: 'Background Message body.',
-      icon: '/firebase-logo.png'
-    };
-    console.log('reg',self.registration.showNotification)
-    self.registration.showNotification(notificationTitle);
+   if(payload.data.type === "food-status"){
+      ShowFoodStatusUpdate(payload.data)
+   }
   });
 console.log("Works")

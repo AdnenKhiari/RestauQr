@@ -50,9 +50,9 @@ export const GetPushMessages = ()=>{
     const [notifications,setNotifications] = useContext(NotificationsContext)
     useEffect(()=>{
         const unsub = onMessage(msg,(payload)=>{
-            console.log("pay",notifications,payload)
-            setNotifications([...notifications,payload.notification])
+            console.log("payload",payload)
+            setNotifications([...notifications,payload])
         })
         return unsub
-    },[notifications,setNotifications])
+    },[setNotifications])
 }

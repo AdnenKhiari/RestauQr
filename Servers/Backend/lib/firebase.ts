@@ -7,5 +7,6 @@ export const InitFirebase = ()=>{
     const firestore = admin.firestore(fb_app)
     const storage = admin.storage(fb_app)
     const auth = admin.auth(fb_app)
+    const msg = admin.messaging(fb_app)
 
 }
