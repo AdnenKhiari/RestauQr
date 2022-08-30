@@ -1,0 +1,73 @@
+.payment-container{
+    width: 100vw;
+    max-width: 1500px;
+    margin: 10px auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    .payment-method-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        align-content: center;
+        width: 100%;
+        > h1 , > p{
+            color: secondary(1);
+            padding-left: 15px;
+        }
+        .payment-methods{
+            display: flex;
+            width: 100%;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            align-content: center;
+            padding: 10px;
+
+            .payment-method{
+                min-width: 250px;
+                margin: 10px 0px;
+                margin-right: 10px;
+                background-color: light_gray(1);
+                color: black;
+                padding: 20px 10px;
+                border-radius: 5px;
+                transition: all 150ms ease;
+                cursor: pointer;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                align-content: center;
+                height: 80px;
+                p{
+                    font-family: $primary_font;
+                    font-size: $h3_size;
+                }
+                img{
+                    width: 50px;
+                    object-fit: cover;
+                    margin-right: 15px;
+                }
+            }
+            .payment-method.active{
+                background-color: primary(1);
+            }
+        }
+
+    }
+}
+
+.paymentform{
+    width: 100%;
+    max-width: 500px;
+    form{
+        width: 100%;
+    }
+    button{
+        margin: 20px 0px;
+    }
+}

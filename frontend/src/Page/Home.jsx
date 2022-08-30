@@ -14,6 +14,7 @@ import ValidateTableId from "../Lib/ValidateTableId"
 import GetCategories from "../Lib/GetCategories"
 import NotificationsContainer from "../Components/NotificationsContainer"
 import { GetPushMessages, GetToken } from "../Lib/PushNotifications"
+import PaymentContainer from "../Components/Payment"
 const Home = ()=>{
     const usenav = useNavigate()
     const {tableid} = useParams()
@@ -64,6 +65,8 @@ const Home = ()=>{
                 <Route path={ROUTES.CART_DETAILS} >
                     <Route index element={<CartDetails />} />
                     <Route path={ROUTES.FOOD_UPDATE} element={<FoodDetails  />}/>
+                    <Route path={ROUTES.PAY} element={<PaymentContainer  />}/>
+
                 </Route>
             </Route>
         </Routes>

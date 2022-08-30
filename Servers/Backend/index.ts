@@ -1,16 +1,15 @@
 import express , {Express} from "express";
-import dotenv from "dotenv"
 import V1 from "./Controller/v1"
 import bodyParser from "body-parser"
 import { InitFirebase } from "./lib/firebase";
 import cookieparser from "cookie-parser"
 import ErrHandler from "./ErrHandler"
 import cors from "cors"
+import LoadEnv from "./utils/Loadenv";
 const app = express()
 
-if(process.env.NODE_ENV !== 'production'){
-    dotenv.config()    
-}
+LoadEnv()
+
 app.use(cors({
     origin: (origin,callback)=>{
         return callback(null,true)
@@ -19,7 +18,12 @@ app.use(cors({
 }))
 
 //to parse body from requests
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    verify(req, res, buf, encoding) {
+        const reqt : any = req
+        reqt.rawBody = buf
+    },
+}));
 
 //cookie parser for cookies
 app.use(cookieparser())

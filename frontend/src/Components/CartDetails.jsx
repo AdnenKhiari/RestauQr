@@ -70,6 +70,7 @@ const SubOrderDetails = ({ordernum,order})=>{
     </div>}
     </>
     )}
+    {order.cart && order.cart.length > 0 && !order.cart.some((cur)=>!(cur.status && (cur.status === "accomplished" || "canceled"))) && <button onClick={(e)=>usenav(ROUTES.PAY)} >Pay !</button>}
     </div>
 }
 const CartItem = ({item,ordernum})=>{

@@ -9,5 +9,6 @@ const APIROUTES = {
     GET_CURRENT_ORDER_BY_TABLE : (tableid) => base_url+"orders/clientOrder/"+tableid,
     REMOVE_ORDER : (orderid,subid) => base_url+"orders/clientOrder/"+orderid+"/"+subid,
     ADD_TOKEN_TO_CURRENT: (orderid) => base_url+"pushnot/"+orderid,
+    GET_STRIPE_CLIENT_SECRET : base_url+"payments/stripe/clientsecret"
 }
 export default APIROUTES

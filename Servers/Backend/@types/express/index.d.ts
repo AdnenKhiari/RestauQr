@@ -1,8 +1,9 @@
 declare namespace Express {
    interface Request {
-     orderid?: string;
-     productid?: string;
-     user: any,
-     decodedtoken: any
-    }
- }
+      orderid?: string;
+      productid?: string;
+      user?: any,
+      decodedtoken?: any
+      rawBody?: string | Buffer 
+   }
+}
