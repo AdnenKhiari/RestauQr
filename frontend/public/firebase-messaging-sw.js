@@ -1,3 +1,4 @@
+const ignored = self.__WB_MANIFEST;
 
 console.log("Exists")
 // Give the service worker access to Firebase Messaging.
