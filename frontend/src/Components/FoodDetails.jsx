@@ -11,6 +11,11 @@ import { useEffect } from "react"
 import { joiResolver } from '@hookform/resolvers/joi';
 import joi from "joi"
 
+import etoilesimg from "../images/etoiles.png"
+import checkboximg from "../images/checkbox.png"
+import radioimg from "../images/radio.png"
+import radiobuttonimg from "../images/radio-button.png"
+
 const ingredientsSchema = joi.object({
     options: joi.array().optional().items(
     joi.object({
@@ -79,7 +84,7 @@ const FoodDetails = ()=>{
 
     return <div className="food-details-container">
         <div className="food-details">
-            <h1><img  className="make-img-primary" src="/etoiles.png" alt="" />{food.title}<img className="make-img-primary" src="/etoiles.png" alt="" /></h1>
+            <h1><img  className="make-img-primary" src={etoilesimg} alt="" />{food.title}<img className="make-img-primary" src={etoilesimg} alt="" /></h1>
             <div>
                 <div className="food-img" style={{backgroundImage: "url("+food.img+")"}}>
                     {/*<img src={food.img} alt={food.title}/>*/}
@@ -232,12 +237,12 @@ const Option = ({opt,root,index,parent})=>{
     return<div className="form-input-container"> 
     
         <label className={watch(`${path}.value`) ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}`}><span>{opt.price}{opt.price && "$"}</span> {parent}{opt.msg}{opt.type==="select" && " : " }
-        {opt.type === 'check' && <img  className={watch(`${path}.value`) ? 'make-img-primary' : undefined} src="/checkbox.png" alt="check" />}
+        {opt.type === 'check' && <img  className={watch(`${path}.value`) ? 'make-img-primary' : undefined} src={checkboximg} alt="check" />}
         </label>
             <br />
             {opt.type === 'select' ? opt.choices.map((c)=><div className="form-input"  key={c.msg}>
                 <label className={watch(`${path}.value`) === c.msg ? 'selected' : undefined} htmlFor={`${path}.${opt.msg}.${c.msg}`}><span> {c.price}$</span>{c.msg} 
-                {watch(`${path}.value`) === c.msg ? <img className='make-img-primary' src="/radio.png" alt="" /> : <img src="/radio-button.png" alt="" />}</label>
+                {watch(`${path}.value`) === c.msg ? <img className='make-img-primary' src={radioimg} alt="" /> : <img src={radiobuttonimg} alt="" />}</label>
                 <input  type="radio" value={c.msg} id={`${path}.${opt.msg}.${c.msg}`} {...register(`${path}.value`,{required:true})} />
             </div>
             ) :  <div className="form-input">

@@ -12,6 +12,8 @@ import { FadeIn } from "../animations"
 import {motion} from "framer-motion"
 
 
+import checkboximg from "../images/checkbox.png"
+
 const schema = joi.object({
     id: joi.string().required().label('Table Id'),
     placesNum: joi.number().min(1).required().label('Table Capacity'),
@@ -65,7 +67,7 @@ const TableDetails = ({defaultVals = undefined})=>{
             </div>        
             <div className="input-item">
                 <label htmlFor="disabled"><h2>Is Disabled  :</h2></label>
-                <img className={(watch('disabled') && "make-img-blue ") + " small "  + (errors.price ? 'make-img-error' : '')}  onClick={(e)=>setValue("disabled",!watch("disabled"))}  src="/checkbox.png" alt="disabled" />
+                <img className={(watch('disabled') && "make-img-blue ") + " small "  + (errors.price ? 'make-img-error' : '')}  onClick={(e)=>setValue("disabled",!watch("disabled"))}  src={checkboximg} alt="disabled" />
                 <input className={"secondary-input " + (errors.disabled ? 'input-error' : '')} type="checkbox" id="disabled" {...register("disabled")} />
             </div>       
             <div className="input-item">

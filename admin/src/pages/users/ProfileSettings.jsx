@@ -13,6 +13,7 @@ import { FadeIn } from "../../animations"
 import {motion} from "framer-motion"
 import { getLevel } from "../../lib/utils"
 
+import radioimg from "../../images/radio.png"
 
 const Permissions = ({permissions,disabled = false})=>{
     const {register,watch} = useFormContext() 
@@ -25,26 +26,26 @@ const Permissions = ({permissions,disabled = false})=>{
                 <p className="current-perm">{key} {<span> : {permissions[key]}</span> }</p>
                 <ul className="permissions">
                 {permissions[key] && <li>
-                    {/*<label htmlFor={key}><img  className={watch("permissions."+key) ? 'make-img-blue' : undefined} src="/radio.png" alt="" />{key}</label>*/}
+                    {/*<label htmlFor={key}><img  className={watch("permissions."+key) ? 'make-img-blue' : undefined} src={radioimg} alt="" />{key}</label>*/}
                     { !disabled  && (<>
                     <div className="permission-choice">
                         <input disabled={disabled} value="manage" type="radio" id={key+".manage"} { ...register("permissions."+key)} />
                         <label htmlFor={key+".manage"}>
-                        <img className={watch("permissions."+key) ==="manage" ? 'make-img-blue' : undefined} src="/radio.png" alt="" />
+                        <img className={watch("permissions."+key) ==="manage" ? 'make-img-blue' : undefined} src={radioimg} alt="" />
                             Manage
                         </label>
                     </div>
                     <div className="permission-choice">
                         <input disabled={disabled} value="read" type="radio" id={key+".read"} { ...register("permissions."+key)} />
                         <label htmlFor={key+".read"}>
-                        <img className={watch("permissions."+key) ==="read" ? 'make-img-blue' : undefined} src="/radio.png" alt="" />
+                        <img className={watch("permissions."+key) ==="read" ? 'make-img-blue' : undefined} src={radioimg} alt="" />
                             Read
                         </label>
                     </div>
                     <div className="permission-choice">
                         <input disabled={disabled} value="none" type="radio" id={key+".none"} { ...register("permissions."+key)} />
                         <label htmlFor={key+".none"}>
-                        <img className={watch("permissions."+key) ==="none" ? 'make-img-blue' : undefined} src="/radio.png" alt="" />
+                        <img className={watch("permissions."+key) ==="none" ? 'make-img-blue' : undefined} src={radioimg} alt="" />
                             None
                         </label>
                     </div>

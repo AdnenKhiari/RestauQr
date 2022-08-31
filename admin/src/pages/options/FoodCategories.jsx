@@ -13,6 +13,8 @@ import { FadeIn } from "../../animations"
 import {motion} from "framer-motion"
 import { getLevel } from "../../lib/utils"
 
+import trashimg from "../../images/trash.png"
+
 const schema = joi.object({
     categories: joi.array().items(joi.string().trim())
 })
@@ -56,7 +58,7 @@ const CategoriesForm = ({cats})=>{
     <div className="food-categories-body">
         {watch('categories').map((item,index)=><p className={errors.categories && errors.categories[index] ?  "input-error": undefined} key={index}>
             <input disabled={getLevel(user.profile.permissions.categories)  < getLevel("manage")} placeholder="Category..."  type="text" {...register(`categories.${index}`)} />  
-           {getLevel(user.profile.permissions.categories) >= getLevel( "manage") && <img src="/trash.png" alt="trahs" onClick={(e)=>remove(index)}/>} 
+           {getLevel(user.profile.permissions.categories) >= getLevel( "manage") && <img src={trashimg} alt="trahs" onClick={(e)=>remove(index)}/>} 
             </p>)}
     </div>
     {getLevel(user.profile.permissions.categories) >= getLevel("manage") && <div className="submit-container">   
