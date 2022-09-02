@@ -12,6 +12,9 @@ import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import ProcessRouters from "./swroutes"
+
+import dexie from "dexie"
 
 clientsClaim();
 
@@ -46,24 +49,42 @@ registerRoute(
   createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
-const anyimgregex = /\.(jpg|jpeg|png|webp|avif|gif)?\?(.*)$/
+addEventListener("activate",(event)=>{
+  // Create DB If Not Exists !
+  const db =  new dexie("maindb")
+  db.version(1).stores({
+    users: "id,name",
+    food: "id,title,price,img,category,description",
+    connected: "id,email",
+    utils: "id"
+  })
+  event.waitUntil(db.open())
+})
+
+
+
+const anyimgregex = /\.(jpg|jpeg|png|webp|avif|gif)\??(.*)$/
 const simpleimgregex = /\.(jpg|jpeg|png|webp|avif|gif)$/
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.origin === self.location.origin && simpleimgregex.test(url.pathname), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+  ({ url }) => anyimgregex.test(url), // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: 'images',
     plugins: [
       // Ensure that once this runtime cache reaches a maximum size the
       // least-recently used images are removed.
-      new ExpirationPlugin({ maxEntries: 100 }),
+      new ExpirationPlugin({ maxEntries: 200 }),
     ],
   })
 );
 
+
+self.addEventListener("fetch",(event)=>{
+  ProcessRouters(event)
+})
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})

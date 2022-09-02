@@ -1,4 +1,4 @@
-const baseurl = "http://localhost:8080/v1/"
+const baseurl = "http://localhost:8080/api/v1/"
 export const AUTH = {
     SIGN_IN: baseurl+"auth/signin/",
     CREATE_PROFILE: baseurl+"auth/createProfile/",

@@ -31,7 +31,8 @@ const PaginatedUniversalTable = ({queryConstraints = {},custom_key,custom_val,cs
             params : {
                 ...searchdata,
                 ...queryConstraints
-            }
+            },
+            withCredentials: true
         })
         console.warn(res.data)
         return res.data
