@@ -338,7 +338,12 @@ const SelectionTable = ({root,popActive,popLabel})=>{
 
     return <>{mutateProduct !== null && 
         <>
-        <ProductsTables title={<button type="button" style={{color: "white"}} onClick={(e)=>setMutateProduct(null)}>Cancel</button>} oncl={(row)=> mutateProduct === "add" ? addProduct(row) : modifyProduct(row,mutateProduct)} />
+        <button 
+        type="button" 
+        style={{color: "white",marginLeft: "40px"}} 
+        onClick={(e)=>setMutateProduct(null)}>Cancel Select !</button>
+        <ProductsTables title={""} 
+        oncl={(row)=> mutateProduct === "add" ? addProduct(row) : modifyProduct(row,mutateProduct)} />
         </>}
      <div className="products-table">
 
