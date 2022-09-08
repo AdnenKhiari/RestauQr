@@ -7,7 +7,6 @@ export const AUTH = {
     CONFIRM_VALID_PASSWORD: baseurl+"auth/verifyPasswordCode/",
     VALIDATE_EMAIL:  baseurl+"auth/sendValidateEmail/",
     LOGOUT: baseurl+"auth/logout/",
-
 }
 export const USERS = {
     DELETE_CURRENT :  baseurl+"users/current",
@@ -50,6 +49,12 @@ export const ORDERS = {
         REMOVE_SUB_ORDER: (orderid,subid)=>  baseurl+"orders/" + orderid  + "/suborders/" + subid,
     }
 }
+
+export const UNITS = {
+    GET_UNITS: baseurl+"units/",
+    UPDATE_UNITS: baseurl+"units/"
+}
+
 export const PRODUCTS = {
     GET_PRODUCTS: baseurl+"products/",
     GET_PRODUCT_BY_ID : (id)=> baseurl+"products/"+id,
@@ -66,6 +71,5 @@ export const PRODUCTS = {
         UPDATE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
         REMOVE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
         CONSUME_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/consume/" + subid,
-
     }
 }

@@ -43,7 +43,8 @@ const Main = ()=>{
                 <Route path={ROUTES.FOOD.ALL} element={<FOOD.All />} />
                 <Route path={ROUTES.FOOD.REVIEW} element={<FOOD.Review />} />
                 <Route path={ROUTES.FOOD.UPDATE} element={<FOOD.Update />} />
-                <Route path={ROUTES.OPTIONS.MENU} element={<OPTIONS />} />
+                <Route path={ROUTES.OPTIONS.CATEGORIES} element={<OPTIONS.FoodCategories />} />
+                <Route path={ROUTES.OPTIONS.UNITS} element={<OPTIONS.Units />} />
 
                 <Route path={ROUTES.USERS.MY_PROFILE} element={<USERS.MyProfile />} />
                 <Route path={ROUTES.USERS.PROFILE} element={<USERS.Profile />} />

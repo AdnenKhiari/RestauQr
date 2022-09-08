@@ -1,0 +1,82 @@
+.units-container{
+    background-color: Bright(1);
+    padding: 10px;
+    img{
+        width: 30px;
+        object-fit: cover;        
+        transition: all 100ms ease;   
+    }
+    img:hover{
+        transform: scale(1.1);
+    }
+    .units-header{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        button{
+            height: 50px;
+            color: Bright(1);
+        }
+    }
+    .all-units{
+
+        .allunits{
+            
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 10px;
+            .unit-card{
+                margin: 10px 0px;
+                width: 100%;
+                .unit-card-header{
+                    background-color: Secondary(0.2);
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+                    align-content: center;
+                    padding: 0px 10px;
+                }
+                .unit-card-subinfo{
+                    font-size: $h3size ;
+
+                    font-family: $base_font;
+                    input{
+                        font-size: $h3size ;
+                    }
+                    width: 100%;
+                    .subunit{
+                        padding: 5px 10px;
+                        border: 1px solid Secondary(0.5);
+                        border-top: none;
+                        width: 100%;
+                        display: flex;
+                        justify-content: space-between;
+                        flex-direction: row;
+                        align-items: center;
+                        align-content: center;
+                        div{
+                            display: flex;
+                            flex-direction: row;
+                            align-items: baseline;
+                            align-content: center;
+                        }
+                    }
+                    .subunit:nth-child(1){
+                        border: 1px solid Secondary(0.5);
+
+                    }
+                }
+            }
+        }
+        .units-footer{
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            button{
+                margin: 5px 10px;
+            }
+        }
+    }
+}

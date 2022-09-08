@@ -41,6 +41,6 @@ async (req,res,next)=>{
 
 
 router.get("/",(req,res)=>{
-    return res.send("Hii Tables")
+    return res.send("Hii Categories")
 })
 export default router

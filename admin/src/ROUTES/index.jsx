@@ -61,5 +61,6 @@ export const FOOD = {
     GET_REVIEW : (id)=> "/food/"+id
 }
 export const OPTIONS = {
-    MENU : "/options"
+    CATEGORIES : "/categories",
+    UNITS: "/units"
 }

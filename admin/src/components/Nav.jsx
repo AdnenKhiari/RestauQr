@@ -40,7 +40,9 @@ const Nav = ()=>{
                     <img src={optionsimg} alt="options" />
                     <h2>Categories</h2>
                 </li>
-                <Link to={ROUTES.OPTIONS.MENU} ><li>Categories</li></Link>
+                <Link to={ROUTES.OPTIONS.CATEGORIES} ><li>Categories</li></Link>
+                <Link to={ROUTES.OPTIONS.UNITS} ><li>Units</li></Link>
+
                 <li>    
                     <img src={tableadinnerimg} alt="Tables" />
                     <h2>Tables</h2>
