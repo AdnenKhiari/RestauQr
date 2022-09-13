@@ -151,6 +151,9 @@ const updateFoodProducts = (cur: any,data: any,productid :any)=>{
 }
 const AddUpdateProduct = async (data: any,id: string | undefined)=>{
     const db = admin.firestore()
+    if(data.unit.subunit){
+        data.unitQuantity *= 1.0 * data.unit.subunit.ratio
+    }
     if(id){
         const ref = db.doc('products/'+id)
         const productid = id+""
@@ -165,13 +168,12 @@ const AddUpdateProduct = async (data: any,id: string | undefined)=>{
                 tr.update(db.doc("food/"+fd.id),fd)
             })
             tr.update(ref,data)
-
         })
         return productid
     }else{
         if(!data.stockQuantity)
             data.stockQuantity = 0
-        const all_products =    db.collection('products')
+        const all_products =  db.collection('products')
         const snap = await all_products.add(data)
         return snap.id  
     }

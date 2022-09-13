@@ -19,7 +19,7 @@ const fetchProductOrdersSchema  = joi.object({
 const consumeSchema = joi.object({
     used: joi.number().empty('').default(0).required(),
     wasted: joi.number().empty('').default(0).required(),
-    updateGlobally: joi.number().empty('').default(0).required()
+    updateGlobally: joi.boolean().default(false).required()
 })
 
 const productOrderSchema = joi.object({

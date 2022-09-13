@@ -186,6 +186,45 @@ input,button,a,textarea{
         }
     }
 }
+
+.react-select-container{
+    * {
+        cursor: pointer;
+    }
+    .react-select__control{
+        border: 1.5px solid Secondary(0.6);
+        z-index: 10;  
+        *{
+            z-index: 10;    
+        }
+
+        .react-select__value-container{
+        }
+        .react-select__indicators{
+
+        }   
+    }
+    .react-select__menu{
+        z-index: 100;
+           *{
+            z-index: 100;
+           }
+
+        .react-select__menu-list{
+
+        }
+        .react-select__option{
+
+        }
+    }
+}
+@include scrollify(".react-select-container .react-select__menu .react-select__menu-list");
+.unitvalue{
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+}
 .make-img-blue{
     filter: invert(53%) sepia(75%) saturate(275%) hue-rotate(141deg) brightness(86%) contrast(90%);
 }

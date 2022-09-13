@@ -5,19 +5,21 @@ import * as  Query  from "@tanstack/react-query"
 
 import axios from "axios"
 import * as APIROUTES from "../APIROUTES"
+import { QueryClient } from "@tanstack/react-query"
 const axios_inst = axios.create({
     withCredentials: true
 })
 export const GetProductById = (id)=>{
 
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['products',id],async ()=>{
+    const qr = Query.useQuery(['products',id],async ()=>{
         const res = await axios_inst.get(APIROUTES.PRODUCTS.GET_PRODUCT_BY_ID(id))
         return res.data
     },{
         retry: 0,
         refetchOnWindowFocus: false
     })
+    const {data,isLoading,error: quer_err,refetch}  = qr
     const fetch = async ()=>{
         try{
             await refetch()
@@ -25,14 +27,13 @@ export const GetProductById = (id)=>{
             setError(err)
         }
     }
-    //console.log("Dt",data,isLoading,error)
     useEffect(()=>{
         setError(quer_err)
     },[quer_err])
-    
+    console.log("Found",qr)
     return {
         result : data && data.data,
-        error,
+        error: quer_err,
         loading: isLoading,
         fetch
     }
@@ -135,7 +136,8 @@ export const ConsumeProductItem = (productid) => {
 }
 
 export const RemoveProduct = (productid)=>{
-    const {data,isLoading,error,refetch} = Query.useQuery(['product',productid],async ()=>{
+    const ql = Query.useQueryClient()
+    const {data,isLoading,error,refetch} = Query.useQuery([],async ()=>{
         const res = await axios_inst.delete(APIROUTES.PRODUCTS.REMOVE_PRODUCT(productid))
         return res.data
     },{
@@ -143,11 +145,10 @@ export const RemoveProduct = (productid)=>{
         retry: false
     })
     const mutate = async ()=>{
-        try{
-            await refetch()
-        }catch(err){
-            throw err
-        }
+        const res = await refetch()
+        if(res.error)
+            throw  res.error
+        ql.invalidateQueries(["product",productid])
     }   
     return {
         loading: isLoading,
@@ -196,9 +197,10 @@ export const AddUpdateProductOrder = (productid,add)=>{
                 delete data.id
            // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
 
-            await send({id: id,data})
+            const res = await send({id: id,data})
             client.invalidateQueries([{productid,orderid: data.id},'products','product_orders'])
-            return id
+            console.warn(res)
+            return res.data
         }catch(err){
             setError(err)
             throw err
@@ -239,10 +241,11 @@ export const AddUpdateProduct = (add = false)=>{
                 delete data.id
            // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
 
-            await send({id: id,data})
+            const res = await send({id: id,data})
+            console.warn("Found res",res)
             client.invalidateQueries([{productid: data.id},'products'])
 
-            return id
+            return res.data.id
         }catch(err){
             setError(err)
             throw err

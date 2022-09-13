@@ -11,6 +11,7 @@ const subunit = joi.object({
     ratio: joi.number().required().positive().label("Ratio")
 })
 const units = joi.object({
+    id: joi.string().optional(),
     name : joi.string().required().label("Unit Name"),
     subunits: joi.array().items(subunit).required()
 })

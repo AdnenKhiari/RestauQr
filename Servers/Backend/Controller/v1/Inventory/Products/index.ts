@@ -45,8 +45,16 @@ const ProductSchema =joi.object({
     name: joi.string().required().label('Product Name'),
     sellingUnitPrice: joi.number().min(0).required().label('Price/U:'),
     unitQuantity: joi.number().min(0).required().label('Quantity/U'),
-    unit : joi.string().required().label('Unit')
+    unit : joi.object({
+        id: joi.string().optional(),
+        name: joi.string().required().label("Unit Name"),
+        subunit: joi.object({
+            name: joi.string().required(),
+            ratio: joi.number().required()
+        }).optional()
+    }).required()
 })
+
 router.get('/product_orders',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 

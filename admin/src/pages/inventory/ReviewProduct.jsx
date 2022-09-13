@@ -12,11 +12,14 @@ import joi from "joi"
 import { joiResolver } from "@hookform/resolvers/joi"
 import { useForm } from "react-hook-form"
 import { getLevel } from "../../lib/utils.js"
+import UnitShow from "../../components/Custom/UnitShow.jsx"
+import { GetUnits } from "../../lib/Units.jsx"
+import UnitValue, { unitvalueschema } from "../../components/Custom/UnitValue.jsx"
 
 
 const schema = joi.object({
-    used: joi.number().required().default(0).label("Use"),
-    wasted: joi.number().required().default(0).label("Wasted"),
+    used: unitvalueschema.label("Use"),
+    wasted: unitvalueschema.label("Wasted"),    
 })
 
 const ReviewProduct =()=>{
@@ -26,19 +29,20 @@ const ReviewProduct =()=>{
     const usenav = useNavigate()
     const del = RemoveProduct(productid)
     const consume = ConsumeProductItem(productid)
-
-    const {register,handleSubmit, formState : {errors}} = useForm({
-        resolver: joiResolver(schema),
-        defaultValues: {
-            used: 0,
-            wasted: 0
-        }
+    const {result: allunits,loading: allunitsloading,error: allunitserror} = GetUnits()
+    const {watch,register,handleSubmit, formState : {errors},control} = useForm({
+        resolver: joiResolver(schema)
     })
 
-    if( error)
-        return <Error msg={"Error while retrieving Food information " + productid} error={error} />
-    if( loading)
+    if( error || allunitserror)
+        return <>
+        {error && <Error msg={"Error while retrieving Product information " + productid} error={error} />}
+        {allunitserror && <Error msg={"Error while retrieving Units information "} error={allunitserror} />}
+        </>
+
+    if( loading || allunitsloading)
         return <Loading />
+    console.log(watch())
     return  <>
     <motion.div variants={FadeIn()} className="data-review">
         <div className="data-review-header">
@@ -49,7 +53,7 @@ const ReviewProduct =()=>{
                 }}>Update</button>
                 <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_ORDER(productid))}>New Order</button>
 
-                <button onClick={async (e)=>{
+                <button disabled={del.loading} onClick={async (e)=>{
                     try{
                         await del.remove()
                         usenav(ROUTES.INVENTORY.ALL)
@@ -62,28 +66,43 @@ const ReviewProduct =()=>{
         </div>
         <div className="data-review-body secondary-form">
             <h2><span>Price/U:</span> {product.sellingUnitPrice} Millime</h2>
-            <h2><span>Quantity/U:</span> {product.unitQuantity}{product.unit}</h2>  
-            <h2><span>Available In Stock:</span> {product.stockQuantity}{product.unit}</h2>
+            <h2><span>Quantity/U:</span><UnitShow unitval={{value: product.unitQuantity,unit: product.unit}} /></h2>  
+            <h2><span>Available In Stock:</span> <UnitShow unitval={{value: product.stockQuantity,unit: product.unit}} /></h2>
             <div>
-            <form onSubmit={handleSubmit(async (data)=>{
-                console.log(data)
-                await consume.mutate(data)
+            {/*<form onSubmit={handleSubmit(async (data)=>{
+                const sendata = {
+                    used: data.used = data.used.value * (data.used.unit.subunit ? data.used.unit.subunit.ratio : 1),
+                    wasted:  data.wasted.value * (data.wasted.unit.subunit ? data.wasted.unit.subunit.ratio : 1)  
+                }
+                console.log("SUBMIT !!!",sendata)
+
+                await consume.mutate(sendata)
                 usenav(0)
             })}>
                 <div className="input-item">
                     <div>
                         <label htmlFor="use">Use</label>
-                        <input placeholder="Use..." className="secondary-input" id="use" type="number" {...register("used")} />
+                        <UnitValue inputcustomprops={{placeholder:"Use...", className:"secondary-input" ,id:"use"}}  
+                        register={register}  
+                        name="used" 
+                        control={control} 
+                        defaultValue={{value: 0,units: product.unit}} 
+                        units={allunits.filter((un)=>un.id === product.unit.id)} />
                     </div>
                     <div >    
                         <label htmlFor="waste">Waste</label>
-                        <input placeholder="Waste.." className="secondary-input" id="waste" type="number" {...register("wasted")} />
+                        <UnitValue  inputcustomprops={{placeholder:"Use...", className:"secondary-input" ,id:"use"}}
+                          register={register}  
+                          name="wasted" 
+                          control={control} 
+                          defaultValue={{value: 0,units: product.unit}} 
+                          units={allunits.filter((un)=>un.id === product.unit.id)} />
                     </div>
-                    <button type="submit">Update</button>  
+                    <button type="submit" disabled={consume.loading} >Update</button>  
                 </div>
             </form>
             {errors && errors["wasted"] && <p className="error">{errors["wasted"].message.replaceAll('"',"")}</p>}
-            {errors && errors["used"] && <p className="error">{errors["used"].message.replaceAll('"',"")}</p>}
+            {errors && errors["used"] && <p className="error">{errors["used"].message.replaceAll('"',"")}</p>}*/}
             </div>
         </div>
     </motion.div >

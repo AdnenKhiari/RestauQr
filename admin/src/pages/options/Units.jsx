@@ -12,6 +12,7 @@ const subunit = joi.object({
     ratio: joi.number().required().positive().label("Ratio")
 })
 const units = joi.object({
+    id: joi.string().optional(),
     name : joi.string().required().label("Unit Name"),
     subunits: joi.array().items(subunit).required()
 })
@@ -78,7 +79,6 @@ const UnitCard = ({number,removeUnit})=>{
         name: `allunits.${number}.subunits`
     })
     const unit = watch(`allunits.${number}`)
-    console.log("Unit : ",number,unit)
     return  <div className="unit-card">
         <div className="unit-card-header">
             <h2><input className={"secondary-input " + ((errors.allunits  && errors.allunits[number] && errors.allunits[number].name ) ?  "input-error": "" ) } type="text" {...register(`allunits.${number}.name`)} /></h2>
@@ -98,7 +98,7 @@ const UnitCard = ({number,removeUnit})=>{
                         <p>1 </p>
                         <input className={"secondary-input   "+ ((errors.allunits  && errors.allunits[number] && errors.allunits[number].subunits && errors.allunits[number].subunits[key] && errors.allunits[number].subunits[key].name ) ?  "input-error": "") } type="text" {...register(`allunits.${number}.subunits.${key}.name`)} />
                         <p> = </p>
-                        <input className={"secondary-input   " + ((errors.allunits  && errors.allunits[number] && errors.allunits[number].subunits  && errors.allunits[number].subunits[key] && errors.allunits[number].subunits[key].ratio ) ?  "input-error": "")}  type="number" {...register(`allunits.${number}.subunits.${key}.ratio`)} />
+                        <input className={"secondary-input   " + ((errors.allunits  && errors.allunits[number] && errors.allunits[number].subunits  && errors.allunits[number].subunits[key] && errors.allunits[number].subunits[key].ratio ) ?  "input-error": "")}  type="number" step="0.00000001" {...register(`allunits.${number}.subunits.${key}.ratio`)} />
                         <p> {unit.name}</p>
                     </div>
                     <img className="make-img-error" onClick={(e)=>remove(key)} src={trashimg} alt="remove" />

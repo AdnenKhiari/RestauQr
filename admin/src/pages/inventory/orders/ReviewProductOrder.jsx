@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom"
-import {ConsumeProductOrderItem, GetProductOrderById, RemoveProductOrder} from "../../../lib/ProductsDal.jsx"
+import {ConsumeProductOrderItem, GetProductById, GetProductOrderById, RemoveProductOrder} from "../../../lib/ProductsDal.jsx"
 import Loading from "../../../components/Loading"
 import Error from "../../../components/Error"
 import * as ROUTES from "../../../ROUTES"
@@ -12,34 +12,47 @@ import {useForm} from "react-hook-form"
 import joi from "joi"
 import{joiResolver} from "@hookform/resolvers/joi"
 import moment from "moment"
+import {GetUnits} from "../../../lib/Units"
+import UnitValue,{unitvalueschema} from "../../../components/Custom/UnitValue"
+import UnitShow from "../../../components/Custom/UnitShow"
 
 const schema = joi.object({
-    used: joi.number().required().default(0).label("Use"),
-    wasted: joi.number().required().default(0).label("Wasted"),
+    used: unitvalueschema.label("Use"),
+    wasted: unitvalueschema.label("Wasted"),    
 })
 const ReviewProductOrder =()=>{
     const {productid,orderid} = useParams()
-    const {result : product,loading,error} = GetProductOrderById(productid,orderid)
+    const {result : productorder,loading,error} = GetProductOrderById(productid,orderid)
+    const {result : product,loading: loadingproduct,error: errorproduct} = GetProductById(productid)
+    const {result: allunits,loading: allunitsloading,error: allunitserror} = GetUnits()
+    console.warn("XDDD",product,loadingproduct,errorproduct,productorder,allunits)
+
     const user = useContext(UserContext)
     const usenav = useNavigate()
-    const {register,handleSubmit, formState : {errors}} = useForm({
-        resolver: joiResolver(schema),
-        defaultValues: {
-            used: 0,
-            wasted: 0
-        }
+    const {control,register,handleSubmit, formState : {errors}} = useForm({
+        resolver: joiResolver(schema)
     })
+    const processData = (data)=>{
+        const sendata = {
+            used: data.used = data.used.value * (data.used.unit.subunit ? data.used.unit.subunit.ratio : 1),
+            wasted:  data.wasted.value * (data.wasted.unit.subunit ? data.wasted.unit.subunit.ratio : 1)  
+        }
+        return sendata
+    }
     const consume = ConsumeProductOrderItem(productid,orderid)
     const del = RemoveProductOrder(productid,orderid)
-    if( error)
-        return <Error msg={"Error while retrieving Food information " + productid} error={error} />
-    if( loading)
+    if( error || allunitserror || errorproduct)
+        return <>
+        {error && <Error msg={"Error while retrieving Product Order information " + productid + ","+orderid} error={error} />}
+        {errorproduct && <Error msg={"Error while retrieving Product information " + productid} error={errorproduct} />}
+        {allunitserror && <Error msg={"Error while retrieving AllUnits information "} error={allunitserror} />}
+        </>
+    if( loading || allunitsloading || loadingproduct)
         return <Loading />
-        console.log(errors)
     return  <>
     <motion.div variants={FadeIn()} className="data-review">
         <div className="data-review-header">
-            <h1><span>Name: </span>{product.name}</h1>
+            <h1><span>Name: </span>{productorder.name}</h1>
             <div>
                 
                 {getLevel(user.profile.permissions.tables) >=getLevel("manage") && <><button onClick={(e)=>{
@@ -58,34 +71,45 @@ const ReviewProductOrder =()=>{
             </div>
         </div>
         <div className="data-review-body secondary-form">
-            <h2><span>Purshase Time:</span> {formatFbDate(product.time,true)}</h2>
-            <h2><span>Expires In :</span> {formatFbDate(product.expiresIn,true)} : {moment(product.expiresIn._seconds*1000 + product.expiresIn._nanoseconds / 1000).fromNow()}</h2>
-            <h2><span>Price/U:</span> {product.unitPrice} Millime</h2>
-            <h2><span>Quantity/U:</span> {product.unitQuantity}</h2>  
-            <h2><span>Purshase Quantity:</span> {product.productQuantity}</h2>
-            <h2><span>Used:</span> {product.used}</h2>
-            <h2><span>Wasted:</span> {product.wasted}</h2>
+            <h2><span>Purshase Time:</span> {formatFbDate(productorder.time,true)}</h2>
+            <h2><span>Expires In :</span> {formatFbDate(productorder.expiresIn,true)} : {moment(productorder.expiresIn._seconds*1000 + productorder.expiresIn._nanoseconds / 1000).fromNow()}</h2>
+            <h2><span>Price/U:</span> {productorder.unitPrice} Millime</h2>
+            <h2><span>Quantity/U:</span> <UnitShow  unitval={{value: productorder.unitQuantity,unit: product.unit}} /></h2>  
+            <h2><span>Purshase Quantity:</span> {productorder.productQuantity}</h2>
+            <h2><span>Used:</span> {productorder.used}</h2>
+            <h2><span>Wasted:</span> {productorder.wasted}</h2>
 
             <form onSubmit={(e)=>e.preventDefault()}>
                 <div className="input-item">
                     <div>
                         <label htmlFor="use">Use</label>
-                        <input placeholder="Use..." className="secondary-input" id="use" type="number" {...register("used")} />
-                    </div>
+                        <UnitValue  inputcustomprops={{placeholder:"Use...", className:"secondary-input" ,id:"use"}}
+                          register={register}  
+                          name="used" 
+                          control={control}  
+                          defaultValue={{value: 0,units: product.unit}} 
+                          units={allunits.filter((un)=>un.id === product.unit.id)} />                    </div>
                     <div >    
                         <label htmlFor="waste">Waste</label>
-                        <input placeholder="Waste.." className="secondary-input" id="waste" type="number" {...register("wasted")} />
-                    </div>
-                    <button onClick={handleSubmit(async (data)=>{
-                        console.log(data)
-                        await consume.mutate(data,false)
-                        usenav(0)
-                    })} type="button">Update</button>  
-                    <button onClick={handleSubmit(async (data)=>{
+                        <UnitValue  inputcustomprops={{placeholder:"Waste...", className:"secondary-input" ,id:"waste"}}
+                          register={register}  
+                          name="wasted" 
+                          control={control} 
+                          defaultValue={{value: 0,units: product.unit}} 
+                          units={allunits.filter((un)=>un.id === product.unit.id)} />                     </div>
+                                              <button onClick={handleSubmit(async (data)=>{
+                    data = processData(data)
                     console.log(data)
                     await consume.mutate(data,true)
                     usenav(0)
-                })} type="button">Update Globally</button>  
+                })} disabled={consume.loading} type="button">Update</button> 
+                    <button onClick={handleSubmit(async (data)=>{
+                        console.log(data)
+                        data = processData(data)
+                        await consume.mutate(data,false)
+                        usenav(0)
+                    })} disabled={consume.loading} type="button">Update Locally</button>  
+ 
                 </div>
             </form>
             {errors && errors["wasted"] && <p className="error">{errors["wasted"].message.replaceAll('"',"")}</p>}

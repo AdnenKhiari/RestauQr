@@ -31,7 +31,8 @@ export const GetUnits = ()=>{
         return res.data
     },{
         refetchOnWindowFocus: false,
-        retry: 2
+        retry: 2,
+        staleTime: 1000* 60* 5
     })
     return {
         result: result && result.data.allunits,

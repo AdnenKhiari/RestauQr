@@ -140,7 +140,7 @@ const IngredientsTable = ({products,path,price})=>{
         {
             Header: 'Quantity/U',
             accessor: 'unitQuantity',
-            Cell: ({value,row})=> value+""+row.original.unit
+            Cell: ({value,row})=> value+""+row.original.unit.name
         },
         {
             Header: 'Price/U',

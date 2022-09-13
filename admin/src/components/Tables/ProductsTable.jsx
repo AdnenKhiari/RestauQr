@@ -1,5 +1,5 @@
 import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,documentId, FieldPath} from "firebase/firestore"
-
+import UnitShow from "../Custom/UnitShow"
 import * as ROUTES from "../../ROUTES"
 import { useNavigate } from "react-router-dom"
 import PaginatedUniversalTable from "../UniversalTable/PaginatedUniversalTable"
@@ -33,15 +33,13 @@ const ProductsTables = ({queryConstraints,title,oncl = undefined})=>{
     },
     {
         Header: 'Quantity/U',
-        accessor: 'unitQuantity'
+        accessor: 'unitQuantity',
+        Cell: ({row}) => <UnitShow unitval={{value: row.original.unitQuantity,unit: row.original.unit}} />
     },    
     {
         Header: 'Available Quantity',
-        accessor: 'stockQuantity'
-    },
-    {
-        Header: 'Unit',
-        accessor: 'unit'
+        accessor: 'stockQuantity',
+        Cell: ({row}) => <UnitShow unitval={{value: row.original.stockQuantity,unit: row.original.unit}} />
     }]
 
 
