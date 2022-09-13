@@ -32,11 +32,11 @@ const UniversalTable = ({title,head,body,errs,colors,oncl,prev,next,customOption
             { title && <h1>{title}</h1>}
             <div  className="table-options" >
                 {customOptions && customOptions.structure && customOptions.structure.map((option,index)=><div key={index+100} className="option-item">
-                    <label htmlFor={option.name}>{option.label}
+                    <label htmlFor={"uni-"+option.name}>{option.label}
                     {option.type === 'checkbox' && <img className={option.type === 'checkbox' ? (watch(option.name) ?"selected-box make-img-blue" : "selected-box " ) : undefined  } src={checkboximg} alt="checkbox" />}
 
                     </label>
-                    <input id={option.name} type={option.type} {...register(option.name)} />
+                    <input id={"uni-"+option.name} type={option.type} {...register(option.name)} />
                 </div> ) }
                 <button onClick={(e)=>prev()}><img src={backimg} alt="prev" /></button>
                 {customOptions && customOptions.structure && <button onClick={handleSubmit(customOptions.submit)} type="submit"><img src={searchimg} alt="search" /></button >}

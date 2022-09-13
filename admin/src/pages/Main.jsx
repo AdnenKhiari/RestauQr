@@ -6,6 +6,7 @@ import FOOD from "./food"
 import USERS from "./users"
 import TABLES from "./Tables"
 import INVENTORY from "./inventory"
+import SUPPLIERS from "./suppliers"
 
 import { useContext } from "react"
 import { UserContext } from "../contexts"
@@ -65,6 +66,13 @@ const Main = ()=>{
                 <Route path={ROUTES.INVENTORY.REVIEW_PRODUCT_ORDER} element={<INVENTORY.Orders.ReviewProductOrder />} />
                 <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT_ORDER} element={<INVENTORY.Orders.UpdateProductOrder />} />
                 <Route path={ROUTES.INVENTORY.ADD_PRODUCT_ORDER} element={<INVENTORY.Orders.AddProductOrder />} />
+
+                <Route path={ROUTES.SUPPLIERS.ALL} element={<SUPPLIERS.All />} />
+                <Route path={ROUTES.SUPPLIERS.REVIEW_SUPPLIER} element={<SUPPLIERS.Review />} />
+                <Route path={ROUTES.SUPPLIERS.UPDATE_SUPPLIER} element={<SUPPLIERS.Update />} />
+                <Route path={ROUTES.SUPPLIERS.ADD_SUPPLIER} element={<SUPPLIERS.Add />} />
+
+
 
             </Routes>
             </AnimatePresence >

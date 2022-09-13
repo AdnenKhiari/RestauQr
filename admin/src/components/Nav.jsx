@@ -47,6 +47,7 @@ const Nav = ()=>{
                     <img src={tableadinnerimg} alt="Tables" />
                     <h2>Tables</h2>
                 </li>
+                
                 <Link to={ROUTES.TABLES.ALL} ><li>All Tables</li></Link>
                 {getLevel(user.profile.permissions.tables) >= getLevel("manage") &&  <Link to={ROUTES.TABLES.ADD} ><li>New Table</li></Link>}
                 <li>
@@ -56,7 +57,12 @@ const Nav = ()=>{
                 <Link to={ROUTES.INVENTORY.ALL} ><li>All Products</li></Link>
                 <Link to={ROUTES.INVENTORY.ADD_PRODUCT} ><li>New Product</li></Link>
                 <Link to={ROUTES.INVENTORY.ALL_ORDERS} ><li>All Product Orders</li></Link>
-
+                <li>
+                    <img src={optionsimg} alt="suppliers" />
+                    <h2>Suppliers</h2>
+                </li>
+                <Link to={ROUTES.SUPPLIERS.ALL} ><li>Suppliers</li></Link>
+                <Link to={ROUTES.SUPPLIERS.ADD_SUPPLIER} ><li>New Supplier</li></Link>
                 <li>
                     <img src={utilisateurimg} alt="users" />
                     <h2>Users</h2>

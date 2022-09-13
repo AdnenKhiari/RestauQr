@@ -9,6 +9,14 @@ export const ORDERS = {
     GET_SUBREVIEW : (orderid,id)=>"/suborders/"+orderid+"/"+id,
     GET_REVIEW : (id)=>"/orders/"+id
 }
+export const SUPPLIERS = {
+    ALL : "/suppliers",
+    GET_UPDATE_SUPPLIER: (id)=> "/suppliers/update/" + id,
+    UPDATE_SUPPLIER:  "/suppliers/update/:supplierid",
+    REVIEW_SUPPLIER: "/suppliers/:supplierid",
+    ADD_SUPPLIER : "/suppliers/add",
+    GET_SUPPLIER : (id)=>"/suppliers/"+id
+}
 export const INVENTORY = {
     ALL : "/inventory",
     REVIEW_PRODUCT: "/inventory/:productid",

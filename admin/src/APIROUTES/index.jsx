@@ -49,7 +49,13 @@ export const ORDERS = {
         REMOVE_SUB_ORDER: (orderid,subid)=>  baseurl+"orders/" + orderid  + "/suborders/" + subid,
     }
 }
-
+export const SUPPLIERS = {
+    GET_SUPPLIERS : baseurl+"suppliers/",
+    UPDATE_SUPPLIER: (id)=>baseurl + "suppliers/" + id,
+    ADD_SUPPLIER : baseurl + "suppliers/",
+    GET_SUPPLIER_BY_ID : (id)=>"/suppliers/"+id,
+    REMOVE_SUPPLIER: (id)=>"/suppliers/"+id,
+}
 export const UNITS = {
     GET_UNITS: baseurl+"units/",
     UPDATE_UNITS: baseurl+"units/"

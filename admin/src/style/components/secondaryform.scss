@@ -24,6 +24,76 @@
                 color: Bright(1);
                 margin: 5px;
             }
+            
+        }
+        .input-item.tickets{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            align-content: center;
+            h1{
+                color: Secondary(1);
+            }
+            .ticket-item{
+                cursor: pointer;
+                margin: 5px;
+                background-color: Secondary(0.1);
+                border: 1px solid Secondary(0.6);
+                border-radius: 15px;
+                padding: 10px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                align-content: center;
+                p{
+
+                }
+                img{
+                    width: 30px;
+                    margin: 5px;
+                    object-fit: cover;
+                    cursor: pointer;
+                    display: inline;
+                }
+                img:hover{
+                    transform: scale(1.1);
+                }
+            }
+        }
+        .input-item.multiple{
+            align-items: flex-start;
+            img{
+                width: 30px;
+                margin: 5px;
+                object-fit: cover;
+                cursor: pointer;
+            }
+            img:hover{
+                transform: scale(1.1);
+            }
+            h2{
+                padding-top: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-items: center;
+                align-content: center;
+                min-width: max-content;
+            }
+            .items{
+                display: inline-flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-items: center;
+                align-content: center;
+                > div{  
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    align-content: center;
+                }
+            }
         }
 
         .Dropdown-root{
@@ -101,7 +171,6 @@
                 min-width: 150px;
                 margin: 20px 5px;
                 color: Bright(1);
-
             }
             justify-content: flex-end;
         }
