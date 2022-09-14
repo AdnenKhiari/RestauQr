@@ -53,8 +53,8 @@ export const SUPPLIERS = {
     GET_SUPPLIERS : baseurl+"suppliers/",
     UPDATE_SUPPLIER: (id)=>baseurl + "suppliers/" + id,
     ADD_SUPPLIER : baseurl + "suppliers/",
-    GET_SUPPLIER_BY_ID : (id)=>"/suppliers/"+id,
-    REMOVE_SUPPLIER: (id)=>"/suppliers/"+id,
+    GET_SUPPLIER_BY_ID : (id)=>baseurl+"/suppliers/"+id,
+    REMOVE_SUPPLIER: (id)=>baseurl+"/suppliers/"+id,
 }
 export const UNITS = {
     GET_UNITS: baseurl+"units/",

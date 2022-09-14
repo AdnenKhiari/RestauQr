@@ -188,6 +188,7 @@ input,button,a,textarea{
 }
 
 .react-select-container{
+    min-width: 120px;
     * {
         cursor: pointer;
     }

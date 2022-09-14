@@ -9,6 +9,7 @@ import Auth from "./Authentication"
 import Users from "./Users"
 import Categories from "./Categories"
 import Units from "./Units"
+import Suppliers from "./Suppliers"
 
 import PushNotifications from "./PushNotification"
 const router = Router()
@@ -20,7 +21,7 @@ router.use("/products",Products)
 router.use("/auth",Auth)
 router.use("/categories",Categories)
 router.use("/units",Units)
-
+router.use("/suppliers",Suppliers)
 router.use("/users",Users)
 router.use("/pushnot",PushNotifications)
 export default router

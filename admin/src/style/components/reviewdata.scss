@@ -41,6 +41,40 @@
         > p {
 
         }
+        .ticket-container{
+            display: flex;
+            align-items: center;
+            align-content: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            > h2{
+                display: flex;
+                align-items: center;
+                align-content: center;
+                flex-direction: row;
+                img{
+                    object-fit: cover;
+                    width: 40px;
+                    height: 100%;
+                    margin: 5px;
+                }
+            }
+            .ticket{
+                transition: all 100ms ease;
+                padding: 10px 20px;
+                background-color: Secondary(0.3);
+                border: 1px solid Secondary(0.8);
+                margin: 5px;
+            }
+
+            .ticket:hover{
+                border-left: 5px solid Green(1);
+            }
+        }
+        .ticket-container.column{
+            flex-direction: column;
+            align-content: flex-start;
+        }
         
         .option-item{
             font-size: $h3size  ;

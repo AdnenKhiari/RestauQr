@@ -22,6 +22,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@types/joi-phone-number": "^5.0.4",
     "axios": "^0.27.2",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
@@ -30,6 +31,8 @@
     "express": "^4.18.1",
     "firebase-admin": "^11.0.1",
     "joi": "^17.6.0",
+    "joi-filelist": "^1.0.0",
+    "joi-phone-number": "^5.1.1",
     "moment": "^2.29.4",
     "nodemailer": "^6.7.8",
     "uuid": "^9.0.0"
