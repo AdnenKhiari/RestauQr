@@ -20,7 +20,7 @@ const schema = joi.object({
     used: unitvalueschema.label("Use"),
     wasted: unitvalueschema.label("Wasted"),    
 })
-const ReviewProductOrder =()=>{
+const ReviewMerchandise =()=>{
     const {productid,orderid} = useParams()
     const {result : productorder,loading,error} = GetProductOrderById(productid,orderid)
     const {result : product,loading: loadingproduct,error: errorproduct} = GetProductById(productid)
@@ -43,7 +43,7 @@ const ReviewProductOrder =()=>{
     const del = RemoveProductOrder(productid,orderid)
     if( error || allunitserror || errorproduct)
         return <>
-        {error && <Error msg={"Error while retrieving Product Order information " + productid + ","+orderid} error={error} />}
+        {error && <Error msg={"Error while retrieving Merchandise information " + productid + ","+orderid} error={error} />}
         {errorproduct && <Error msg={"Error while retrieving Product information " + productid} error={errorproduct} />}
         {allunitserror && <Error msg={"Error while retrieving AllUnits information "} error={allunitserror} />}
         </>
@@ -56,7 +56,7 @@ const ReviewProductOrder =()=>{
             <div>
                 
                 {getLevel(user.profile.permissions.tables) >=getLevel("manage") && <><button onClick={(e)=>{
-                    usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT_ORDER(productid,orderid))
+                    usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT_MERCHANDISE(productid,orderid))
                 }}>Update</button>
                 <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid))}>Related Product</button>
                 <button onClick={async (e)=>{
@@ -119,4 +119,4 @@ const ReviewProductOrder =()=>{
     </>
 }
 
-export default ReviewProductOrder
+export default ReviewMerchandise

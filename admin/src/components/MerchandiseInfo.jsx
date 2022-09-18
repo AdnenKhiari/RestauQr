@@ -22,7 +22,7 @@ const schema = joi.object({
     time: joi.date().required().label('Time'),
     expiresIn: joi.date().required().label('Expires In')
 })
-const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
+const MerchandiseDetails = ({defaultVals = undefined,productid})=>{
     const formOptions = useForm({
         defaultValues: defaultVals ? {
             id: defaultVals.id,
@@ -54,7 +54,7 @@ const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
                 throw productordermutator.error
               
             // normalement usenav to the new id
-            usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_ORDER(productid,productorderid))
+            usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_MERCHANDISE(productid,productorderid))
             
         }catch(err){
             console.error(err)
@@ -118,4 +118,4 @@ const ProductOrdersDetails = ({defaultVals = undefined,productid})=>{
         </FormProvider>
     </motion.div>
 }
-export default ProductOrdersDetails
+export default MerchandiseDetails

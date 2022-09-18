@@ -17,6 +17,7 @@ export const SUPPLIERS = {
     ADD_SUPPLIER : "/suppliers/add",
     GET_SUPPLIER : (id)=>"/suppliers/"+id
 }
+/*
 export const INVENTORY = {
     ALL : "/inventory",
     REVIEW_PRODUCT: "/inventory/:productid",
@@ -33,6 +34,25 @@ export const INVENTORY = {
     GET_UPDATE_PRODUCT_ORDER : (productid,orderid)=>"/inventory/"+productid+"/orders/update/"+orderid,
     GET_REVIEW_PRODUCT_ORDER : (productid,orderid)=>"/inventory/"+productid+"/orders/"+orderid
 }
+*/
+
+export const INVENTORY = {
+    ALL : "/inventory",
+    REVIEW_PRODUCT: "/inventory/:productid",
+    ALL_MERCHANDISE :"/inventory/merchandise",
+    ALL_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise",
+    REVIEW_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise/:orderid",
+    UPDATE_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise/update/:orderid",
+    UPDATE_PRODUCT_PRODUCT : "/inventory/update/:productid",
+    ADD_PRODUCT : "/inventory/add",
+    ADD_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise/add",
+    GET_ADD_PRODUCT_MERCHANDISE : (id)=> "/inventory/"+id+"/merchandise/add",
+    GET_UPDATE_PRODUCT : (id)=> "/inventory/update/" + id,
+    GET_REVIEW_PRODUCT : (id)=>"/inventory/"+id,
+    GET_UPDATE_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/update/"+orderid,
+    GET_REVIEW_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/"+orderid
+}
+
 export const AUTH = {
     SINGIN : "/auth/signin",
     SIGNUP : "/auth/signup",

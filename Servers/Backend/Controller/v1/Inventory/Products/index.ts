@@ -1,14 +1,12 @@
 import {Router} from "express"
 import Inventory from "../../../../DataAcessLayer/Inventory"
 import { Request } from "express"
-import ProductOrders from "./ProductOrders"
+import Merchandise from "./Merchandise"
 import joi from "joi"
 import OAuth from "../../Authorisation"
 const router = Router()
 
-
-
-const fetchProductOrderschema  = joi.object({
+const fetchMerchandisechema  = joi.object({
     name: joi.string().allow('').optional().label("Item Name"),
     higherexpiresIn: joi.date().allow('').optional().label('Expires In : min'),
     lowerexpiresIn: joi.date().allow('').optional().label('Expires In : max'),
@@ -55,10 +53,10 @@ const ProductSchema =joi.object({
     }).required()
 })
 
-router.get('/product_orders',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
+router.get('/merchandise',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 
-    const {value,error} = (fetchProductOrderschema.validate(req.query))
+    const {value,error} = (fetchMerchandisechema.validate(req.query))
     if(error)
         return next(error)
     req.query = value
@@ -68,7 +66,7 @@ async (req,res,next)=>{
     try{
         const search_params = req.query
         console.log(search_params)
-        const data = await Inventory.ProductOrders.GetProductOrders(search_params,undefined)
+        const data = await Inventory.Merchandise.GetMerchandise(search_params,undefined)
         return res.send({
             data: data
         })
@@ -186,9 +184,9 @@ router.post('/consume/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"})
     }
 })
 
-router.use('/:productid/product_orders',(req: Request,res,next)=>{
+router.use('/:productid/merchandise',(req: Request,res,next)=>{
     req.productid = <string>req.params.productid
-    return ProductOrders(req,res,next)
+    return Merchandise(req,res,next)
 })
 
 

@@ -69,13 +69,13 @@ export const PRODUCTS = {
     REMOVE_PRODUCT: (id)=> baseurl+"products/"+id,
     CONSUME_PRODUCT: (id)=> baseurl+"products/consume/"+id,
 
-    PRODUCT_ORDERS : {
-        GET_PRODUCT_ORDER_OF_PRODUCT_BY_ID: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
-        GET_PRODUCT_ORDERS: baseurl+"products/product_orders",
-        GET_PRODUCT_ORDERS_OF_PRODUCT : (productid)=> baseurl+"products/"+productid+"/product_orders",
-        ADD_PRODUCT_ORDER:(productid)=>  baseurl+"products/" + productid  + "/product_orders",
-        UPDATE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
-        REMOVE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
-        CONSUME_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/consume/" + subid,
+    MERCHANDISE : { 
+        GET_MERCHANDISE_OF_PRODUCT_BY_ID: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/" + subid,
+        GET_MERCHANDISE: baseurl+"products/merchandise",
+        GET_MERCHANDISE_OF_PRODUCT : (productid)=> baseurl+"products/"+productid+"/merchandise",
+        ADD_MERCHANDISE:(productid)=>  baseurl+"products/" + productid  + "/merchandise",
+        UPDATE_MERCHANDISE: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/" + subid,
+        REMOVE_MERCHANDISE: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/" + subid,
+        CONSUME_MERCHANDISE: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/consume/" + subid,
     }
 }

@@ -56,7 +56,7 @@ const Nav = ()=>{
                 </li>
                 <Link to={ROUTES.INVENTORY.ALL} ><li>All Products</li></Link>
                 <Link to={ROUTES.INVENTORY.ADD_PRODUCT} ><li>New Product</li></Link>
-                <Link to={ROUTES.INVENTORY.ALL_ORDERS} ><li>All Product Orders</li></Link>
+                <Link to={ROUTES.INVENTORY.ALL_MERCHANDISE} ><li>Merchandise</li></Link>
                 <li>
                     <img src={optionsimg} alt="suppliers" />
                     <h2>Suppliers</h2>

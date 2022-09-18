@@ -15,7 +15,7 @@ const schema  = joi.object({
     lowertime: joi.date().allow('').required().label('Purshase Time : max')
 })
 
-const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
+const MerchandiseTable = ({queryConstraints,title,parentid})=>{
 
     const page_lim = 10
     const path = (parentid ? 'products/' + parentid+'/'  : '') + 'product_orders' 
@@ -101,7 +101,7 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
     title={title} 
     custom_key="lastProductRef"
     custom_val="product_ref"
-    cs_query={parentid ? APIROUTES.PRODUCTS.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_OF_PRODUCT(parentid) :  APIROUTES.PRODUCTS.PRODUCT_ORDERS.GET_PRODUCT_ORDERS}
+    cs_query={parentid ? APIROUTES.PRODUCTS.MERCHANDISE.GET_MERCHANDISE_OF_PRODUCT(parentid) :  APIROUTES.PRODUCTS.MERCHANDISE.GET_MERCHANDISE}
     onDataQueried={onDataQueried} 
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   
@@ -109,8 +109,8 @@ const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
     group={!parentid}
     schema={schema}
     queryConstraints={queryConstraints}
-    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_ORDER(row.product_id,row.id))}
+    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_MERCHANDISE(row.product_id,row.id))}
     page_lim= {page_lim}        />
 }
-export default ProductOrdersTable
+export default MerchandiseTable
 

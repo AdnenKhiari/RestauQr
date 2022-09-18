@@ -62,10 +62,10 @@ const Main = ()=>{
                 <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT} element={<INVENTORY.UpdateProduct />} />
 
 
-                <Route path={ROUTES.INVENTORY.ALL_ORDERS} element={<INVENTORY.Orders.AllOrders />} />
-                <Route path={ROUTES.INVENTORY.REVIEW_PRODUCT_ORDER} element={<INVENTORY.Orders.ReviewProductOrder />} />
-                <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT_ORDER} element={<INVENTORY.Orders.UpdateProductOrder />} />
-                <Route path={ROUTES.INVENTORY.ADD_PRODUCT_ORDER} element={<INVENTORY.Orders.AddProductOrder />} />
+                <Route path={ROUTES.INVENTORY.ALL_MERCHANDISE} element={<INVENTORY.Marchandise.AllMerchandise />} />
+                <Route path={ROUTES.INVENTORY.REVIEW_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.ReviewMerchandise />} />
+                <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.UpdateMerchandise />} />
+                <Route path={ROUTES.INVENTORY.ADD_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.AddMerchandise />} />
 
                 <Route path={ROUTES.SUPPLIERS.ALL} element={<SUPPLIERS.All />} />
                 <Route path={ROUTES.SUPPLIERS.REVIEW_SUPPLIER} element={<SUPPLIERS.Review />} />

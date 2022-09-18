@@ -159,7 +159,7 @@ const IngredientsTable = ({products,path,price})=>{
     const usenav = useNavigate()
     const tb = useTable({columns: columns,data: products},useSortBy)
 
-    return <div className="products-table">
+    return <div className="secondary-table">
         <h2><span>{path}</span></h2>
         <table {...tb.getTableProps()}>
             <thead>

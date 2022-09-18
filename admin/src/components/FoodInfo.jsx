@@ -345,7 +345,7 @@ const SelectionTable = ({root,popActive,popLabel})=>{
         <ProductsTables title={""} 
         oncl={(row)=> mutateProduct === "add" ? addProduct(row) : modifyProduct(row,mutateProduct)} />
         </>}
-     <div className="products-table">
+     <div className="secondary-table">
 
         <div className="products-list-header">
             <h2>Products : </h2>

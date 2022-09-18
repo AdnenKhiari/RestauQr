@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin"
 
-const GetProductOrderById =  async (productid: string,orderid: string)=>{
+const GetMerchandiseById =  async (productid: string,orderid: string)=>{
     const db = admin.firestore()
     const ref = db.doc(`products/${productid}/product_orders/${orderid}`)
     
@@ -11,7 +11,7 @@ const GetProductOrderById =  async (productid: string,orderid: string)=>{
     return {id: ref.id,...res.data()}
 }
 
-const DeleteProductOrder = async (productid: string,orderid: string)=>{
+const DeleteMerchandise = async (productid: string,orderid: string)=>{
     let quan = 0
     const db = admin.firestore()
 
@@ -27,7 +27,7 @@ const DeleteProductOrder = async (productid: string,orderid: string)=>{
         })
     })
 }
-const ConsumeProductOrder = async (productid: string,orderid: string,data: {wasted:number,used: number,updateGlobally : boolean}) => {
+const ConsumeMerchandise= async (productid: string,orderid: string,data: {wasted:number,used: number,updateGlobally : boolean}) => {
     const db = admin.firestore()
 
     const docref = db.doc(`products/${productid}/product_orders/${orderid}`)
@@ -54,7 +54,7 @@ const ConsumeProductOrder = async (productid: string,orderid: string,data: {wast
             })
     })
 }
-const GetProductOrders = async (searchData: any,productid: string | undefined)=>{
+const GetMerchandise = async (searchData: any,productid: string | undefined)=>{
     const db = admin.firestore()
     const path = (productid ? 'products/' + productid+'/'  : '') + 'product_orders' 
     let col = productid ? db.collection( path) : db.collectionGroup('product_orders' )
@@ -102,7 +102,7 @@ const GetProductOrders = async (searchData: any,productid: string | undefined)=>
     console.log(data.docs)
     return data.docs.map((order)=>{return{ id:order.id,...order.data()}})
 }
-const AddUpdateProductOrders = async (productid: string,orderid: string | undefined,data: any)=>{
+const AddUpdateMerchandise = async (productid: string,orderid: string | undefined,data: any)=>{
     const db = admin.firestore()
 
     const prodref = db.doc('products/'+productid)
@@ -172,9 +172,9 @@ const updateFoodProducts = (cur: any,data: any,productid :any)=>{
 
 
 export default {
-    GetProductOrderById,
-    GetProductOrders,
-    AddUpdateProductOrders,
-    DeleteProductOrder,
-    ConsumeProductOrder
+    GetMerchandiseById,
+    GetMerchandise,
+    AddUpdateMerchandise,
+    DeleteMerchandise,
+    ConsumeMerchandise
 }

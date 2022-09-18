@@ -7,7 +7,7 @@ import { useContext } from "react"
 import { UserContext } from "../../contexts"
 import {motion} from "framer-motion"
 import { FadeIn } from "../../animations"
-import ProductOrdersTable from "../../components/Tables/ProductOrdersTable.jsx"
+import MerchandiseTable from "../../components/Tables/MerchandiseTable.jsx"
 import joi from "joi"
 import { joiResolver } from "@hookform/resolvers/joi"
 import { useForm } from "react-hook-form"
@@ -51,7 +51,7 @@ const ReviewProduct =()=>{
                 {getLevel(user.profile.permissions.tables) >= getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT(productid))
                 }}>Update</button>
-                <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_ORDER(productid))}>New Order</button>
+                <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_MERCHANDISE(productid))}>Add Merchandise</button>
 
                 <button disabled={del.loading} onClick={async (e)=>{
                     try{
@@ -106,7 +106,7 @@ const ReviewProduct =()=>{
             </div>
         </div>
     </motion.div >
-    <ProductOrdersTable  title={'All Orders'} parentid={productid}  />
+    <MerchandiseTable  title={'Related Merchandise'} parentid={productid}  />
 
     </>
         //queryConstraints={{order_ref: productid }}
