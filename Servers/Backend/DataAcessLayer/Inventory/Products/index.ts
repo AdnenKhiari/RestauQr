@@ -51,7 +51,7 @@ const ConsumeProductItem = async (productid: string,data : {used:number,wasted: 
 const DeleteProduct =  async (productid: string)=>{
     const db = admin.firestore()
     const product_ref = db.doc('products/'+productid)
-    const orders_ref = db.collection('products/'+productid+"/product_orders")
+    const orders_ref = db.collection('products/'+productid+"/product_instances")
     const food_ref = db.collection('food')
 
     let allfood = await food_ref.get();

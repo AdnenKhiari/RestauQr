@@ -7,6 +7,7 @@ import USERS from "./users"
 import TABLES from "./Tables"
 import INVENTORY from "./inventory"
 import SUPPLIERS from "./suppliers"
+import PRODUCT_ORDERS from "./productorders"
 
 import { useContext } from "react"
 import { UserContext } from "../contexts"
@@ -72,6 +73,11 @@ const Main = ()=>{
                 <Route path={ROUTES.SUPPLIERS.UPDATE_SUPPLIER} element={<SUPPLIERS.Update />} />
                 <Route path={ROUTES.SUPPLIERS.ADD_SUPPLIER} element={<SUPPLIERS.Add />} />
 
+
+                <Route path={ROUTES.PRODUCT_ORDERS.ALL} element={<PRODUCT_ORDERS.All />} />
+                <Route path={ROUTES.PRODUCT_ORDERS.REVIEW_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Review />} />
+                <Route path={ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDERS} element={<INVENTORY.AddProduct />} />
+                <Route path={ROUTES.PRODUCT_ORDERS.UPDATE_PRODUCT_ORDERS} element={<INVENTORY.UpdateProduct />} />
 
 
             </Routes>

@@ -2,7 +2,7 @@ import * as admin from "firebase-admin"
 
 const GetMerchandiseById =  async (productid: string,orderid: string)=>{
     const db = admin.firestore()
-    const ref = db.doc(`products/${productid}/product_orders/${orderid}`)
+    const ref = db.doc(`products/${productid}/product_instances/${orderid}`)
     
     const res = await ref.get()
     if(!res.exists)
@@ -15,7 +15,7 @@ const DeleteMerchandise = async (productid: string,orderid: string)=>{
     let quan = 0
     const db = admin.firestore()
 
-    const ref = db.doc('products/'+productid+'/product_orders/'+orderid)
+    const ref = db.doc('products/'+productid+'/product_instances/'+orderid)
     db.runTransaction(async (tr)=>{
         const snap = await tr.get(ref)
         if(!snap.exists)
@@ -30,7 +30,7 @@ const DeleteMerchandise = async (productid: string,orderid: string)=>{
 const ConsumeMerchandise= async (productid: string,orderid: string,data: {wasted:number,used: number,updateGlobally : boolean}) => {
     const db = admin.firestore()
 
-    const docref = db.doc(`products/${productid}/product_orders/${orderid}`)
+    const docref = db.doc(`products/${productid}/product_instances/${orderid}`)
     const prodref = db.doc(`products/${productid}`)
     await db.runTransaction(async (tr)=>{
         const snap = await tr.get(docref)
@@ -56,16 +56,16 @@ const ConsumeMerchandise= async (productid: string,orderid: string,data: {wasted
 }
 const GetMerchandise = async (searchData: any,productid: string | undefined)=>{
     const db = admin.firestore()
-    const path = (productid ? 'products/' + productid+'/'  : '') + 'product_orders' 
-    let col = productid ? db.collection( path) : db.collectionGroup('product_orders' )
+    const path = (productid ? 'products/' + productid+'/'  : '') + 'product_instances' 
+    let col = productid ? db.collection( path) : db.collectionGroup('product_instances' )
     const pagname = 'time'
-    let query  = col.orderBy(pagname,searchData.dir || 'desc');
+    let query :  admin.firestore.Query<admin.firestore.DocumentData> = col
 
     if(searchData.name)
         query = query.orderBy('name',searchData.dir || 'desc').where('name','>=',searchData.name)
     
     if(searchData.order_ref)
-        query = query.where("order_ref",'==',searchData.order_ref)
+        query = query.orderBy(pagname,searchData.dir || 'desc').where("order_ref",'==',searchData.order_ref)
         
     if(searchData.higherexpiresIn || searchData.lowerexpiresIn){
         query = query.orderBy('expiresIn',searchData.dir || 'desc')
@@ -86,7 +86,7 @@ const GetMerchandise = async (searchData: any,productid: string | undefined)=>{
     }
 
     if(searchData.lastRef){
-        const starting = await db.doc(productid ? path+"/"+searchData.lastRef : "products/"+searchData.lastProductRef+"/product_orders/"+searchData.lastRef).get()
+        const starting = await db.doc(productid ? path+"/"+searchData.lastRef : "products/"+searchData.lastProductRef+"/product_instances/"+searchData.lastRef).get()
         if(!starting.exists)
             throw Error("Invalid Last Reference")
         if(searchData.swapped)
@@ -100,7 +100,7 @@ const GetMerchandise = async (searchData: any,productid: string | undefined)=>{
     query = query.limit(2)
     const data = await query.get()
     console.log(data.docs)
-    return data.docs.map((order)=>{return{ id:order.id,...order.data()}})
+    return data.docs.map((order)=>{return{ id:order.id,product_ref: order.ref.parent?.parent?.id,...order.data()}})
 }
 const AddUpdateMerchandise = async (productid: string,orderid: string | undefined,data: any)=>{
     const db = admin.firestore()
@@ -108,7 +108,7 @@ const AddUpdateMerchandise = async (productid: string,orderid: string | undefine
     const prodref = db.doc('products/'+productid)
 
     if(orderid){
-        const ref = db.doc('products/'+productid+'/product_orders/'+orderid)
+        const ref = db.doc('products/'+productid+'/product_instances/'+orderid)
         const productorderid = orderid+""
         await db.runTransaction(async (tr)=>{
 
@@ -135,7 +135,7 @@ const AddUpdateMerchandise = async (productid: string,orderid: string | undefine
     }else{
         data = {...data,used: 0,wasted: 0}
         const stockadd =  (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
-        const ref = db.collection('products/'+productid+'/product_orders').doc()
+        const ref = db.collection('products/'+productid+'/product_instances').doc()
         await db.runTransaction(async (tr)=>{
             tr.create(ref,data)
             tr.update(prodref,{stockQuantity: admin.firestore.FieldValue.increment(stockadd)})

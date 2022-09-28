@@ -43,7 +43,7 @@ export const INVENTORY = {
     ALL_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise",
     REVIEW_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise/:orderid",
     UPDATE_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise/update/:orderid",
-    UPDATE_PRODUCT_PRODUCT : "/inventory/update/:productid",
+    UPDATE_PRODUCT : "/inventory/update/:productid",
     ADD_PRODUCT : "/inventory/add",
     ADD_PRODUCT_MERCHANDISE: "/inventory/:productid/merchandise/add",
     GET_ADD_PRODUCT_MERCHANDISE : (id)=> "/inventory/"+id+"/merchandise/add",
@@ -51,6 +51,16 @@ export const INVENTORY = {
     GET_REVIEW_PRODUCT : (id)=>"/inventory/"+id,
     GET_UPDATE_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/update/"+orderid,
     GET_REVIEW_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/"+orderid
+}
+
+export const PRODUCT_ORDERS = {
+    ALL : "/suppliers/orders",
+    GET_UPDATE_PRODUCT_ORDERS: (supid,orderid)=> "/suppliers/"+supid+"/orders/update/" + orderid,
+    UPDATE_PRODUCT_ORDERS : "/suppliers/:supplierid/orders/update/:orderid",
+    REVIEW_PRODUCT_ORDERS: "/suppliers/orders",
+    ADD_PRODUCT_ORDERS: "/suppliers/orders/add",
+    GET_PRODUCT_ORDERS_OF_SUPPLIER : (supid)=> "/suppliers/"+supid+"/orders/",
+    GET_PRODUCT_ORDERS_BY_ID : (supid,orderid)=> "/suppliers/"+supid+"/orders/" + orderid,
 }
 
 export const AUTH = {

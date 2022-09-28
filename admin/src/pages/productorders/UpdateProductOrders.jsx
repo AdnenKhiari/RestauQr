@@ -4,7 +4,7 @@ import { GetSupplierById } from "../../lib/SuppliersDal"
 import Loading from "../../components/Loading"
 import Error from "../../components/Error"
 
-const UpdateSupplier = ()=>{
+const UpdateProductOrder = ()=>{
     const {supplierid} = useParams()
     const {result,error,loading} = GetSupplierById(supplierid,true)
     console.log(result,error,loading)
@@ -14,4 +14,4 @@ const UpdateSupplier = ()=>{
         return <Error err={error} msg='Invalid ID' />
     return <SuppliersInfo defaultVals={result} />
 }
-export default UpdateSupplier
+export default UpdateProductOrder

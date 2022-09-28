@@ -18,7 +18,7 @@ const schema  = joi.object({
 const MerchandiseTable = ({queryConstraints,title,parentid})=>{
 
     const page_lim = 10
-    const path = (parentid ? 'products/' + parentid+'/'  : '') + 'product_orders' 
+    const path = (parentid ? 'products/' + parentid+'/'  : '') + 'product_instances' 
     const rows = [      
     {
         Header: 'Item Name',
@@ -87,11 +87,11 @@ const MerchandiseTable = ({queryConstraints,title,parentid})=>{
                 return {...item,id: item.id,product_id: parentid ? parentid : item.product_ref}
             })
             res = alldata
+            console.log(alldata)
         }
         return res
     }
 
-    console.log(APIROUTES.PRODUCTS.GET_PRODUCTS,"URL")
 
     const usenav = useNavigate()
     return <PaginatedUniversalTable 

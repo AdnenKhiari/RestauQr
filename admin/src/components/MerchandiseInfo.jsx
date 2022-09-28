@@ -1,5 +1,5 @@
 import {FormProvider, useFieldArray, useForm, useFormContext} from "react-hook-form"
-import {AddUpdateProductOrder, GetProductById} from "../lib/ProductsDal"
+import {AddUpdateMerchandise, GetProductById} from "../lib/ProductsDal"
 import {useNavigate, useParams} from "react-router-dom"
 import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
@@ -39,7 +39,7 @@ const MerchandiseDetails = ({defaultVals = undefined,productid})=>{
     const {result: allunits,error: errorunits,loading: loadingunits} = GetUnits()
 
     const {handleSubmit,register,setValue,watch,reset,control,formState : {errors}} = formOptions
-    const productordermutator = AddUpdateProductOrder(productid,!defaultVals)
+    const productordermutator = AddUpdateMerchandise(productid,!defaultVals)
     const usenav = useNavigate() 
     console.log(errors)
     const SubmitForm = async (data)=>{

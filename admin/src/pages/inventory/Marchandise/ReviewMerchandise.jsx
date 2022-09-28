@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom"
-import {ConsumeProductOrderItem, GetProductById, GetProductOrderById, RemoveProductOrder} from "../../../lib/ProductsDal.jsx"
+import {ConsumeMerchandiseItem, GetProductById, GetMerchandiseById, RemoveMerchandise} from "../../../lib/ProductsDal.jsx"
 import Loading from "../../../components/Loading"
 import Error from "../../../components/Error"
 import * as ROUTES from "../../../ROUTES"
@@ -22,7 +22,7 @@ const schema = joi.object({
 })
 const ReviewMerchandise =()=>{
     const {productid,orderid} = useParams()
-    const {result : productorder,loading,error} = GetProductOrderById(productid,orderid)
+    const {result : productorder,loading,error} = GetMerchandiseById(productid,orderid)
     const {result : product,loading: loadingproduct,error: errorproduct} = GetProductById(productid)
     const {result: allunits,loading: allunitsloading,error: allunitserror} = GetUnits()
     console.warn("XDDD",product,loadingproduct,errorproduct,productorder,allunits)
@@ -39,8 +39,8 @@ const ReviewMerchandise =()=>{
         }
         return sendata
     }
-    const consume = ConsumeProductOrderItem(productid,orderid)
-    const del = RemoveProductOrder(productid,orderid)
+    const consume = ConsumeMerchandiseItem(productid,orderid)
+    const del = RemoveMerchandise(productid,orderid)
     if( error || allunitserror || errorproduct)
         return <>
         {error && <Error msg={"Error while retrieving Merchandise information " + productid + ","+orderid} error={error} />}

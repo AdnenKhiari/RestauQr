@@ -52,7 +52,7 @@ const ReviewSupplier =()=>{
             <h2><span>Email:</span>  </h2>
             <h2>{supplier.email}</h2>            
             {supplier.website && <><h2><span>Website:</span></h2>
-            <h2><a target="_blank" href={supplier.website}>{supplier.website}</a></h2></>}
+            <h2><a target="_blank" rel="noreferrer" href={supplier.website}>{supplier.website}</a></h2></>}
             <h2><span>Phone Numbers:</span></h2>
             <div className="ticket-container column">
                 {supplier.phonenumbers && supplier.phonenumbers.map((sup,key)=><h2 key={key} >
