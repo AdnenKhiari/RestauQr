@@ -13,9 +13,13 @@
         table-layout: fixed ;
         padding: 15px;
         thead{
+            position: sticky;
+            top: 0px;
+            z-index: 100000;
             width: 100%;
             background-color: LightGray(1);
             tr{
+
                 width: 100%;
                 th{
                     width: 100%;
@@ -46,13 +50,13 @@
             tr{
                 width: 100%;
                 td{
-                    width: 100%;
                     text-align: start;
                     padding: 15px;
                     text-transform: capitalize;
                     width: 100%;
                     button{
-                        margin: 0px 5px;
+                        margin: 5px 5px;
+                        width: 100%;
                         border: none;
                         background-color: Secondary(0.4);
                         font-family: $base_font;

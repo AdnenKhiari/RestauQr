@@ -1,13 +1,22 @@
 import { useContext } from "react"
-import { Navigate } from "react-router-dom"
-import SuppliersInfo from "../../components/SuppliersInfo.jsx"
+import { Navigate, useParams } from "react-router-dom"
+import Error from "../../components/Error"
+import Loading from "../../components/Loading"
+import ProductOrdersInfo from "../../components/ProductOrdersInfo"
 import {UserContext} from '../../contexts'
+import { GetSupplierById } from "../../lib/SuppliersDal"
 import { getLevel } from "../../lib/utils"
 import * as ROUTES from "../../ROUTES"
 const AddProductOrder = ()=>{
     const user = useContext(UserContext) 
+    const {supid} = useParams()
     if(getLevel(user.profile.permissions.food) < getLevel("manage") )
         return <Navigate to={ROUTES.SUPPLIERS.ALL} />
-    return <SuppliersInfo />
+    const suppinfo = GetSupplierById(supid)
+    if(suppinfo.error)
+        return <Error error={suppinfo.error} msg={"Error while retrieving supplier info "} />
+    if(suppinfo.loading)
+        return <Loading />
+    return <ProductOrdersInfo supplierinfo={suppinfo.result} />
 }
 export default AddProductOrder

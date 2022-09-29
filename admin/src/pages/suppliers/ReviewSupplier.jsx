@@ -34,7 +34,11 @@ const ReviewSupplier =()=>{
         <div className="data-review-header">
             <h1><span>{supplier.name}</span></h1>
             <div>
-                {getLevel(user.profile.permissions.food)>=  getLevel("manage") && <><button onClick={(e)=>{
+                {getLevel(user.profile.permissions.food)>=  getLevel("manage") && <>
+                
+                <button onClick={(e)=>usenav(ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDER_TO_SUPPLIER(supplierid))}>Make an Order</button>
+
+                <button onClick={(e)=>{
                     usenav(ROUTES.SUPPLIERS.GET_UPDATE_SUPPLIER(supplier.id))
                 }}>Update</button>
                 <button onClick={async (e)=>{
