@@ -32,6 +32,7 @@
     "react-table": "^7.8.0",
     "react-to-print": "^2.14.7",
     "react-virtualized-auto-sizer": "^1.0.6",
+    "reactjs-popup": "^2.0.5",
     "sass": "^1.53.0",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4"
