@@ -6,14 +6,14 @@ import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
 import{joiResolver} from "@hookform/resolvers/joi"
 import { fileListExtension } from 'joi-filelist';
-
+import PopupItem from "./PopupItem"
 import BaseJoi from "joi"
 import Loading from "./Loading"
 import Error from "./Error"
 import { FadeIn } from "../animations"
 import {motion} from "framer-motion"
 import Select from "react-select"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import CustomSelect from "./Custom/CustomSelect"
 import FormSelect from "./Custom/FormSelect"
 import UnitValue from "./Custom/UnitValue"
@@ -31,15 +31,21 @@ import uploadimg from "../images/upload.png"
 
 
 const joi  =  fileListExtension(BaseJoi)  
+const orderdetailschema = joi.object({
+    status: joi.string().valid("Completed","Canceled","Waiting").required().label('Status'),
+    delivery_date: joi.date().allow("").required().label('Delivery Date'),
+    cancel_reason: joi.string().allow("").label("Cancel Reason").optional(),
+})
 const schema = joi.object({
     id: joi.string().optional().label('Order Id'),
     expected_delivery_date: joi.date().required().label('Expected Date'),
-    notes: joi.string().label("Notes"),
+    notes: joi.string().allow("").label("Notes"),
     orders: joi.array().items(joi.object({
         name: joi.string().required(),
         product: joi.string().required(),
         units: joi.number().required(),
         priceperunit :  joi.number().required(),
+        details: orderdetailschema.optional()
     })).required()
 })
 
@@ -102,10 +108,23 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
 
 const OrdersTable = ({supplierinfo,defaultVals})=>{
     const {watch,register,control} = useFormContext()
+
+    const [detailsPopUpOpen,setDetailsPopUpOpen] = useState(false)
+    const [orderDetails,setorderDetails] = useState(null)
+
+    const [merchandisePopUpOpen,setMerchandisePopUpOpen] = useState(false)
+    const [merchandiseDetails,setMerchandiseDetails] = useState(null)
+
     const {append,remove} = useFieldArray({
         name: "orders"
     })
     const orders = watch("orders") || []
+
+    const openOrderDetails = (data,id)=>{
+        setDetailsPopUpOpen(true)
+        setorderDetails( structuredClone({data,id}))    
+        console.log("opened",detailsPopUpOpen)
+    }
     const columns = useMemo(()=>{
         return [{
             Header: 'Name',
@@ -144,18 +163,14 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
         {
             Header: 'Total',
             Cell: ({row})=><h3 style={{fontWeight: "600"}}>{row.original.units * row.original.priceperunit}</h3>
-        },
-        {
-            Header: 'Status',
-            Cell: ({row})=><h3>Delivered</h3>
-        },
+        },  
         {
             Header: 'Action',
             Cell: (val)=>{
                 return<>
-                <button onClick={(e)=>console.log("Confime")} >Link Merchandise</button>
-                <button onClick={(e)=>console.log("Confime")} >Update Status</button>
-                <h3><button onClick={(e)=>remove(val.row.index)} >Remove</button></h3>
+                <button type="button" onClick={(e)=>console.log("Confime")} >Link Merchandise</button>
+                <button type="button" onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Update Details</button>
+                <h3><button type="button" onClick={(e)=>remove(val.row.index)} >Remove</button></h3>
                 </> 
             }
         }
@@ -165,7 +180,11 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
     const usenav = useNavigate()
     const tb = useTable({columns: columns,data: orders })
 
-    return orders &&<>
+    return <> 
+    <PopupItem open={detailsPopUpOpen} onClose={(e)=>setDetailsPopUpOpen(false)}>
+        <ProductOrderDetails {...orderDetails} />
+    </PopupItem>
+    {orders &&<>
      <div className="secondary-table">
         <table {...tb.getTableProps()}>
             <thead>
@@ -191,14 +210,54 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
                   <h3><span>Total Price : {tb.data.reduce((prev,row)=>prev + row.units * row.priceperunit,0)}</span></h3>  
                 </td>
                 <td>
-                <button onClick={(e)=>{append({units:0,name:"",product:"",priceperunit: 0})}} type="button" className="input">Add</button> 
+                <button onClick={(e)=>{append({units:0,name:"",product:"",priceperunit: 0,details: {
+                    status: "Waiting",
+                    delivery_date: "",
+                    cancel_reason: ""
+                }})}} type="button" className="input">Add</button> 
                 <button style={{width:"0px","padding":0}}></button>
                 </td>
                 </tr>
             </tbody>
         </table>
     </div>
+    </>}
     </>
+}
+
+
+const ProductOrderDetails = ({data,id})=>{
+    console.log("Default Details",data)
+    const productpath = `orders.${id}.details`
+    const {watch,control,register, formState: {errors}} = useFormContext()
+
+    const watch_cancel = watch(productpath+".status")
+    return <motion.div variants={FadeIn()} className="secondary-form">
+        <form onReset={(e)=>{
+            e.preventDefault();
+            }}>
+        <h1>{data.name + " :" } </h1>
+
+        <div className="input-item">
+            <label htmlFor="status"><h2>Status : </h2></label>
+            <FormSelect options={[{label: "Waiting",value: "Waiting"}
+            ,{label: "Canceled",value: "Canceled"}
+            ,{label: "Completed",value: "Completed"}]} 
+            defaultValue={{label: data.details?.status,value: data.details?.status}} name={productpath+`.status`} control={control} />
+        </div>   
+        <div className="input-item">
+                <label htmlFor="delivery_date"><h2>Delivery Date : </h2></label>
+                <input className={"secondary-input " + (errors[productpath+".delivery_date"] ? 'input-error' : '')} type="date" id="delivery_date" {...register(productpath+".delivery_date")} />
+        </div>   
+        {watch_cancel === "Canceled" && <div className="input-item">
+            <label htmlFor="cancel_reason"><h2>Cancel Reason: </h2></label>
+            <textarea className={(errors[productpath+".cancel_reason"] ? 'input-error' : '')} id="cancel_reason" cols="30" rows="10"{...register(productpath+".cancel_reason")}></textarea>
+        </div>    }
+        {errors[productpath+".status"] && <p className="error">{errors[productpath+".status"].message.replaceAll('"','') }</p>}
+        {errors[productpath+".delivery_date"] && <p className="error">{errors[productpath+".delivery_date"].message.replaceAll('"','') }</p>}
+        {errors[productpath+".cancel_reason"] && <p className="error">{errors[productpath+".cancel_reason"].message.replaceAll('"','') }</p>}
+        </form>
+</motion.div>
 }
 
 export default ProductOrderInfo

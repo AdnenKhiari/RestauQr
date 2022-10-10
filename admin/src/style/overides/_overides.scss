@@ -236,39 +236,53 @@ input,button,a,textarea{
     filter: invert(52%) sepia(37%) saturate(427%) hue-rotate(85deg) brightness(99%) contrast(94%);
 
 }
-.popup-container{
-    background-color: rgba($color: #000000, $alpha: 0.85);
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    z-index: 100000;
-
-    > * {
-    z-index: 1000000;
+#popup-root{
+    > *  {   
+        z-index: 100000 !important;
     }
-    .content-container{
-        overflow-y: auto;
-        max-width: 80vw;
-        margin: 0px auto;
 
+    .popup-container{
+        background-color: rgba($color: #000000, $alpha: 0.85);
+        width: 100vw;
+        height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         align-content: center;
-        button.closecontainer{
+        position: static;
+    
 
-            border-radius: 0px;
-            color: Bright(1);
-            padding: 10px  35px;
-            align-self: flex-end;
+        .content-container{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            * {
+                z-index: 100001;
+            }
+            .react-select-container{
+                z-index: 1000200;
+                *  {
+                    z-index: 1000200;
+
+                }
+            }
+            .content{
+                width: 80vw;
+                margin: 0px auto;
+            }
+            button.closecontainer{
+    
+                border-radius: 0px;
+                color: Bright(1);
+                padding: 10px  35px;
+                align-self: flex-end;
+            }
         }
+    
     }
-
 }
+
 @include scrollify(".Dropdown-menu",true);
-@include scrollify(".popup-container .content-container",true);
