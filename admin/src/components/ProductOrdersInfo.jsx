@@ -169,7 +169,7 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
             Cell: (val)=>{
                 return<>
                 <button type="button" onClick={(e)=>console.log("Confime")} >Link Merchandise</button>
-                <button type="button" onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Update Details</button>
+                <button type="button" onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Delivery Details</button>
                 <h3><button type="button" onClick={(e)=>remove(val.row.index)} >Remove</button></h3>
                 </> 
             }
@@ -236,7 +236,7 @@ const ProductOrderDetails = ({data,id})=>{
         <form onReset={(e)=>{
             e.preventDefault();
             }}>
-        <h1>{data.name + " :" } </h1>
+        <h1>{(data.name || "Item Name" )+ " :" } </h1>
 
         <div className="input-item">
             <label htmlFor="status"><h2>Status : </h2></label>
