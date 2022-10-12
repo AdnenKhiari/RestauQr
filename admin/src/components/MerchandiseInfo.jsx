@@ -87,6 +87,7 @@ const MerchandiseDetails = ({defaultVals = undefined,productid})=>{
                           register={register}  
                           name="unitQuantity" 
                           control={control}     
+                          customunits={[{...product.unit,customUnits: product.customUnits}]}
                           defaultValue={{value:  defaultVals ? defaultVals.unitQuantity: 0,units: product.unit}} 
                           units={allunits.filter((un)=>un.id === product.unit.id)} />    
                 </div>    

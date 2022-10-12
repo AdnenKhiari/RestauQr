@@ -4,7 +4,7 @@ import joi from "joi"
 const UnitValue = (props)=>{
     return <div className="unitvalue">
         <input {...props?.inputcustomprops} type="number" step="0.000000001" defaultValue={props.defaultValue.value} {...props.register(props.name+".value")}/>
-        <UnitSelect control={props.control} defaultValue={props.defaultValue.units} name={props.name+".unit"} units={props.units} />
+        <UnitSelect customunits={props.customunits} control={props.control} defaultValue={props.defaultValue.units} name={props.name+".unit"} units={props.units} />
     </div>
 }
 export const unitvalueschema = joi.object({

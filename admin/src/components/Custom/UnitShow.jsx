@@ -3,7 +3,7 @@ import {GetUnits} from "../../lib/Units"
 import Loading from "../Loading"
 import Error from "../Error"
 import { useEffect, useState } from "react"
-const UnitShow = ({unitval})=>{
+const UnitShow = ({unitval,customunits})=>{
     const {result: allunits,loading,error} = GetUnits()
     const [ratio,setRatio] = useState(unitval.unit.subunit ? unitval.unit.subunit.ratio : 1)
     const [currentunit,setCurrentunit] = useState(null)
@@ -40,7 +40,14 @@ const UnitShow = ({unitval})=>{
                 label: sub.name,
                 value: sub
             }))]
-        }] : []} />
+        },customunits && customunits.length > 0 ? {
+            label: "Custom Units",
+            options: [...customunits.map((sub)=>({
+                    label: sub.name,
+                    value: sub
+                }))]
+            
+        } : {}] : []} />
     </div>
 }
 export default UnitShow
