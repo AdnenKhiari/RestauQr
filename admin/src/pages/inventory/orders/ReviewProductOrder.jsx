@@ -74,7 +74,7 @@ const ReviewProductOrder =()=>{
             <h2><span>Purshase Time:</span> {formatFbDate(productorder.time,true)}</h2>
             <h2><span>Expires In :</span> {formatFbDate(productorder.expiresIn,true)} : {moment(productorder.expiresIn._seconds*1000 + productorder.expiresIn._nanoseconds / 1000).fromNow()}</h2>
             <h2><span>Price/U:</span> {productorder.unitPrice} Millime</h2>
-            <h2><span>Quantity/U:</span> <UnitShow  unitval={{value: productorder.unitQuantity,unit: product.unit}} /></h2>  
+            <h2><span>Quantity/U:</span> <UnitShow customunits={product.customUnits} unitval={{value: productorder.unitQuantity,unit: product.unit}} /></h2>  
             <h2><span>Purshase Quantity:</span> {productorder.productQuantity}</h2>
             <h2><span>Used:</span> {productorder.used}</h2>
             <h2><span>Wasted:</span> {productorder.wasted}</h2>
@@ -83,7 +83,9 @@ const ReviewProductOrder =()=>{
                 <div className="input-item">
                     <div>
                         <label htmlFor="use">Use</label>
-                        <UnitValue  inputcustomprops={{placeholder:"Use...", className:"secondary-input" ,id:"use"}}
+                        <UnitValue  
+                          customunits={[{...product.unit,customUnits: product.customUnits}]}
+                          inputcustomprops={{placeholder:"Use...", className:"secondary-input" ,id:"use"}}
                           register={register}  
                           name="used" 
                           control={control}  
@@ -93,6 +95,7 @@ const ReviewProductOrder =()=>{
                         <label htmlFor="waste">Waste</label>
                         <UnitValue  inputcustomprops={{placeholder:"Waste...", className:"secondary-input" ,id:"waste"}}
                           register={register}  
+                          customunits={[{...product.unit,customUnits: product.customUnits}]}
                           name="wasted" 
                           control={control} 
                           defaultValue={{value: 0,units: product.unit}} 

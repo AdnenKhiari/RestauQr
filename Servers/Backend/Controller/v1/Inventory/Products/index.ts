@@ -45,6 +45,10 @@ const ProductSchema =joi.object({
     name: joi.string().required().label('Product Name'),
     sellingUnitPrice: joi.number().min(0).required().label('Price/U:'),
     unitQuantity: joi.number().min(0).required().label('Quantity/U'),
+    customUnits: joi.array().items(joi.object({
+        name: joi.string().required(),
+        ratio: joi.number().required()
+    }).optional()).label("Custom Units"),
     unit : joi.object({
         id: joi.string().optional(),
         name: joi.string().required().label("Unit Name"),
