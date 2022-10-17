@@ -75,7 +75,13 @@ export const PRODUCTS = {
     UPDATE_PRODUCT: (id)=> baseurl+"products/"+id,
     REMOVE_PRODUCT: (id)=> baseurl+"products/"+id,
     CONSUME_PRODUCT: (id)=> baseurl+"products/consume/"+id,
-
+    TEMPLATES: {
+        GET_PRODUCT_TEMPLATES: (id)=> baseurl+"products/"+id+"/templates",
+        GET_PRODUCT_TEMPLATE_BY_ID : (id,tempid)=> baseurl+"products/"+id+"/templates/"+tempid,
+        ADD_TEMPLATE: (id)=> baseurl+"products/"+id+"/templates/",
+        UPDATE_TEMPLATE: (id,tempid)=> baseurl+"products/"+id+"/templates/"+tempid,
+        REMOVE_TEMPLATE: (id,tempid)=> baseurl+"products/"+id+"/templates/"+tempid,
+    },
     MERCHANDISE : { 
         GET_MERCHANDISE_OF_PRODUCT_BY_ID: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/" + subid,
         GET_MERCHANDISE: baseurl+"products/merchandise",
