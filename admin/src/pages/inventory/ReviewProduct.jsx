@@ -22,7 +22,7 @@ const schema = joi.object({
     wasted: unitvalueschema.label("Wasted"),    
 })
 
-const ReviewProduct =()=>{
+const ReviewProduct = ()=>{
     const {productid} = useParams()
     const {result : product,loading,error} = GetProductById(productid)
     const user = useContext(UserContext)

@@ -50,7 +50,11 @@ export const INVENTORY = {
     GET_UPDATE_PRODUCT : (id)=> "/inventory/update/" + id,
     GET_REVIEW_PRODUCT : (id)=>"/inventory/"+id,
     GET_UPDATE_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/update/"+orderid,
-    GET_REVIEW_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/"+orderid
+    GET_REVIEW_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/"+orderid,
+    TEMPLATES : {
+        UPDATE_TEMPLATE : "/inventory/:productid/templates/update/:templateid",
+        ADD_TEMPLATE : "/inventory/:productid/templates/add"
+    }
 }
 
 export const PRODUCT_ORDERS = {
@@ -62,6 +66,7 @@ export const PRODUCT_ORDERS = {
     ADD_PRODUCT_ORDER_TO_SUPPLIER : (supid)=> "/suppliers/"+supid+"/orders/add",
     GET_PRODUCT_ORDERS_OF_SUPPLIER : (supid)=> "/suppliers/"+supid+"/orders/",
     GET_PRODUCT_ORDERS_BY_ID : (supid,orderid)=> "/suppliers/"+supid+"/orders/" + orderid,
+
 }
 
 export const AUTH = {

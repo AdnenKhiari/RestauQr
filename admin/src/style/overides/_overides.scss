@@ -251,9 +251,10 @@ input,button,a,textarea{
         align-items: center;
         align-content: center;
         position: static;
-    
+
 
         .content-container{
+
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -272,6 +273,8 @@ input,button,a,textarea{
             .content{
                 width: 80vw;
                 margin: 0px auto;
+                height: 60vh;
+                overflow-y: auto;
             }
             button.closecontainer{
     
@@ -286,3 +289,4 @@ input,button,a,textarea{
 }
 
 @include scrollify(".Dropdown-menu",true);
+@include scrollify("#popup-root .popup-container .content",true);

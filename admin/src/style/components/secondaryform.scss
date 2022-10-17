@@ -3,6 +3,11 @@
     h1{
         margin: 15px;
     }
+    .split-two{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
     form{
         background-color: Bright(1);
         padding: 15px;

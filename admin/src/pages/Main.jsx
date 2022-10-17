@@ -62,7 +62,6 @@ const Main = ()=>{
                 <Route path={ROUTES.INVENTORY.ADD_PRODUCT} element={<INVENTORY.AddProduct />} />
                 <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT} element={<INVENTORY.UpdateProduct />} />
 
-
                 <Route path={ROUTES.INVENTORY.ALL_MERCHANDISE} element={<INVENTORY.Marchandise.AllMerchandise />} />
                 <Route path={ROUTES.INVENTORY.REVIEW_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.ReviewMerchandise />} />
                 <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.UpdateMerchandise />} />
@@ -73,12 +72,13 @@ const Main = ()=>{
                 <Route path={ROUTES.SUPPLIERS.UPDATE_SUPPLIER} element={<SUPPLIERS.Update />} />
                 <Route path={ROUTES.SUPPLIERS.ADD_SUPPLIER} element={<SUPPLIERS.Add />} />
 
-
                 <Route path={ROUTES.PRODUCT_ORDERS.ALL} element={<PRODUCT_ORDERS.All />} />
                 <Route path={ROUTES.PRODUCT_ORDERS.REVIEW_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Review />} />
                 <Route path={ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Add />} />
                 <Route path={ROUTES.PRODUCT_ORDERS.UPDATE_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Update />} />
 
+                <Route path={ROUTES.INVENTORY.TEMPLATES.UPDATE_TEMPLATE} element={<INVENTORY.TEMPLATES.Update />} />
+                <Route path={ROUTES.INVENTORY.TEMPLATES.ADD_TEMPLATE} element={<INVENTORY.TEMPLATES.Add />} />
 
             </Routes>
             </AnimatePresence >
