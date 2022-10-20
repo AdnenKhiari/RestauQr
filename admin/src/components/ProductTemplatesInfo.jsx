@@ -122,9 +122,11 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
                     })}
                 </div>
             </div>
+            
             {errors["id"] && <p className="error">{errors["id"].message.replaceAll('"','') }</p>}
             {errors["name"] && <p className="error">{errors["name"].message.replaceAll('"','') }</p>}
-            {errors["unitQuantity"] && <p className="error">{errors["unitQuantity"].message.replaceAll('"','') }</p>}
+            {errors["notes"] && <p className="error">{errors["notes"].message.replaceAll('"','') }</p>}
+            {errors["custom_fields"] && <p className="error">{errors["custom_fields"].message.replaceAll('"','') }</p>}
 
             <div className="validate">
                 <button type={"reset"}>Reset</button>

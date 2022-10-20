@@ -66,8 +66,7 @@ export const AddUpdateProductTemplate = (productid,add = false)=>{
     const client = Query.useQueryClient()
 
     const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (all)=>{
-       //console.warn(all)
-        const res = add ?  await axios_inst.post(APIROUTES.PRODUCTS.TEMPLATES.ADD_TEMPLATE(productid),all.data) : await axios_inst.put(APIROUTES.PRODUCTS.TEMPLATES.UPDATE_TEMPLATE(productid,all.id),all.data)
+      const res = add ?  await axios_inst.post(APIROUTES.PRODUCTS.TEMPLATES.ADD_TEMPLATE(productid),all.data) : await axios_inst.put(APIROUTES.PRODUCTS.TEMPLATES.UPDATE_TEMPLATE(productid,all.id),all.data)
       return res.data
     },{
         retry: 0

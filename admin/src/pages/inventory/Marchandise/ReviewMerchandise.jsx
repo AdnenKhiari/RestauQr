@@ -100,7 +100,7 @@ const ReviewMerchandise =()=>{
                           control={control} 
                           defaultValue={{value: 0,units: product.unit}} 
                           units={allunits.filter((un)=>un.id === product.unit.id)} />                     </div>
-                                              <button onClick={handleSubmit(async (data)=>{
+                        <button onClick={handleSubmit(async (data)=>{
                     data = processData(data)
                     console.log(data)
                     await consume.mutate(data,true)
@@ -112,7 +112,7 @@ const ReviewMerchandise =()=>{
                         await consume.mutate(data,false)
                         usenav(0)
                     })} disabled={consume.loading} type="button">Update Locally</button>  
- 
+
                 </div>
             </form>
             {errors && errors["wasted"] && <p className="error">{errors["wasted"].message.replaceAll('"',"")}</p>}
