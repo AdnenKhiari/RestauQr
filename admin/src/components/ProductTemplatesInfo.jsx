@@ -23,6 +23,9 @@ import notesimg from "../images/notes.png"
 import textinputimg from "../images/text-input.png"
 import integerimg from "../images/numeric.png"
 import decimalimg from "../images/decimal.png"
+import radioimg from "../images/radio.png"
+import selectimg from "../images/selectimg.png"
+import dropdownimg from "../images/dropdownimg.png"
 
 
 import { v4 as uuidv4 } from 'uuid';
@@ -37,7 +40,12 @@ const schema = joi.object({
             id: joi.string().optional(),
             label: joi.string().required().label("Label"),
             name: joi.string().required().label("Name"),
-            type: joi.string().valid("numeric","integer","short-text","long-text","date","date-time").required().label("Type"),
+            type: joi.string().valid("list-select","select","numeric","integer","short-text","long-text","date","date-time").required().label("Type"),
+            choices: joi.alternatives().conditional('type',[
+                {is: "select",then: joi.array().items(joi.string()).required()},
+                {is: "list-select",then: joi.array().items(joi.string()).required(),
+                otherwise: joi.forbidden()}
+            ]).label("Choices"),
         }).required()
     ).required()
 })
@@ -89,9 +97,10 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
         <PopupItem open={addFieldOpen} onClose={(e)=>setAddFieldOpen(false)}>
             <NewFieldDetails append={append} />
         </PopupItem>
-        <h1>{defaultVals ? "Update Product Template : " + defaultVals.name :"Add Product Template" }</h1>
         <FormProvider {...formOptions}>
             <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>
+            <h1>{defaultVals ? "Update Product Template : " + defaultVals.name :"Add Product Template" }</h1>
+
             <button type="button" 
             style={{color: "white",float: "right"}}
             onClick={(e)=>{setAddFieldOpen(true)}}
@@ -110,7 +119,7 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
                     <label><h2>Custom Fields : </h2></label>
                 </div>     
                     {custom_fields && custom_fields.map((item,key)=>{
-                        return <CustomLabelInput remove={remove} data={item} idx={ key} key={key} />
+                        return <CustomLabelInput key={key} remove={remove} data={item} idx={ key}  />
                     })}
                 </div>
                 <div className="template-preview">
@@ -118,7 +127,7 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
                         <label ><h2>Preview : </h2></label>
                     </div>  
                     {custom_fields && custom_fields.map((item,key)=>{
-                        return <CustomInput remove={remove} data={item} idx={ key} key={key} />
+                        return <CustomInput  remove={remove} data={item} idx={ key} key={key} />
                     })}
                 </div>
             </div>
@@ -149,23 +158,53 @@ const getImg = (txt)=>{
         case "integer":
             return integerimg
         case "decimal":
-            return decimalimg
+            return decimalimg 
+        case "select":
+            return selectimg
+        case "list-select":
+            return dropdownimg
         default:
             return ""
     }
 }
-
+const MultipleSelect = ({idx,data}) =>{
+    const path = `custom_fields.${idx}.choices`
+    const {formState : {errors},register,watch}  = useFormContext()
+    const {append,remove} = useFieldArray({
+        name: path
+    })
+    const choices = watch(`custom_fields.${idx}.choices`)
+    return <div className="select-choices" style={{paddingLeft: "50px"}}>
+        <img className="make-img-green" style={{float: choices.length > 0 ? "left" : "none",width: "70px",marginRight: "10px"}} src={plusimg} alt="" onClick={(e)=>append("")} />
+        <div className="choices">
+            {choices.map((ch,key)=>(
+            <div key={key} className="input-item">
+                <img className="make-img-blue" style={{width: "50px",marginRight: "10px"}} src={radioimg} alt="" />
+                <input placeholder={data.label+"..."} className={"secondary-input " + (errors.custom_fields ? 'input-error' : '')} type="text" id={data.name+`.${key}`} {...register(path+`.${key}`)} />
+                <img src={trashimg} className={"make-img-error"} style={{cursor: "pointer",width: "40px"}} onClick={(e)=>remove(key)} alt="" />
+            </div>  
+            ))}
+        </div>
+    </div>
+}
 const CustomLabelInput = ({data,idx,remove})=>{
     const {formState : {errors},register}  = useFormContext()
-    return <div className="input-item">
+
+    return <><div className="input-item">
                 <img className="make-img-blue" style={{width: "70px",marginRight: "10px"}} src={getImg(data.type)} alt="" />
                 <input placeholder={data.label+"..."} className={"secondary-input " + (errors.custom_fields ? 'input-error' : '')} type="text" id={data.name} {...register(`custom_fields.${idx}.label`)} />
+
                 <img src={trashimg} className={"make-img-error"} style={{cursor: "pointer",width: "40px"}} onClick={(e)=>remove(idx)} alt="" />
-            </div>          
+            </div>    
+            {(data.type === "select" || data.type === "list-select") && (<>  
+                    <MultipleSelect idx={idx} data={data} />
+                </>
+            ) }
+        </>      
 }
 
 const CustomInput = ({data,idx})=>{
-    return <div className="custom-input">
+    return <div className="custom-input "  style={{margin: "5px"}}>
         <div className="input-item">
             <label htmlFor={data.name}><h2>{data.label ? data.label +" :" : "Add A Name"}  </h2></label>
             {data.type === "short-text" && 
@@ -183,6 +222,15 @@ const CustomInput = ({data,idx})=>{
             {data.type === "date-time" && 
                 <input  placeholder={data.label + "..."} className={"secondary-input "} type="datetime-local" id={data.name}/>
             }
+            {data.type === "select" && 
+            <CustomSelect options={data.choices.map((ch)=>({label: ch,value:ch}))} 
+                defaultValue={{label: "",value: ""}}/>
+            }
+            {data.type === "list-select" && 
+            <CustomSelect
+            isMulti={true}
+            options={data.choices.map((ch)=>({label: ch,value:ch}))} 
+            />}
         </div>      
         {data.type === "long-text" && 
             <textarea cols="3" rows="3" type="text" id={data.name}></textarea>
@@ -284,6 +332,36 @@ const NewFieldDetails = ({append})=>{
                     label: "",
                     name: "c-" + id,
                     type: "decimal"
+                })
+            }}
+             />
+            <FieldChoice 
+            label="Select" 
+            desc={"A DropDown Selection"}
+            img={dropdownimg}
+            onclick={(e)=>{
+                const id = uuidv4();
+                append({
+                    id: id,
+                    label: "",
+                    name: "c-" + id,
+                    type: "select",
+                    choices: []
+                })
+            }}
+             />
+            <FieldChoice 
+            label="Multiple Select" 
+            desc={"A List Selection"}
+            img={selectimg}
+            onclick={(e)=>{
+                const id = uuidv4();
+                append({
+                    id: id,
+                    label: "",
+                    name: "c-" + id,
+                    type: "list-select",
+                    choices: []
                 })
             }}
              />
