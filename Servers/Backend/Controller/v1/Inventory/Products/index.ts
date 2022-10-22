@@ -2,6 +2,7 @@ import {Router} from "express"
 import Inventory from "../../../../DataAcessLayer/Inventory"
 import { Request } from "express"
 import Merchandise from "./Merchandise"
+import ProductTemplates from "./productTemplates"
 import joi from "joi"
 import OAuth from "../../Authorisation"
 const router = Router()
@@ -193,6 +194,10 @@ router.use('/:productid/merchandise',(req: Request,res,next)=>{
     return Merchandise(req,res,next)
 })
 
+router.use('/:productid/templates',(req: Request,res,next)=>{
+    req.productid = <string>req.params.productid
+    return ProductTemplates(req,res,next)
+})
 
 router.get("/",(req,res)=>{
     return res.send("Hii Products")

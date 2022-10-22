@@ -42,8 +42,9 @@ const ReviewProduct = ()=>{
 
     if( loading || allunitsloading)
         return <Loading />
-    console.log(watch())
+    //console.log(watch())
     return  <>
+
     <motion.div variants={FadeIn()} className="data-review">
         <div className="data-review-header">
             <h1><span>Name: </span>{product.name}</h1>
@@ -109,6 +110,18 @@ const ReviewProduct = ()=>{
             </div>
         </div>
     </motion.div >
+    <motion.div variants={FadeIn()} className="data-review">
+        <div className="data-review-header">
+            <h1><span>Templates: </span></h1>
+            <div>
+                {getLevel(user.profile.permissions.tables) >= getLevel("manage") && <><button onClick={(e)=>{
+                    usenav(ROUTES.INVENTORY.TEMPLATES.GET_ADD_TEMPLATE(productid))
+                }}>New Template</button>
+                </>}
+                <button style={{display: "none"}}></button>
+            </div>
+        </div>
+    </motion.div>
     <MerchandiseTable  title={'Related Merchandise'} parentid={productid}  />
 
     </>

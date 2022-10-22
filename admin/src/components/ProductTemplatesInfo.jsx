@@ -40,7 +40,7 @@ const schema = joi.object({
             id: joi.string().optional(),
             label: joi.string().required().label("Label"),
             name: joi.string().required().label("Name"),
-            type: joi.string().valid("list-select","select","numeric","integer","short-text","long-text","date","date-time").required().label("Type"),
+            type: joi.string().valid("list-select","select","decimal","integer","short-text","long-text","date","date-time").required().label("Type"),
             choices: joi.alternatives().conditional('type',[
                 {is: "select",then: joi.array().items(joi.string()).required()},
                 {is: "list-select",then: joi.array().items(joi.string()).required(),
@@ -72,7 +72,6 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
         
         try{
             console.log("D",data)
-            return;
             const tempid  = await templatemutator.mutate(data)
             console.log(tempid)
 
