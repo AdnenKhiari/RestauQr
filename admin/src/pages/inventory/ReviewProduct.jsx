@@ -15,7 +15,8 @@ import { getLevel } from "../../lib/utils.js"
 import UnitShow from "../../components/Custom/UnitShow.jsx"
 import { GetUnits } from "../../lib/Units.jsx"
 import UnitValue, { unitvalueschema } from "../../components/Custom/UnitValue.jsx"
-
+import {TemplatePreview} from "../../components/ProductTemplatesInfo"
+import { RemoveProductTemplate } from "../../lib/ProductTemplates.jsx"
 
 const schema = joi.object({
     used: unitvalueschema.label("Use"),
@@ -33,8 +34,8 @@ const ReviewProduct = ()=>{
     const {watch,register,handleSubmit, formState : {errors},control} = useForm({
         resolver: joiResolver(schema)
     })
-
-    if( error || allunitserror)
+    const removetemplate = RemoveProductTemplate(productid)
+    if( error || allunitserror )
         return <>
         {error && <Error msg={"Error while retrieving Product information " + productid} error={error} />}
         {allunitserror && <Error msg={"Error while retrieving Units information "} error={allunitserror} />}
@@ -112,21 +113,27 @@ const ReviewProduct = ()=>{
     </motion.div >
     <motion.div variants={FadeIn()} className="data-review">
         <div className="data-review-header">
-            <h1><span>Templates: </span></h1>
-            <div>
+            <h1><span>Template:</span> {product.template?.name} </h1>
+            <div >
                 {getLevel(user.profile.permissions.tables) >= getLevel("manage") && <><button onClick={(e)=>{
-                    usenav(ROUTES.INVENTORY.TEMPLATES.GET_ADD_TEMPLATE(productid))
-                }}>New Template</button>
+                    usenav(ROUTES.INVENTORY.TEMPLATES.GET_ADD_UPDATE_TEMPLATE(productid))
+                }}>{product.template ? " Update Template" : " New Template" }</button>
                 </>}
-                <button style={{display: "none"}}></button>
+                <button style={{display : !product.template ? "none" : "inline-block"}} type="button" onClick={async (e)=>{
+                    await removetemplate.remove()
+                }} >Delete</button>
             </div>
+        </div>
+        <div className="data-review-body secondary-form">
+            <form style={{margin: "0px",padding: "0px"}} action="none">  
+                {product.template?.notes && <p style={{margin: "10px 5px"}}><span>{product.template?.notes}</span></p>}              
+                {product.template && <TemplatePreview showpreview={false} custom_fields={product.template?.custom_fields}   />}
+            </form>
         </div>
     </motion.div>
     <MerchandiseTable  title={'Related Merchandise'} parentid={productid}  />
 
-    </>
-        //queryConstraints={{order_ref: productid }}
-            
+    </>            
 }
 
 export default ReviewProduct

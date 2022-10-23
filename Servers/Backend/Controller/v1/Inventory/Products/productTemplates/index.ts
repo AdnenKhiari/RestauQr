@@ -22,33 +22,6 @@ const TemplateSchema = joi.object({
         }).required()
     ).required()
 })
-router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
-async (req,res,next)=>{
-    try{
-        const productid = <string>req.productid
-        const data = await ProductTemplates.GetTemplatesOfProduct(productid)
-        return res.send({
-            data: data
-        })
-
-    }catch(err){
-        return next(err)
-    }
-})
-
-router.get('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
-    const id: string = req.params.id
-    try{
-        const productid = <string>req.productid
-        const data = await ProductTemplates.GetTemplateById(productid,id)
-        return res.send({
-            data: data
-        })
-    }catch(err){
-        return next(err)
-    }
-})
-
 
 router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
@@ -61,7 +34,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
     const data  : any = req.body
     const productid = <string>req.productid
     try{
-        const result = await ProductTemplates.AddUpdateTemplate(data,productid,undefined)
+        const result = await ProductTemplates.AddUpdateTemplate(data,productid)
         return res.send({   
             data: {
                 id: result
@@ -71,7 +44,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
         return next(err)
     }
 })
-router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
+router.put('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
     const {value,error} = (TemplateSchema.validate(req.body))
     if(error)
@@ -81,9 +54,8 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 },async (req,res,next)=>{
     const data  : any = req.body
     const productid = <string>req.productid  
-     const id : any = req.params.id
     try{
-        const result = await ProductTemplates.AddUpdateTemplate(data,productid,id)
+        const result = await ProductTemplates.AddUpdateTemplate(data,productid)
         return res.send({   
             data: {
                 id: result
@@ -93,11 +65,10 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
         return next(err)
     }
 })
-router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
-    const {id} = req.params
+router.delete('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     try{
         const productid = <string>req.productid  
-        const data : any= await ProductTemplates.DeleteTemplate(productid,id)
+        const data : any= await ProductTemplates.DeleteTemplate(productid)
         return res.send({
             data: data
         })

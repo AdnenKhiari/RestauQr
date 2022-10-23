@@ -77,8 +77,7 @@ const Main = ()=>{
                 <Route path={ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Add />} />
                 <Route path={ROUTES.PRODUCT_ORDERS.UPDATE_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Update />} />
 
-                <Route path={ROUTES.INVENTORY.TEMPLATES.UPDATE_TEMPLATE} element={<INVENTORY.TEMPLATES.Update />} />
-                <Route path={ROUTES.INVENTORY.TEMPLATES.ADD_TEMPLATE} element={<INVENTORY.TEMPLATES.Add />} />
+                <Route path={ROUTES.INVENTORY.TEMPLATES.ADD_UPDATE_TEMPLATE} element={<INVENTORY.TEMPLATES.AddUpdate />} />
 
             </Routes>
             </AnimatePresence >

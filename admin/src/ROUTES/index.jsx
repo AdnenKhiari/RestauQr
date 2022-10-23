@@ -52,11 +52,8 @@ export const INVENTORY = {
     GET_UPDATE_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/update/"+orderid,
     GET_REVIEW_PRODUCT_MERCHANDISE : (productid,orderid)=>"/inventory/"+productid+"/merchandise/"+orderid,
     TEMPLATES : {
-        UPDATE_TEMPLATE : "/inventory/:productid/templates/update/:templateid",
-        ADD_TEMPLATE : "/inventory/:productid/templates/add",
-        GET_UPDATE_TEMPLATE : (productid,id)=> "/inventory/"+productid+"/templates/update"+id,
-        GET_ADD_TEMPLATE : (productid)=> "/inventory/"+productid+"/templates/add",
-
+        ADD_UPDATE_TEMPLATE : "/inventory/:productid/template/",
+        GET_ADD_UPDATE_TEMPLATE : (productid)=> "/inventory/"+productid+"/template",
     }
 }
 

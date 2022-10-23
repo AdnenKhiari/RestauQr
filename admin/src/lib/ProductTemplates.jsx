@@ -7,41 +7,10 @@ const axios_inst = axios.create({
     withCredentials: true
 })
 
-export const GetProductTemplateById = (id,templateid)=>{
-
-    const [error,setError] = useState(null)
-    const qr = Query.useQuery(['product_template',{id,templateid}],async ()=>{
-        const res = await axios_inst.get(APIROUTES.PRODUCTS.TEMPLATES.GET_PRODUCT_TEMPLATE_BY_ID(id))
-        return res.data
-    },{
-        retry: 0,
-        refetchOnWindowFocus: false
-    })
-    const {data,isLoading,error: quer_err,refetch}  = qr
-    const fetch = async ()=>{
-        try{
-            await refetch()
-        }catch(err){
-            setError(err)
-        }
-    }
-    useEffect(()=>{
-        setError(quer_err)
-    },[quer_err])
-    console.log("Found",qr)
-    return {
-        result : data && data.data,
-        error: quer_err,
-        loading: isLoading,
-        fetch
-    }
-}
-
-
-export const RemoveProductTemplate = (productid,templateid)=>{
+export const RemoveProductTemplate = (productid)=>{
     const ql = Query.useQueryClient()
     const {data,isLoading,error,refetch} = Query.useQuery([],async ()=>{
-        const res = await axios_inst.delete(APIROUTES.PRODUCTS.TEMPLATES.REMOVE_TEMPLATE(productid,templateid))
+        const res = await axios_inst.delete(APIROUTES.PRODUCTS.TEMPLATES.REMOVE_TEMPLATE(productid))
         return res.data
     },{
         enabled: false,
@@ -51,10 +20,10 @@ export const RemoveProductTemplate = (productid,templateid)=>{
         const res = await refetch()
         if(res.error)
             throw  res.error
-        ql.invalidateQueries(["product_template",{id:productid,templateid: templateid}])
+        ql.invalidateQueries(["product",{id:productid}])
     }   
     return {
-        loading: isLoading,
+        loading: isLoading ,
         error,
         remove: mutate
     }
@@ -74,15 +43,12 @@ export const AddUpdateProductTemplate = (productid,add = false)=>{
 
     const mutate = async (data)=>{
         try{
-            const id = data.id
-            if(data.id)
-                delete data.id
            // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
 
-            const res = await send({id: id,data})
+            const res = await send({id: undefined,data})
             console.warn("Found res",res)
-            client.invalidateQueries([{id:productid,templateid: data.id},'product_template'])
-            return res.data.id
+            client.invalidateQueries([{id:productid},'product'])
+            return productid
         }catch(err){
             setError(err)
             throw err

@@ -3,8 +3,7 @@ import ReviewProduct from "./ReviewProduct"
 import AddProduct from "./AddProduct"
 import UpdateProduct from "./UpdateProduct"
 import Marchandise from "./Marchandise"
-import AddTemplate from "./AddTemplate"
-import UpdateTemplate from "./UpdateTemplate"
+import AddUpdateTemplate from "./AddUpdateTemplate"
 
 const Inventory = {
     AllProducts,
@@ -13,8 +12,7 @@ const Inventory = {
     UpdateProduct,
     Marchandise,
     TEMPLATES: {
-        Add: AddTemplate,
-        Update: UpdateTemplate
+        AddUpdate:AddUpdateTemplate,
     }
 }
 export default Inventory

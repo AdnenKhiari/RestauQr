@@ -54,8 +54,7 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
         defaultValues: defaultVals ? {
             custom_fields: defaultVals.custom_fields,
             name: defaultVals.name,
-            notes: defaultVals.notes,
-            id: defaultVals.id
+            notes: defaultVals.notes
         } : {
             notes: '',
             custom_fields: [],
@@ -121,14 +120,8 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
                         return <CustomLabelInput key={key} remove={remove} data={item} idx={ key}  />
                     })}
                 </div>
-                <div className="template-preview">
-                    <div className="input-item">
-                        <label ><h2>Preview : </h2></label>
-                    </div>  
-                    {custom_fields && custom_fields.map((item,key)=>{
-                        return <CustomInput  remove={remove} data={item} idx={ key} key={key} />
-                    })}
-                </div>
+                <TemplatePreview custom_fields={custom_fields} />
+                
             </div>
             
             {errors["id"] && <p className="error">{errors["id"].message.replaceAll('"','') }</p>}
@@ -143,6 +136,17 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
             </form>
         </FormProvider>
     </motion.div>
+}
+
+export const TemplatePreview = ({custom_fields,showpreview = true})=>{
+    return  <div className="template-preview">
+    {showpreview&& <div className="input-item">
+        <label ><h2>Preview : </h2></label>
+    </div>  }
+    {custom_fields && custom_fields.map((item,key)=>{
+        return <CustomInput  data={item} idx={ key} key={key} />
+    })}
+</div>
 }
 const getImg = (txt)=>{
     switch(txt){
@@ -159,9 +163,9 @@ const getImg = (txt)=>{
         case "decimal":
             return decimalimg 
         case "select":
-            return selectimg
-        case "list-select":
             return dropdownimg
+        case "list-select":
+            return selectimg
         default:
             return ""
     }
@@ -205,7 +209,7 @@ const CustomLabelInput = ({data,idx,remove})=>{
 const CustomInput = ({data,idx})=>{
     return <div className="custom-input "  style={{margin: "5px"}}>
         <div className="input-item">
-            <label htmlFor={data.name}><h2>{data.label ? data.label +" :" : "Add A Name"}  </h2></label>
+            <label htmlFor={data.name}><h2><span>{data.label ? data.label +" :" : "Add A Name"}</span>  </h2></label>
             {data.type === "short-text" && 
                 <input placeholder={data.label + "..."} className={"secondary-input "} type="text" id={data.name}/>
             }

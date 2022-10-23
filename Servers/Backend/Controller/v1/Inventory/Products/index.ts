@@ -194,7 +194,7 @@ router.use('/:productid/merchandise',(req: Request,res,next)=>{
     return Merchandise(req,res,next)
 })
 
-router.use('/:productid/templates',(req: Request,res,next)=>{
+router.use('/:productid/template',(req: Request,res,next)=>{
     req.productid = <string>req.params.productid
     return ProductTemplates(req,res,next)
 })
