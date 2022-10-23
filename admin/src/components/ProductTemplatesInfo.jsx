@@ -40,7 +40,7 @@ const schema = joi.object({
             id: joi.string().optional(),
             label: joi.string().required().label("Label"),
             name: joi.string().required().label("Name"),
-            type: joi.string().valid("list-select","select","decimal","integer","short-text","long-text","date","date-time").required().label("Type"),
+            type: joi.string().valid("list-select","select","decimal","short-text","long-text","date","date-time").required().label("Type"),
             choices: joi.alternatives().conditional('type',[
                 {is: "select",then: joi.array().items(joi.string()).required()},
                 {is: "list-select",then: joi.array().items(joi.string()).required(),
@@ -158,8 +158,6 @@ const getImg = (txt)=>{
             return calendarimg
         case "date-time":
             return datetimeimg
-        case "integer":
-            return integerimg
         case "decimal":
             return decimalimg 
         case "select":
@@ -215,9 +213,6 @@ const CustomInput = ({data,idx})=>{
             }
             {data.type === "decimal" && 
                 <input  className={"secondary-input "} step="0.0001" type="number" id={data.name}/>
-            }
-            {data.type === "integer" && 
-                <input  className={"secondary-input "} step="1" type="number" id={data.name}/>
             }
             {data.type === "date" && 
                 <input  placeholder={data.label + "..."} className={"secondary-input "} type="date" id={data.name}/>
@@ -307,20 +302,6 @@ const NewFieldDetails = ({append})=>{
                     label: "",
                     name: "c-" + id,
                     type: "date-time"
-                })
-            }}
-             />
-            <FieldChoice 
-            label="Integer" 
-            desc={"A Signed Integer"}
-            img={decimalimg}
-            onclick={(e)=>{
-                const id = uuidv4();
-                append({
-                    id: id,
-                    label: "",
-                    name: "c-" + id,
-                    type: "integer"
                 })
             }}
              />

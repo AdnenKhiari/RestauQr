@@ -6,7 +6,6 @@ const CustomSelect  = (props)=>{
     defaultValue={props.defaultValue}
     className="react-select-container"
     classNamePrefix="react-select"
-    
     theme={(theme)=>({
         ...theme,
         colors: {

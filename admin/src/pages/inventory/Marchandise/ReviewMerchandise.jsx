@@ -71,14 +71,16 @@ const ReviewMerchandise =()=>{
             </div>
         </div>
         <div className="data-review-body secondary-form">
-            <h2><span>Purshase Time:</span> {formatFbDate(productorder.time,true)}</h2>
             <h2><span>Expires In :</span> {formatFbDate(productorder.expiresIn,true)} : {moment(productorder.expiresIn._seconds*1000 + productorder.expiresIn._nanoseconds / 1000).fromNow()}</h2>
             <h2><span>Price/U:</span> {productorder.unitPrice} Millime</h2>
             <h2><span>Quantity/U:</span> <UnitShow customunits={product.customUnits} unitval={{value: productorder.unitQuantity,unit: product.unit}} /></h2>  
             <h2><span>Purshase Quantity:</span> {productorder.productQuantity}</h2>
+            {product.template?.custom_fields.map((k)=><h2><span>{k.label}:</span> {(
+                k.type ==="date" ? formatFbDate(productorder[k.name],true) : k.type ==="date-time" ? formatFbDate(productorder[k.name],false) : productorder[k.name]
+            )}</h2>)}
+            
             <h2><span>Used:</span> {productorder.used}</h2>
             <h2><span>Wasted:</span> {productorder.wasted}</h2>
-
             <form onSubmit={(e)=>e.preventDefault()}>
                 <div className="input-item">
                     <div>
@@ -101,17 +103,17 @@ const ReviewMerchandise =()=>{
                           defaultValue={{value: 0,units: product.unit}} 
                           units={allunits.filter((un)=>un.id === product.unit.id)} />                     </div>
                         <button onClick={handleSubmit(async (data)=>{
-                    data = processData(data)
-                    console.log(data)
-                    await consume.mutate(data,true)
-                    usenav(0)
-                })} disabled={consume.loading} type="button">Update</button> 
-                    <button onClick={handleSubmit(async (data)=>{
-                        console.log(data)
-                        data = processData(data)
-                        await consume.mutate(data,false)
-                        usenav(0)
-                    })} disabled={consume.loading} type="button">Update Locally</button>  
+                            data = processData(data)
+                            console.log(data)
+                            await consume.mutate(data,true)
+                            usenav(0)
+                        })} disabled={consume.loading} type="button">Update</button> 
+                        <button onClick={handleSubmit(async (data)=>{
+                            console.log(data)
+                            data = processData(data)
+                            await consume.mutate(data,false)
+                            usenav(0)
+                        })} disabled={consume.loading} type="button">Update Locally</button>  
 
                 </div>
             </form>

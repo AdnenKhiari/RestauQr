@@ -20,10 +20,12 @@
             justify-content: flex-start;
             align-items: center ;
             align-content: center;
+            margin: 5px 0px;
             label{
                 font-size: $h2size;
                 color: Secondary(1);
                 margin: 5px;
+                text-transform: capitalize;
             }
             button{
                 color: Bright(1);

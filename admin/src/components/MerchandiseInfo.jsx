@@ -12,41 +12,60 @@ import {formatFbDate} from "../lib/utils"
 import {motion} from "framer-motion"
 import UnitValue,{unitvalueschema} from "./Custom/UnitValue"
 import { GetUnits } from "../lib/Units"
+import FormSelect from "./Custom/FormSelect"
 
-const schema = joi.object({
-    id: joi.string().optional().label('Item Id'),
-    name: joi.string().required().label('Item Name'),
-    productQuantity: joi.number().min(0).required().label('Item Quantity :'),
-    unitQuantity: unitvalueschema.required().label('Quantity/U'),
-    unitPrice: joi.number().min(0).required().label('Price/U'),
-    time: joi.date().required().label('Time'),
-    expiresIn: joi.date().required().label('Expires In')
-})
+
+
 const MerchandiseDetails = ({defaultVals = undefined,productid})=>{
-    const formOptions = useForm({
-        defaultValues: defaultVals ? {
-            id: defaultVals.id,
-            name: defaultVals.name,
-            productQuantity: defaultVals.productQuantity,
-            unitPrice: defaultVals.unitPrice,
-            expiresIn: formatFbDate(defaultVals.expiresIn,true),
-            time:formatFbDate(defaultVals.time,true)
-            } 
-            : undefined,
-        resolver: joiResolver(schema)
-    })
+
     const {result: product,error: producterr,loading: loadingerr} = GetProductById(productid)
     const {result: allunits,error: errorunits,loading: loadingunits} = GetUnits()
 
-    const {handleSubmit,register,setValue,watch,reset,control,formState : {errors}} = formOptions
-    const productordermutator = AddUpdateMerchandise(productid,!defaultVals)
+    if(producterr || errorunits)
+        return <>
+            {producterr && <Error error={producterr} msg="Error while retrieving Product Information" />}
+            {errorunits && <Error error={errorunits} msg="Error while retrieving Units Information" />}
+        </>
+    if(loadingerr|| loadingunits)
+        return <Loading />
+    console.log("CSL",product,producterr,loadingerr)
+    return <MechandiseUi allunits={allunits} product={product} productid={productid} defaultVals={defaultVals} />
+}
+const getSchemaOfCustomFields = (custom_fields)=>{
+    const arr = {
+        id: joi.string().optional().label('Item Id'),
+        name: joi.string().required().label('Item Name'),
+        productQuantity: joi.number().min(0).required().label('Item Quantity :'),
+        unitQuantity: unitvalueschema.required().label('Quantity/U'),
+        unitPrice: joi.number().min(0).required().label('Price/U'),
+        expiresIn: joi.date().required().label('Expires In'),
+    }
+    custom_fields.forEach((key)=>{
+        if(key.type === "short-text")
+            arr[key.name] = joi.string().allow("").required().label(key.label)
+        if(key.type === "long-text")
+            arr[key.name] = joi.string().allow("").required().label(key.label)
+        if(key.type === "decimal")
+            arr[key.name] = joi.number().allow("").required().label(key.label)
+        if(key.type === "date")
+            arr[key.name] = joi.date().allow("").required().label(key.label)
+        if(key.type === "date-time")
+            arr[key.name] =joi.date().allow("").required().label(key.label)
+        if(key.type === "select")
+            arr[key.name] =joi.string().valid(...key.choices,"").required().label(key.label)
+        if(key.type === "list-select")
+            arr[key.name] =joi.array().items(joi.string().valid(...key.choices).optional()).required().label(key.label)
+    })
+    return  joi.object(arr)
+}
+const MechandiseUi = ({defaultVals,productid,product,allunits})=>{
     const usenav = useNavigate() 
-    console.log(errors)
+
+    const schema =getSchemaOfCustomFields(product.template?.custom_fields  || [])
     const SubmitForm = async (data)=>{
         try{
             data.unitQuantity = data.unitQuantity.value * (data.unitQuantity.unit?.subunit ? data.unitQuantity.unit?.subunit.ratio : 1 )
             console.log("D",data)
-
             const productorderid  = await productordermutator.mutate(data)
             console.log(productorderid)
 
@@ -60,14 +79,33 @@ const MerchandiseDetails = ({defaultVals = undefined,productid})=>{
             console.error(err)
         }
     }
-    if(producterr || errorunits)
-        return <>
-            {producterr && <Error error={producterr} msg="Error while retrieving Product Information" />}
-            {errorunits && <Error error={errorunits} msg="Error while retrieving Units Information" />}
-        </>
-    if(loadingerr|| loadingunits)
-        return <Loading />
-    console.log("CSL",product,producterr,loadingerr)
+    const getDefaultVals = ()=>{
+        const ob = {
+            id: defaultVals.id,
+            name: defaultVals.name,
+            productQuantity: defaultVals.productQuantity,
+            unitPrice: defaultVals.unitPrice,
+            expiresIn: formatFbDate(defaultVals.expiresIn,true),
+        } 
+        product.template.custom_fields?.forEach((key)=>{
+            if(key.type === "date")
+                ob[key.name] = formatFbDate(defaultVals[key.name],true)
+            else if(key.type ==="date-time")
+                ob[key.name] = formatFbDate(defaultVals[key.name],false,true)
+            else ob[key.name] = defaultVals[key.name]
+        })
+        return ob
+    }
+    console.log(getDefaultVals())
+    const formOptions = useForm({
+        defaultValues: defaultVals ? getDefaultVals()
+            : undefined,
+        resolver: joiResolver(schema)
+    })
+    const {handleSubmit,register,setValue,watch,reset,control,formState : {errors}} = formOptions
+    const productordermutator = AddUpdateMerchandise(productid,!defaultVals)
+    console.log(errors,watch())
+    
     return <motion.div variants={FadeIn()} className="secondary-form">
         <h1>{defaultVals ? "Update Item : " + defaultVals.name :"Add Item" } </h1>
         
@@ -96,19 +134,46 @@ const MerchandiseDetails = ({defaultVals = undefined,productid})=>{
                 <input  className={"secondary-input " + (errors.unitPrice ? 'input-error' : '')} type="number" id="unitPrice" {...register("unitPrice")} />
             </div>   
             <div className="input-item">
-                <label htmlFor="time"><h2>Purshase Time : </h2></label>
-                <input  className={"secondary-input " + (errors.time ? 'input-error' : '')} type="date" id="time" {...register("time")} />
-            </div>    
-            <div className="input-item">
                 <label htmlFor="expiresIn"><h2>Expires In : </h2></label>
-                <input  className={"secondary-input " + (errors.expiresIn ? 'input-error' : '')} type="date" id="expiresIn" {...register("expiresIn")} />
+                <input className={"secondary-input " + (errors.expiresIn ? 'input-error' : '')} type="date" id="expiresIn" {...register("expiresIn")} />
             </div>    
+            {product.template?.custom_fields.map((cst,key)=>{
+                return <>
+                <div key={key} className="input-item">
+                    <label htmlFor={cst.name}><h2>{cst.label} : </h2></label>
+                    {(cst.type === "short-text" || cst.type === "date-time" || cst.type === "date"  ||  cst.type === "decimal" ) && <input  className={"secondary-input " + (errors[cst.name] ? 'input-error' : '')} 
+                    step={cst.type === "decimal" ? 0.00001  : undefined}
+                    type={(
+                        cst.type === "date" ? "date"  : cst.type === "date-time" ? "datetime-local" : (cst.type === "decimal") ? "number" : "text"
+                    )} id={cst.name} 
+                    {...register(cst.name)} />}
+            
+                    
+                    {cst.type === "select" && (
+                        <FormSelect options={cst.choices.map((item)=>({value: item,label: item}))} defaultValue={defaultVals[cst.name] && {label:defaultVals[cst.name],value: defaultVals[cst.name]}} name={cst.name} control={control} />
+                    )
+                    }
+                   
+                    {cst.type === "list-select" && (
+                        <FormSelect isMulti options={cst.choices.map((item)=>({value: item,label: item}))} defaultValue={defaultVals[cst.name] && defaultVals[cst.name].map((k)=>({label: k,value: k}))} name={cst.name} control={control} />  
+                    )}
+                </div> 
+                {(cst.type === "long-text") && <textarea 
+                    key={key+100} 
+                    rows={20}
+                    cols={20}
+                    className={(errors[cst.name] ? 'input-error' : '')} 
+                    id={cst.name} 
+                    {...register(cst.name)} />}
+                
+                </>
+            }) 
+            }
 
             {errors["name"] && <p className="error">{errors["name"].message.replaceAll('"','') }</p>}
             {errors["productQuantity"] && <p className="error">{errors["productQuantity"].message.replaceAll('"','') }</p>}
             {errors["unitPrice"] && <p className="error">{errors["unitPrice"].message.replaceAll('"','') }</p>}
             {errors["unitQuantity"] && <p className="error">{errors["unitQuantity"].message.replaceAll('"','') }</p>}
-            {errors["time"] && <p className="error">{errors["time"].message.replaceAll('"','') }</p>}
             {errors["expiresIn"] && <p className="error">{errors["expiresIn"].message.replaceAll('"','') }</p>}
 
             <div className="validate">

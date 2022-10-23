@@ -22,14 +22,14 @@ const consumeSchema = joi.object({
     updateGlobally: joi.boolean().default(false).required()
 })
 
-const merchandiseSchema = joi.object({
+const merchandiseSchema = joi.any() /*joi.object({
     name: joi.string().required().label('Item Name'),
     productQuantity: joi.number().min(0).required().label('Item Quantity :'),
     unitQuantity: joi.number().min(0).required().label('Quantity/U'),
     unitPrice: joi.number().min(0).required().label('Price/U'),
     time: joi.date().required().label('Time'),
     expiresIn: joi.date().required().label('Expires In')
-})
+})*/
 router.get('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
     const subid: string = req.params.subid
     const productid: string = <string>req.productid
