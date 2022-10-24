@@ -80,14 +80,14 @@ const MechandiseUi = ({defaultVals,productid,product,allunits})=>{
         }
     }
     const getDefaultVals = ()=>{
-        const ob = {
+        const ob = defaultVals ? {
             id: defaultVals.id,
             name: defaultVals.name,
             productQuantity: defaultVals.productQuantity,
             unitPrice: defaultVals.unitPrice,
             expiresIn: formatFbDate(defaultVals.expiresIn,true),
-        } 
-        product.template.custom_fields?.forEach((key)=>{
+        }  : undefined
+        defaultVals && product.template.custom_fields?.forEach((key)=>{
             if(key.type === "date")
                 ob[key.name] = formatFbDate(defaultVals[key.name],true)
             else if(key.type ==="date-time")
@@ -150,12 +150,12 @@ const MechandiseUi = ({defaultVals,productid,product,allunits})=>{
             
                     
                     {cst.type === "select" && (
-                        <FormSelect options={cst.choices.map((item)=>({value: item,label: item}))} defaultValue={defaultVals[cst.name] && {label:defaultVals[cst.name],value: defaultVals[cst.name]}} name={cst.name} control={control} />
+                        <FormSelect options={cst.choices.map((item)=>({value: item,label: item}))} defaultValue={defaultVals && defaultVals[cst.name] && {label:defaultVals[cst.name],value: defaultVals[cst.name]}} name={cst.name} control={control} />
                     )
                     }
                    
                     {cst.type === "list-select" && (
-                        <FormSelect isMulti options={cst.choices.map((item)=>({value: item,label: item}))} defaultValue={defaultVals[cst.name] && defaultVals[cst.name].map((k)=>({label: k,value: k}))} name={cst.name} control={control} />  
+                        <FormSelect isMulti options={cst.choices.map((item)=>({value: item,label: item}))} defaultValue={defaultVals && defaultVals[cst.name] ? defaultVals[cst.name].map((k)=>({label: k,value: k})) : []} name={cst.name} control={control} />  
                     )}
                 </div> 
                 {(cst.type === "long-text") && <textarea 
