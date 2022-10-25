@@ -17,7 +17,7 @@ import { useEffect, useState } from "react"
 import CustomSelect from "./Custom/CustomSelect"
 import FormSelect from "./Custom/FormSelect"
 import UnitValue from "./Custom/UnitValue"
-
+import MerchandiseInfo from "./MerchandiseInfo"
 import UnitSelect from "./Custom/UnitSelect"
 import ProductTable from "./Tables/ProductsTable"
 import addimage from "../images/addimage.png"
@@ -122,9 +122,16 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
 
     const openOrderDetails = (data,id)=>{
         setDetailsPopUpOpen(true)
-        setorderDetails( structuredClone({data,id}))    
-        console.log("opened",detailsPopUpOpen)
+        setorderDetails(structuredClone({data,id}))    
+        console.log("opened merchandise detail",detailsPopUpOpen)
     }
+
+    const openMerchandiseDetails = (data,id)=>{
+        setMerchandisePopUpOpen(true)
+        setMerchandiseDetails(structuredClone({data,id}))    
+        console.log("opened",merchandiseDetails)
+    }
+
     const columns = useMemo(()=>{
         return [{
             Header: 'Name',
@@ -168,7 +175,7 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
             Header: 'Action',
             Cell: (val)=>{
                 return<>
-                <button type="button" onClick={(e)=>console.log("Confime")} >Link Merchandise</button>
+                <button type="button" onClick={(e)=>openMerchandiseDetails(val.row.original,val.row.index)} >Link Merchandise</button>
                 <button type="button" onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Delivery Details</button>
                 <h3><button type="button" onClick={(e)=>remove(val.row.index)} >Remove</button></h3>
                 </> 
@@ -183,6 +190,10 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
     return <> 
     <PopupItem open={detailsPopUpOpen} onClose={(e)=>setDetailsPopUpOpen(false)}>
         <ProductOrderDetails {...orderDetails} />
+    </PopupItem>
+    <PopupItem open={merchandisePopUpOpen} onClose={(e)=>setMerchandisePopUpOpen(false)}>
+        {console.log(orderDetails)}
+        <MerchandiseInfo productid={orderDetails && orderDetails.data.product} />
     </PopupItem>
     {orders &&<>
      <div className="secondary-table">

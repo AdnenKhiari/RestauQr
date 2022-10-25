@@ -107,10 +107,11 @@ const MechandiseUi = ({defaultVals,productid,product,allunits})=>{
     console.log(errors,watch())
     
     return <motion.div variants={FadeIn()} className="secondary-form">
-        <h1>{defaultVals ? "Update Item : " + defaultVals.name :"Add Item" } </h1>
         
         <FormProvider {...formOptions}>
             <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>
+            <h1>{defaultVals ? "Update Item : " + defaultVals.name :"Add Item" } </h1>
+
             <div className="input-item">
                 <label htmlFor="name"><h2>Item Name : </h2></label>
                 <input placeholder="Name..." className={"secondary-input " + (errors.name ? 'input-error' : '')} type="text" id="name" {...register("name")} />
