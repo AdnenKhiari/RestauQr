@@ -15,22 +15,6 @@ import { GetUnits } from "../lib/Units"
 import FormSelect from "./Custom/FormSelect"
 
 
-
-const MerchandiseDetails = ({defaultVals = undefined,productid})=>{
-
-    const {result: product,error: producterr,loading: loadingerr} = GetProductById(productid)
-    const {result: allunits,error: errorunits,loading: loadingunits} = GetUnits()
-
-    if(producterr || errorunits)
-        return <>
-            {producterr && <Error error={producterr} msg="Error while retrieving Product Information" />}
-            {errorunits && <Error error={errorunits} msg="Error while retrieving Units Information" />}
-        </>
-    if(loadingerr|| loadingunits)
-        return <Loading />
-    console.log("CSL",product,producterr,loadingerr)
-    return <MechandiseUi allunits={allunits} product={product} productid={productid} defaultVals={defaultVals} />
-}
 const getSchemaOfCustomFields = (custom_fields)=>{
     const arr = {
         id: joi.string().optional().label('Item Id'),
@@ -58,10 +42,32 @@ const getSchemaOfCustomFields = (custom_fields)=>{
     })
     return  joi.object(arr)
 }
-const MechandiseUi = ({defaultVals,productid,product,allunits})=>{
-    const usenav = useNavigate() 
 
-    const schema =getSchemaOfCustomFields(product.template?.custom_fields  || [])
+const MerchandiseDetails = ({defaultVals = undefined,productid,submit})=>{
+
+    const {result: product,error: producterr,loading: loadingerr} = GetProductById(productid)
+    const {result: allunits,error: errorunits,loading: loadingunits} = GetUnits()
+    const productordermutator = AddUpdateMerchandise(productid,!defaultVals)
+
+    const usenav = useNavigate() 
+    const getDefaultVals = ()=>{
+        const ob = defaultVals ? {
+            id: defaultVals.id,
+            name: defaultVals.name,
+            unitQuantity : defaultVals.unitQuantity,
+            productQuantity: defaultVals.productQuantity,
+            unitPrice: defaultVals.unitPrice,
+            expiresIn: formatFbDate(defaultVals?.expiresIn,true),
+        }  : undefined
+        defaultVals && product.template?.custom_fields?.forEach((key)=>{
+            if(key.type === "date")
+                ob[key.name] = formatFbDate(defaultVals[key.name],true)
+            else if(key.type ==="date-time")
+                ob[key.name] = formatFbDate(defaultVals[key.name],false,true)
+            else ob[key.name] = defaultVals[key.name]
+        })
+        return ob
+    }
     const SubmitForm = async (data)=>{
         try{
             data.unitQuantity = data.unitQuantity.value * (data.unitQuantity.unit?.subunit ? data.unitQuantity.unit?.subunit.ratio : 1 )
@@ -79,37 +85,31 @@ const MechandiseUi = ({defaultVals,productid,product,allunits})=>{
             console.error(err)
         }
     }
-    const getDefaultVals = ()=>{
-        const ob = defaultVals ? {
-            id: defaultVals.id,
-            name: defaultVals.name,
-            productQuantity: defaultVals.productQuantity,
-            unitPrice: defaultVals.unitPrice,
-            expiresIn: formatFbDate(defaultVals.expiresIn,true),
-        }  : undefined
-        defaultVals && product.template.custom_fields?.forEach((key)=>{
-            if(key.type === "date")
-                ob[key.name] = formatFbDate(defaultVals[key.name],true)
-            else if(key.type ==="date-time")
-                ob[key.name] = formatFbDate(defaultVals[key.name],false,true)
-            else ob[key.name] = defaultVals[key.name]
-        })
-        return ob
-    }
-    console.log(getDefaultVals())
+    if(producterr || errorunits)
+        return <>
+            {producterr && <Error error={producterr} msg="Error while retrieving Product Information" />}
+            {errorunits && <Error error={errorunits} msg="Error while retrieving Units Information" />}
+        </>
+    if(loadingerr|| loadingunits)
+        return <Loading />
+    //console.log("CSL",product,producterr,loadingerr)
+    return <MechandiseUi onSubmit={submit ? submit : SubmitForm} allunits={allunits} product={product} defaultVals={getDefaultVals()} />
+}
+
+const MechandiseUi = ({defaultVals,product,allunits,onSubmit})=>{
+    const schema =getSchemaOfCustomFields(product.template?.custom_fields  || [])
+
     const formOptions = useForm({
-        defaultValues: defaultVals ? getDefaultVals()
-            : undefined,
+        defaultValues: defaultVals,
         resolver: joiResolver(schema)
     })
     const {handleSubmit,register,setValue,watch,reset,control,formState : {errors}} = formOptions
-    const productordermutator = AddUpdateMerchandise(productid,!defaultVals)
     console.log(errors,watch())
     
     return <motion.div variants={FadeIn()} className="secondary-form">
         
         <FormProvider {...formOptions}>
-            <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>
+            <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(onSubmit)}>
             <h1>{defaultVals ? "Update Item : " + defaultVals.name :"Add Item" } </h1>
 
             <div className="input-item">
@@ -126,8 +126,8 @@ const MechandiseUi = ({defaultVals,productid,product,allunits})=>{
                           register={register}  
                           name="unitQuantity" 
                           control={control}     
-                          customunits={[{...product.unit,customUnits: product.customUnits}]}
-                          defaultValue={{value:  defaultVals ? defaultVals.unitQuantity: 0,units: product.unit}} 
+                          customunits={[{...product.unit,customUnits: product.customUnits || []}]}
+                          defaultValue={{value:  defaultVals ? defaultVals.unitQuantity : 0,units: product.unit}} 
                           units={allunits.filter((un)=>un.id === product.unit.id)} />    
                 </div>    
             <div className="input-item">

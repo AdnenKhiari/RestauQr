@@ -56,7 +56,8 @@ export const getOptionsList = (fd,last = "")=>{
 
 export const formatFbDate = (dt,dateonly = false,inp = false)=>{
     const new_date = dt && dt._seconds ? new Date(dt._seconds*1000 + dt._nanoseconds / 1000) : dt
-
+    if(!dt)
+        return ""
     if(inp)
         return moment(new_date).format("YYYY-MM-DDThh:mm")
     if(!dateonly)

@@ -93,7 +93,7 @@ const ProductTemplateDetails = ({defaultVals = undefined})=>{
     console.log(watch())
     return <motion.div variants={FadeIn()} className="secondary-form">
         <PopupItem open={addFieldOpen} onClose={(e)=>setAddFieldOpen(false)}>
-            <NewFieldDetails append={append} />
+            {(close) => <NewFieldDetails append={append} />}
         </PopupItem>
         <FormProvider {...formOptions}>
             <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>

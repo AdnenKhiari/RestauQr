@@ -7,7 +7,7 @@ const PopupItem = ({children,open= false,onClose = (e)=>{},onOpen=(e)=>{}})=>{
             <div className="content-container">
                 <button className="closecontainer" onClick={(e)=>close()}>Close</button>
                 <div className="content">
-                    {children}
+                    {children(close)}
                 </div>
             </div>
         </div>

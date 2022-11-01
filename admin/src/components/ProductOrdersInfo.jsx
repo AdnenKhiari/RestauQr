@@ -41,10 +41,8 @@ const schema = joi.object({
     expected_delivery_date: joi.date().required().label('Expected Date'),
     notes: joi.string().allow("").label("Notes"),
     orders: joi.array().items(joi.object({
-        name: joi.string().required(),
+        productorder_details: joi.any(),
         product: joi.string().required(),
-        units: joi.number().required(),
-        priceperunit :  joi.number().required(),
         details: orderdetailschema.optional()
     })).required()
 })
@@ -83,9 +81,10 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
         }
     }
     return <motion.div variants={FadeIn()} className="secondary-form">
-        <h1>{defaultVals ? "Update Products Orders : " :"Add Products Orders   " } </h1>
         <FormProvider {...formOptions}>
             <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>  
+            <h1>{defaultVals ? "Update Products Orders : " :"Add Products Orders   " } </h1>
+
             <div className="input-item">
                 <label htmlFor="expected_delivery_date"><h2>Expected Delivery Date : </h2></label>
                 <input className={"secondary-input " + (errors.expected_delivery_date ? 'input-error' : '')} type="date" id="expected_delivery_date" {...register("expected_delivery_date")} />
@@ -107,7 +106,7 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
 }
 
 const OrdersTable = ({supplierinfo,defaultVals})=>{
-    const {watch,register,control} = useFormContext()
+    const {watch,register,control,setValue} = useFormContext()
 
     const [detailsPopUpOpen,setDetailsPopUpOpen] = useState(false)
     const [orderDetails,setorderDetails] = useState(null)
@@ -131,31 +130,30 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
         setMerchandiseDetails(structuredClone({data,id}))    
         console.log("opened",merchandiseDetails)
     }
-
+    
     const columns = useMemo(()=>{
         return [{
             Header: 'Name',
             accessor: 'name',
-            Cell: (val)=> <input style={{width: "100%"}}  className={"secondary-input "} type="text" {...register(`orders.${val.row.index}.name`)} />
-          
+            Cell: (val)=> <input style={{width: "100%"}}  className={"secondary-input "} type="text" {...register(`orders.${val.row.index}.productorder_details.name`)} />
         },
         {
             Header: 'Product',
             accessor: 'product',
             Cell: (val)=><>
-            <FormSelect options={supplierinfo.products.map((item)=>({value: item.id,label: item.name}))} defaultValue={{value: ""}} name={`orders.${val.row.index}.product`} control={control} />
+            <FormSelect isDisabled={orders[val.row.index]?.product !== ""}  options={supplierinfo.products.map((item)=>({value: item.id,label: item.name}))} defaultValue={{value: orders[val.row.index]?.product || "",label: supplierinfo.products.find((p)=>p.id === orders[val.row.index]?.product)?.name || ""}} name={`orders.${val.row.index}.product`} control={control} />
             </>
         },
         {
             Header: 'Units',
             accessor: 'units',
-            Cell: (val)=> <input  className={"secondary-input "} type="number" {...register(`orders.${val.row.index}.units`)} />
+            Cell: (val)=> <input  className={"secondary-input "} type="number" {...register(`orders.${val.row.index}.productorder_details.productQuantity`)} />
 
         },
         {
             Header: 'Price/U',
             accessor: 'priceperunit',
-            Cell: (val)=> <input  className={"secondary-input "} type="number" {...register(`orders.${val.row.index}.priceperunit`)} />
+            Cell: (val)=> <input  className={"secondary-input "} type="number" {...register(`orders.${val.row.index}.productorder_details.unitPrice`)} />
         },
         /*{
             Header: 'Quantity/U',
@@ -169,32 +167,36 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
         },*/
         {
             Header: 'Total',
-            Cell: ({row})=><h3 style={{fontWeight: "600"}}>{row.original.units * row.original.priceperunit}</h3>
+            Cell: ({row})=><h3 style={{fontWeight: "600"}}>{row.original.productorder_details?.productQuantity * row.original.productorder_details?.unitPrice || 0}</h3>
         },  
         {
             Header: 'Action',
             Cell: (val)=>{
+                console.log("Selected Value",val.row.original)
                 return<>
-                <button type="button" onClick={(e)=>openMerchandiseDetails(val.row.original,val.row.index)} >Link Merchandise</button>
-                <button type="button" onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Delivery Details</button>
+                <button type="button"  disabled={!(val.row.original && val.row.original.product)} onClick={(e)=>openMerchandiseDetails(val.row.original,val.row.index)} >Link Merchandise</button>
+                <button type="button"  onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Delivery Details</button>
                 <h3><button type="button" onClick={(e)=>remove(val.row.index)} >Remove</button></h3>
                 </> 
             }
         }
        ]
-    },[])
-
+    },[orders])
+    const updateOrderDetails = (close,id)=>(data)=>{
+        console.log(data)
+        setValue(`orders.${id}.productorder_details`,data)
+        close()
+    }
     const usenav = useNavigate()
     const tb = useTable({columns: columns,data: orders })
-
-    return <> 
-    <PopupItem open={detailsPopUpOpen} onClose={(e)=>setDetailsPopUpOpen(false)}>
-        <ProductOrderDetails {...orderDetails} />
-    </PopupItem>
-    <PopupItem open={merchandisePopUpOpen} onClose={(e)=>setMerchandisePopUpOpen(false)}>
-        {console.log(orderDetails)}
-        <MerchandiseInfo productid={orderDetails && orderDetails.data.product} />
-    </PopupItem>
+    console.log("All Orders",orders)
+    return <>   
+    {orderDetails && <PopupItem open={detailsPopUpOpen} onClose={(e)=>setDetailsPopUpOpen(false)}>
+        {(close) => <ProductOrderDetails {...orderDetails} />}
+    </PopupItem>}
+    {merchandiseDetails &&merchandiseDetails.data.product  && <PopupItem open={merchandisePopUpOpen} onClose={(e)=>setMerchandisePopUpOpen(false)}>
+        {(close) => <MerchandiseInfo defaultVals={orders && orders[merchandiseDetails.id]?.productorder_details} submit={updateOrderDetails(close,merchandiseDetails.id)} productid={merchandiseDetails && merchandiseDetails.data.product} />}
+    </PopupItem>}
     {orders &&<>
      <div className="secondary-table">
         <table {...tb.getTableProps()}>
@@ -218,13 +220,15 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
                     </tr>
                 })}
                 <tr><td></td><td></td><td></td><td></td><td>
-                  <h3><span>Total Price : {tb.data.reduce((prev,row)=>prev + row.units * row.priceperunit,0)}</span></h3>  
+                  <h3><span>Total Price : {tb.data.reduce((prev,row)=>prev + (row.productorder_details?.productQuantity * row.productorder_details?.unitPrice || 0 ),0)}</span></h3>  
                 </td>
                 <td>
-                <button onClick={(e)=>{append({units:0,name:"",product:"",priceperunit: 0,details: {
+                <button onClick={(e)=>{append({product:"",details: {
                     status: "Waiting",
                     delivery_date: "",
                     cancel_reason: ""
+                },productorder_details: {
+                    name: ""
                 }})}} type="button" className="input">Add</button> 
                 <button style={{width:"0px","padding":0}}></button>
                 </td>
