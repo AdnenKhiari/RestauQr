@@ -26,6 +26,6 @@ const UpdateProductOrder = ()=>{
             {<Error error={productorderinfo.error} msg={"Error while retrieving Products Orders info "} />}
         </>
 
-    return <ProductOrdersInfo supplierinfo={result} defaultVals={productorderinfo} />
+    return <ProductOrdersInfo supplierinfo={result} defaultVals={productorderinfo.result} />
 }
 export default UpdateProductOrder

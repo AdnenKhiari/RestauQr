@@ -1,5 +1,5 @@
 import {FormProvider, useFieldArray, useForm, useFormContext} from "react-hook-form"
-import {AddUpdateMerchandise, GetProductById} from "../lib/ProductsDal"
+import {AddUpdateMerchandise, GetProductById, preprocess_order} from "../lib/ProductsDal"
 import {useNavigate, useParams} from "react-router-dom"
 import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
@@ -43,7 +43,7 @@ const getSchemaOfCustomFields = (custom_fields)=>{
     return  joi.object(arr)
 }
 
-const MerchandiseDetails = ({defaultVals = undefined,productid,submit})=>{
+const MerchandiseDetails = ({convertUnit=true,defaultVals = undefined,productid,submit})=>{
 
     const {result: product,error: producterr,loading: loadingerr} = GetProductById(productid)
     const {result: allunits,error: errorunits,loading: loadingunits} = GetUnits()
@@ -54,7 +54,7 @@ const MerchandiseDetails = ({defaultVals = undefined,productid,submit})=>{
         const ob = defaultVals ? {
             id: defaultVals.id,
             name: defaultVals.name,
-            unitQuantity : defaultVals.unitQuantity,
+            unitQuantity: defaultVals.unitQuantity / (product.unit.subunit ? product.unit.subunit.ratio : 1 ),
             productQuantity: defaultVals.productQuantity,
             unitPrice: defaultVals.unitPrice,
             expiresIn: formatFbDate(defaultVals?.expiresIn,true),
@@ -70,7 +70,7 @@ const MerchandiseDetails = ({defaultVals = undefined,productid,submit})=>{
     }
     const SubmitForm = async (data)=>{
         try{
-            data.unitQuantity = data.unitQuantity.value * (data.unitQuantity.unit?.subunit ? data.unitQuantity.unit?.subunit.ratio : 1 )
+            data = preprocess_order(data)
             console.log("D",data)
             const productorderid  = await productordermutator.mutate(data)
             console.log(productorderid)
@@ -93,7 +93,11 @@ const MerchandiseDetails = ({defaultVals = undefined,productid,submit})=>{
     if(loadingerr|| loadingunits)
         return <Loading />
     //console.log("CSL",product,producterr,loadingerr)
-    return <MechandiseUi onSubmit={submit ? submit : SubmitForm} allunits={allunits} product={product} defaultVals={getDefaultVals()} />
+    return <MechandiseUi onSubmit={submit ? (data)=>{
+        //data.unitQuantity.value = data.unitQuantity.value * (product.unit.subunit ? product.unit.subunit.ratio : 1 ) 
+        console.log("UNITTTTTT",data,(product.unit.subunit ? product.unit.subunit.ratio : 1 ) )
+        submit(data)
+    } : SubmitForm} allunits={allunits} product={product} defaultVals={getDefaultVals()} />
 }
 
 const MechandiseUi = ({defaultVals,product,allunits,onSubmit})=>{
@@ -105,11 +109,10 @@ const MechandiseUi = ({defaultVals,product,allunits,onSubmit})=>{
     })
     const {handleSubmit,register,setValue,watch,reset,control,formState : {errors}} = formOptions
     console.log(errors,watch())
-    
     return <motion.div variants={FadeIn()} className="secondary-form">
         
         <FormProvider {...formOptions}>
-            <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(onSubmit)}>
+            <form onReset={(e)=>{e.preventDefault();e.stopPropagation();reset()}} onSubmit={(e)=>{e.stopPropagation();handleSubmit(onSubmit)(e)}}>
             <h1>{defaultVals ? "Update Item : " + defaultVals.name :"Add Item" } </h1>
 
             <div className="input-item">
@@ -126,9 +129,9 @@ const MechandiseUi = ({defaultVals,product,allunits,onSubmit})=>{
                           register={register}  
                           name="unitQuantity" 
                           control={control}     
-                          customunits={[{...product.unit,customUnits: product.customUnits || []}]}
+                          customunits={product.customUnits ? [{...product.unit,customUnits: product.customUnits }] : undefined}
                           defaultValue={{value:  defaultVals ? defaultVals.unitQuantity : 0,units: product.unit}} 
-                          units={allunits.filter((un)=>un.id === product.unit.id)} />    
+                          units={allunits.filter((un)=>un.id === product.unit.id)} />  
                 </div>    
             <div className="input-item">
                 <label htmlFor="unitPrice"><h2>Price/U : </h2></label>

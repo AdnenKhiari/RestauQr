@@ -9,10 +9,10 @@ import { getLevel } from "../../lib/utils"
 import * as ROUTES from "../../ROUTES"
 const AddProductOrder = ()=>{
     const user = useContext(UserContext) 
-    const {supid} = useParams()
+    const {supplierid} = useParams()
     if(getLevel(user.profile.permissions.food) < getLevel("manage") )
         return <Navigate to={ROUTES.SUPPLIERS.ALL} />
-    const suppinfo = GetSupplierById(supid)
+    const suppinfo = GetSupplierById(supplierid)
     if(suppinfo.error)
         return <Error error={suppinfo.error} msg={"Error while retrieving supplier info "} />
     if(suppinfo.loading)

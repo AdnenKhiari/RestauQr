@@ -1,7 +1,7 @@
 import {FormProvider, useFieldArray, useForm, useFormContext, useWatch} from "react-hook-form"
 import {AddUpdateSupplier} from "../lib/SuppliersDal"
 import {GetUnits} from "../lib/Units"
-import {useNavigate} from "react-router-dom"
+import {useNavigate, useParams} from "react-router-dom"
 import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
 import{joiResolver} from "@hookform/resolvers/joi"
@@ -28,6 +28,8 @@ import { useSortBy, useTable } from "react-table"
 import { useMemo } from "react"
 import {AddUpdateProductOrders} from "../lib/ProductOrdersDal"
 import uploadimg from "../images/upload.png"
+import { preprocess_order } from "../lib/ProductsDal"
+import { formatFbDate } from "../lib/utils"
 
 
 const joi  =  fileListExtension(BaseJoi)  
@@ -49,24 +51,28 @@ const schema = joi.object({
 
 const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
     //const {result: allunits,error: errunits,loading: unitloading} = GetUnits()
+    const {supplierid} = useParams()
+    console.log("Default values for info",defaultVals)
     const formOptions = useForm({
        defaultValues: defaultVals ? {
         id: defaultVals.id,
+        notes: defaultVals.notes,
+        expected_delivery_date: formatFbDate(defaultVals.expected_delivery_date,true) ,
         orders: defaultVals.orders,
         } : {orders: []},
         resolver: joiResolver(schema)
     })
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
-    const productordersmutator = AddUpdateProductOrders(!defaultVals)
+    const productordersmutator = AddUpdateProductOrders(supplierid,!defaultVals)
     const usenav = useNavigate() 
     console.log(errors)
     const SubmitForm = async (data)=>{
-        
-        console.log(data)
-        return;
         try{
-            console.log("D",data)   
-            data.logo = ""
+            console.log("D You FOund me alldatra",data)   
+            data.orders.forEach((order)=>{
+                order.productorder_details = preprocess_order(order.productorder_details)
+            })
+
             const suborderid  = await productordersmutator.mutate(data)
             console.log(suborderid)
 
@@ -74,7 +80,7 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
                 throw productordersmutator.error
               
             // normalement usenav to the new id
-            usenav(ROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_BY_ID(suborderid))
+            //usenav(ROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_BY_ID(supplierid,suborderid))
             
         }catch(err){
             console.error(err)
@@ -105,7 +111,7 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
     </motion.div>
 }
 
-const OrdersTable = ({supplierinfo,defaultVals})=>{
+const OrdersTable = ({supplierinfo})=>{
     const {watch,register,control,setValue} = useFormContext()
 
     const [detailsPopUpOpen,setDetailsPopUpOpen] = useState(false)
@@ -183,7 +189,8 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
        ]
     },[orders])
     const updateOrderDetails = (close,id)=>(data)=>{
-        console.log(data)
+        //convert to number because the form saves it as an object of unit value
+        data.unitQuantity = data.unitQuantity.value * (data.unitQuantity.unit.subunit ? data.unitQuantity.unit.subunit.ratio : 1)
         setValue(`orders.${id}.productorder_details`,data)
         close()
     }
@@ -194,6 +201,7 @@ const OrdersTable = ({supplierinfo,defaultVals})=>{
     {orderDetails && <PopupItem open={detailsPopUpOpen} onClose={(e)=>setDetailsPopUpOpen(false)}>
         {(close) => <ProductOrderDetails {...orderDetails} />}
     </PopupItem>}
+    {/*id bug in default vals  after usag : unitQuantity + allahou a3lim about the name change stuff */}
     {merchandiseDetails &&merchandiseDetails.data.product  && <PopupItem open={merchandisePopUpOpen} onClose={(e)=>setMerchandisePopUpOpen(false)}>
         {(close) => <MerchandiseInfo defaultVals={orders && orders[merchandiseDetails.id]?.productorder_details} submit={updateOrderDetails(close,merchandiseDetails.id)} productid={merchandiseDetails && merchandiseDetails.data.product} />}
     </PopupItem>}

@@ -62,7 +62,7 @@ export const PRODUCT_ORDERS = {
     GET_UPDATE_PRODUCT_ORDERS: (supid,orderid)=> "/suppliers/"+supid+"/orders/update/" + orderid,
     UPDATE_PRODUCT_ORDERS : "/suppliers/:supplierid/orders/update/:orderid",
     REVIEW_PRODUCT_ORDERS: "/suppliers/orders",
-    ADD_PRODUCT_ORDERS: "/suppliers/:supid/orders/add",
+    ADD_PRODUCT_ORDERS: "/suppliers/:supplierid/orders/add",
     ADD_PRODUCT_ORDER_TO_SUPPLIER : (supid)=> "/suppliers/"+supid+"/orders/add",
     GET_PRODUCT_ORDERS_OF_SUPPLIER : (supid)=> "/suppliers/"+supid+"/orders/",
     GET_PRODUCT_ORDERS_BY_ID : (supid,orderid)=> "/suppliers/"+supid+"/orders/" + orderid,

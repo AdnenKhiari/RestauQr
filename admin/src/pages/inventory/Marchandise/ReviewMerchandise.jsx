@@ -54,7 +54,6 @@ const ReviewMerchandise =()=>{
         <div className="data-review-header">
             <h1><span>Name: </span>{productorder.name}</h1>
             <div>
-                
                 {getLevel(user.profile.permissions.tables) >=getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT_MERCHANDISE(productid,orderid))
                 }}>Update</button>
@@ -86,7 +85,7 @@ const ReviewMerchandise =()=>{
                     <div>
                         <label htmlFor="use">Use</label>
                         <UnitValue  
-                          customunits={[{...product.unit,customUnits: product.customUnits}]}
+                          customunits={product.customUnits && [{...product.unit,customUnits: product.customUnits}]}
                           inputcustomprops={{placeholder:"Use...", className:"secondary-input" ,id:"use"}}
                           register={register}  
                           name="used" 
@@ -97,7 +96,7 @@ const ReviewMerchandise =()=>{
                         <label htmlFor="waste">Waste</label>
                         <UnitValue  inputcustomprops={{placeholder:"Waste...", className:"secondary-input" ,id:"waste"}}
                           register={register}  
-                          customunits={[{...product.unit,customUnits: product.customUnits}]}
+                          customunits={product.customUnits && [{...product.unit,customUnits: product.customUnits}]}
                           name="wasted" 
                           control={control} 
                           defaultValue={{value: 0,units: product.unit}} 

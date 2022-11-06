@@ -72,7 +72,11 @@ export const GetMerchandiseById = (productid,orderid)=>{
         fetch: fetch
     }
 }
-
+export const preprocess_order = (data)=>{
+    if(data.unitQuantity?.value)
+        data.unitQuantity = data.unitQuantity.value * (data.unitQuantity.unit?.subunit ? data.unitQuantity.unit?.subunit.ratio : 1 )
+    return data
+} 
 export const ConsumeMerchandiseItem = (productid,orderid) => {
     const [error,setError] = useState(null)
     const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (data)=>{

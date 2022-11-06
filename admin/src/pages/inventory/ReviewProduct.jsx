@@ -70,9 +70,9 @@ const ReviewProduct = ()=>{
             <h2><span>Price/U:</span> {product.sellingUnitPrice} Millime</h2>
             <h2><span>Quantity/U:</span> <UnitShow customunits={product.customUnits} unitval={{value: product.unitQuantity,unit: product.unit}} /></h2>  
             <h2><span>Available In Stock:</span> <UnitShow customunits={product.customUnits}  unitval={{value: product.stockQuantity,unit: product.unit}} /></h2>
-            <h2><span>Units:</span><div>
-                {product.customUnits && product.customUnits.map((unit,key)=><div style={{margin: "10px"}} key={key}>{unit.name} Is <UnitShow customunits={product.customUnits}  unitval={{value: unit.ratio,unit: product.unit}}/></div>)}
-            </div></h2>
+            {product.customUnits &&  <h2><span>Units:</span><div>
+                {product.customUnits?.map((unit,key)=><div style={{margin: "10px"}} key={key}>{unit.name} Is <UnitShow customunits={product.customUnits}  unitval={{value: unit.ratio,unit: product.unit}}/></div>)}
+            </div></h2>}
             <div>
             {/*<form onSubmit={handleSubmit(async (data)=>{
                 const sendata = {

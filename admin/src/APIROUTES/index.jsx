@@ -63,7 +63,7 @@ export const UNITS = {
 export const PRODUCT_ORDERS = {
     GET_PRODUCT_ORDERS_OF_SUPPLIER : (id)=>baseurl + "suppliers/"+id+"/product_orders/",
     GET_PRODUCT_ORDERS : baseurl + "suppliers/product_orders/",
-    UPDATE_PRODUCT_ORDERS:(id,prodid)=>baseurl+"/suppliers/"+id+"/product_orders/"+prodid,
+    UPDATE_PRODUCT_ORDERS:(id,prodid)=>baseurl+"suppliers/"+id+"/product_orders/"+prodid,
     ADD_PRODUCT_ORDERS :  (id)=>baseurl + "suppliers/"+id+"/product_orders",
     GET_PRODUCT_ORDERS_BY_ID : (id,prodid)=>baseurl+"/suppliers/"+id+"/product_orders/"+prodid,
     REMOVE_PRODUCT_ORDERS: (id,prodid)=>baseurl+"/suppliers/"+id+"/product_orders/"+prodid,

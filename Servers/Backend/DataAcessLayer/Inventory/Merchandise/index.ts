@@ -38,6 +38,8 @@ const ConsumeMerchandise= async (productid: string,orderid: string,data: {wasted
             throw Error("Invalid IDs")
         }
         const cur = snap.data()
+        if(cur?.disabled)
+            throw Error("Item Disabled !")
         if(cur?.used + data.used < 0 || cur?.wasted + data?.wasted < 0){
             throw Error("Invalid Query,the wasted and used total ammounts cannot be negative")
         }
@@ -102,45 +104,78 @@ const GetMerchandise = async (searchData: any,productid: string | undefined)=>{
     console.log(data.docs)
     return data.docs.map((order)=>{return{ id:order.id,product_ref: order.ref.parent?.parent?.id,...order.data()}})
 }
-const AddUpdateMerchandise = async (productid: string,orderid: string | undefined,data: any)=>{
+const AddUpdateMerchandise = async (productid: string,orderid: string | undefined,data: any,isdisabled: boolean = false)=>{
+    
     const db = admin.firestore()
-
     const prodref = db.doc('products/'+productid)
+
 
     if(orderid){
         const ref = db.doc('products/'+productid+'/product_instances/'+orderid)
         const productorderid = orderid+""
         await db.runTransaction(async (tr)=>{
-
-            const old_prod = (await tr.get(prodref))
-            if(!old_prod.exists)
-                throw Error("Invalid Product Id")
-            const old_prod_data = old_prod.data()
-
-            const old_ord = (await tr.get(ref))
-            if(!old_ord.exists)
-                throw Error("Invalid Order Id")
-            const old_ord_data = old_ord.data()
-
-            const new_quantity = data.unitQuantity * data.productQuantity
-            const old_quantity = old_ord_data?.unitQuantity * old_ord_data?.productQuantity
-            const diff = new_quantity - old_quantity
-            if(-diff > old_prod_data?.stockQuantity )
-                throw Error("Exceeded maximum Capacity")
-            tr.update(ref,data).update(prodref,{
-                stockQuantity: admin.firestore.FieldValue.increment(diff)
-            })
+            await updatemerchandise(tr,prodref,ref,data,undefined)
         })
         return productorderid
     }else{
-        data = {...data,used: 0,wasted: 0}
-        const stockadd =  (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
         const ref = db.collection('products/'+productid+'/product_instances').doc()
         await db.runTransaction(async (tr)=>{
-            tr.create(ref,data)
-            tr.update(prodref,{stockQuantity: admin.firestore.FieldValue.increment(stockadd)})
+            addmerchandise(tr,prodref,ref,data,isdisabled)
         })
         return ref.id 
+    }
+}
+
+export const addmerchandise = (tr: FirebaseFirestore.Transaction,prodref: FirebaseFirestore.DocumentReference<any>,ref: FirebaseFirestore.DocumentReference<any>,data: any,isdisabled: boolean)=>{
+    data = {...data,used: 0,wasted: 0}
+    //for data update
+    data.disabled = isdisabled
+    const stockadd = (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
+    tr.create(ref,data)
+    if(!isdisabled)
+        tr.update(prodref,{stockQuantity: admin.firestore.FieldValue.increment(stockadd)})
+}
+export const updatemerchandise = async (tr: FirebaseFirestore.Transaction,prodref: FirebaseFirestore.DocumentReference<any>,ref: FirebaseFirestore.DocumentReference<any>,data: any,isdisabled: undefined | boolean)=>{
+    const stockadd = (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
+    //for data update
+    if(isdisabled !== undefined)
+        data.disabled = isdisabled
+    const old_prod = (await tr.get(prodref))
+    if(!old_prod.exists)
+        throw Error("Invalid Product Id")
+    const old_prod_data = old_prod.data()
+
+    const old_ord = (await tr.get(ref))
+    if(!old_ord.exists)
+        throw Error("Invalid Order Id")
+    const old_ord_data = old_ord.data()
+
+    if(isdisabled === undefined)
+        isdisabled = old_ord_data?.disabled
+
+    if(!old_ord_data?.disabled && isdisabled)
+        throw Error("Invalid Status Change")
+
+
+
+    if(!old_ord_data?.disabled && !isdisabled){
+        //update the quantities 
+        const new_quantity = data.unitQuantity * data.productQuantity
+        const old_quantity = old_ord_data?.unitQuantity * old_ord_data?.productQuantity
+        const diff = new_quantity - old_quantity
+        if(-diff > old_prod_data?.stockQuantity )
+            throw Error("Exceeded maximum Capacity")
+        tr.update(prodref,{
+            stockQuantity: admin.firestore.FieldValue.increment(diff)
+        })
+    }
+
+    //update the data
+    tr.update(ref,data)
+
+    if(old_ord_data?.disabled && !isdisabled){
+        //add quantity to product
+        tr.update(prodref,{stockQuantity: admin.firestore.FieldValue.increment(stockadd)})
     }
 }
 

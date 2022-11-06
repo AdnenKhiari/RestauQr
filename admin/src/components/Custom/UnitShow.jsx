@@ -40,14 +40,16 @@ const UnitShow = ({unitval,customunits})=>{
                 label: sub.name,
                 value: sub
             }))]
-        },customunits && customunits.length > 0 ? {
+        },
+        ...(customunits?.length > 0 ? [{
             label: "Custom Units",
             options: [...customunits.map((sub)=>({
                     label: sub.name,
                     value: sub
                 }))]
             
-        } : {}] : []} />
+        }] : [])
+        ] : []} />
     </div>
 }
 export default UnitShow

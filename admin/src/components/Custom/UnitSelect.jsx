@@ -37,7 +37,7 @@ const UnitSelect = (props)=>{
     })),...(customunits ? customunits.map((un)=>({
         
         label: "Custom Units",
-        options: un.customUnits.map((sub)=>({
+        options: un.customUnits?.map((sub)=>({
             label: sub.name,
             value: {
                 name: un.name,
