@@ -177,6 +177,8 @@ export const updatemerchandise = async (tr: FirebaseFirestore.Transaction,prodre
         //add quantity to product
         tr.update(prodref,{stockQuantity: admin.firestore.FieldValue.increment(stockadd)})
     }
+
+    return ref.id
 }
 
 const updateFoodProducts = (cur: any,data: any,productid :any)=>{

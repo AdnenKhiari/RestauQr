@@ -88,7 +88,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 
 router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
-
+    console.log("Got it !")
     const {value,error} = (merchandiseSchema.validate(req.body))
     if(error)
         return next(error)

@@ -21,7 +21,6 @@ import MerchandiseInfo from "./MerchandiseInfo"
 import UnitSelect from "./Custom/UnitSelect"
 import ProductTable from "./Tables/ProductsTable"
 import addimage from "../images/addimage.png"
-
 import plusimage from "../images/plus.png"
 import trashimg from "../images/trash.png"
 import { useSortBy, useTable } from "react-table"
@@ -43,6 +42,7 @@ const schema = joi.object({
     expected_delivery_date: joi.date().required().label('Expected Date'),
     notes: joi.string().allow("").label("Notes"),
     orders: joi.array().items(joi.object({
+        id: joi.string().allow("").optional(),
         productorder_details: joi.any(),
         product: joi.string().required(),
         details: orderdetailschema.optional()
@@ -58,7 +58,10 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
         id: defaultVals.id,
         notes: defaultVals.notes,
         expected_delivery_date: formatFbDate(defaultVals.expected_delivery_date,true) ,
-        orders: defaultVals.orders,
+        orders: defaultVals.orders.map((ord)=>{
+            ord.details.delivery_date = formatFbDate(ord.details.delivery_date,true)
+            return ord
+        }),
         } : {orders: []},
         resolver: joiResolver(schema)
     })
@@ -79,8 +82,7 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
             if(productordersmutator.error)
                 throw productordersmutator.error
               
-            // normalement usenav to the new id
-            //usenav(ROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_BY_ID(supplierid,suborderid))
+            usenav(0)
             
         }catch(err){
             console.error(err)
@@ -141,7 +143,7 @@ const OrdersTable = ({supplierinfo})=>{
         return [{
             Header: 'Name',
             accessor: 'name',
-            Cell: (val)=> <input style={{width: "100%"}}  className={"secondary-input "} type="text" {...register(`orders.${val.row.index}.productorder_details.name`)} />
+            Cell: (val)=> <input style={{width: "100%"}} disabled={val.row.original?.productorder_details?.id}  className={"secondary-input "} type="text" {...register(`orders.${val.row.index}.productorder_details.name`)} />
         },
         {
             Header: 'Product',
@@ -153,13 +155,13 @@ const OrdersTable = ({supplierinfo})=>{
         {
             Header: 'Units',
             accessor: 'units',
-            Cell: (val)=> <input  className={"secondary-input "} type="number" {...register(`orders.${val.row.index}.productorder_details.productQuantity`)} />
+            Cell: (val)=> <input  className={"secondary-input "} type="number"  disabled={val.row.original?.productorder_details?.id}  {...register(`orders.${val.row.index}.productorder_details.productQuantity`)} />
 
         },
         {
             Header: 'Price/U',
             accessor: 'priceperunit',
-            Cell: (val)=> <input  className={"secondary-input "} type="number" {...register(`orders.${val.row.index}.productorder_details.unitPrice`)} />
+            Cell: (val)=> <input  className={"secondary-input "} type="number"  disabled={val.row.original?.productorder_details?.id}  {...register(`orders.${val.row.index}.productorder_details.unitPrice`)} />
         },
         /*{
             Header: 'Quantity/U',
@@ -180,7 +182,12 @@ const OrdersTable = ({supplierinfo})=>{
             Cell: (val)=>{
                 console.log("Selected Value",val.row.original)
                 return<>
-                <button type="button"  disabled={!(val.row.original && val.row.original.product)} onClick={(e)=>openMerchandiseDetails(val.row.original,val.row.index)} >Link Merchandise</button>
+                <button type="button"  disabled={!(val.row.original && val.row.original.product)} onClick={(e)=>{
+                    if(!val.row.original?.productorder_details?.id) 
+                        openMerchandiseDetails(val.row.original,val.row.index)
+                    else
+                        window.open(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_MERCHANDISE(val.row.original?.product,val.row.original?.productorder_details?.id,"_top"))
+                    }} >{val.row.original?.productorder_details?.id === undefined ? "Link Merchandise" : "Merchandise Details"}</button>
                 <button type="button"  onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Delivery Details</button>
                 <h3><button type="button" onClick={(e)=>remove(val.row.index)} >Remove</button></h3>
                 </> 
