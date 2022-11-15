@@ -28,7 +28,7 @@ const SignedIn = async (req: Express.Request,res: Express.Response,next: Express
     }
 }
 const HasAccess = (scopes : permissions) => (req : Express.Request,res : Express.Response,next : Express.NextFunction)=>{
-    console.warn("DECOED IN SCOPE",req.decodedtoken)
+    //console.warn("DECOED IN SCOPE",req.decodedtoken)
     Object.keys(scopes).forEach((scope: string)=>{
         console.log("FOUND",scope,req.decodedtoken)
 

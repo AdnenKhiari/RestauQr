@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin"
+import { firestore } from "firebase-admin"
 
 const GetMerchandiseById =  async (productid: string,orderid: string)=>{
     const db = admin.firestore()
@@ -12,7 +13,6 @@ const GetMerchandiseById =  async (productid: string,orderid: string)=>{
 }
 
 const DeleteMerchandise = async (productid: string,orderid: string)=>{
-    let quan = 0
     const db = admin.firestore()
 
     const ref = db.doc('products/'+productid+'/product_instances/'+orderid)
@@ -21,12 +21,35 @@ const DeleteMerchandise = async (productid: string,orderid: string)=>{
         if(!snap.exists)
             throw Error("Invalid Product Order Id")
         const data = snap.data()
-        quan = data?.unitQuantity * data?.productQuantity - (data?.used + data?.wasted)
-        tr.delete(ref).update(db.doc('products/'+productid),{
-            stockQuantity: admin.firestore.FieldValue.increment(-quan)
-        })
+
+        if(data?.productorder_id && data?.supplier_id  && data?.order_id){
+            const productorder_ref = db.doc(`/suppliers/${data?.supplier_id}/productorders/${data?.productorder_id}`)
+            const productorder_snap = await tr.get(productorder_ref)
+            if(!productorder_snap.exists)
+                throw Error("Product Order Do Not Exists")
+            const productorder_data  = productorder_snap.data()      
+            const to_remove = productorder_data?.orders.findIndex((pd: any) => pd.id === data.order_id)
+            if(to_remove !== -1)
+                productorder_data?.orders.splice(to_remove)
+            if(productorder_data?.orders.length > 0)
+                tr.update(productorder_ref,productorder_data)
+            else 
+                tr.delete(productorder_ref)
+        }
+        //updates the product quantity before removing the merchandise
+        processremovemerchandise(data,tr,db.doc("/products/"+productid))
+        tr.delete(ref)
+
     })
 }
+export const processremovemerchandise = (data: any,tr: firestore.Transaction,ref: firestore.DocumentReference<firestore.DocumentData>)=>{
+    const quan = data?.unitQuantity * data?.productQuantity - (data?.used + data?.wasted)
+    if(!data?.disabled)
+        tr.update(ref,{
+            stockQuantity: admin.firestore.FieldValue.increment(-quan)
+        })
+}
+
 const ConsumeMerchandise= async (productid: string,orderid: string,data: {wasted:number,used: number,updateGlobally : boolean}) => {
     const db = admin.firestore()
 
@@ -120,16 +143,20 @@ const AddUpdateMerchandise = async (productid: string,orderid: string | undefine
     }else{
         const ref = db.collection('products/'+productid+'/product_instances').doc()
         await db.runTransaction(async (tr)=>{
-            addmerchandise(tr,prodref,ref,data,isdisabled)
+            addmerchandise(tr,prodref,ref,data,isdisabled,undefined,undefined,undefined)
         })
         return ref.id 
     }
 }
 
-export const addmerchandise = (tr: FirebaseFirestore.Transaction,prodref: FirebaseFirestore.DocumentReference<any>,ref: FirebaseFirestore.DocumentReference<any>,data: any,isdisabled: boolean)=>{
+export const addmerchandise = (tr: FirebaseFirestore.Transaction,prodref: FirebaseFirestore.DocumentReference<any>,ref: FirebaseFirestore.DocumentReference<any>,data: any,isdisabled: boolean,supplierid: string | undefined,productorderid: string | undefined,order_id: string | undefined)=>{
     data = {...data,used: 0,wasted: 0}
     //for data update
     data.disabled = isdisabled
+    if(productorderid && supplierid && order_id)
+        data.productorder_id = productorderid
+        data.supplier_id = supplierid
+        data.order_id = order_id
     const stockadd = (data.unitQuantity * data.productQuantity - (data.used + data.wasted))
     tr.create(ref,data)
     if(!isdisabled)

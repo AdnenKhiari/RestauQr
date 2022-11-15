@@ -64,11 +64,12 @@ router.get('/',
         return next(err)
     }
 })
-
+*/
 router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
-    const {id} = req.params
+    const id: string = req.params.id
+    const supplierid = <string>req.supplierid
     try{
-        const data = await Orders.DeleteOrderById(id)
+        const data = await ProductOrders.DeleteProductOrder(supplierid,id)
         return res.send({
             data: data
         })
@@ -80,5 +81,5 @@ router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),async (r
 
 router.get("/",(req,res)=>{
     return res.send("Hii Invoices")
-})*/
+})
 export default router

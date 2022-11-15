@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin"
 import moment from "moment"
-import { addmerchandise, updatemerchandise } from "../../Inventory/Merchandise"
+import { addmerchandise, processremovemerchandise, updatemerchandise } from "../../Inventory/Merchandise"
 import Orders from "../../Orders"
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,9 +13,9 @@ const GetProductOrderById =  async (supplierid:string,id: string)=>{
     if(!res.exists)
         throw Error("Invalid Id")
     const productorders : any = {id: ref.id,...res.data()} 
-    const allorders = await db.getAll(...productorders.orders.map((order: any,key: number)=>{
+    const allorders = productorders.orders.length > 0 ? await db.getAll(...productorders.orders.map((order: any,key: number)=>{
         return db.doc('products/'+order.product+'/product_instances/'+order.merchandiseid)
-    }))
+    })) : []
     
     return {
         id: productorders.id,
@@ -34,42 +34,27 @@ const GetProductOrderById =  async (supplierid:string,id: string)=>{
     })}
 
 }
-const DeleteSupplierById =  async (id: string)=>{
+const DeleteProductOrder =  async (supplierid: string,id: string)=>{
     const db = admin.firestore()
-    const ref = db.doc("suppliers/"+id)
-    await ref.delete()
-}
-const GetSuppliers =  async (searchData: any)=>{
-    const db = admin.firestore()
-    let col = db.collection("suppliers")
-    const pagname = 'name'
-    let query  = col.orderBy(pagname,searchData.dir || 'desc');
+    const path = 'suppliers/'+supplierid+"/productorders/"
+    const current_order_ref = id ? db.doc(path+id) : db.collection(path).doc() 
+    await db.runTransaction(async tr=>{
+        const current_order_snap = await tr.get(current_order_ref)
+        if(!current_order_snap.exists)
+            throw Error("Invalid Id")
+        const current_order : any = current_order_snap.data()
+        const to_remove_merchandise_snaps = current_order.orders.length > 0 ? await tr.getAll(...current_order.orders.map((od : any)=> db.doc('products/'+od.product+"/product_instances/"+od.merchandiseid) )): []
 
-    /*if(searchData.startDate)
-        query = query.where('time','>=',(moment(searchData.startDate).toDate()))
-    if(searchData.tableid)
-        query = query.where('tableid','==',(searchData.tableid))
-    if(searchData.endDate)
-        query = query.where('time','<=',(moment(searchData.endDate).toDate()))
-    if(searchData.status)
-        query = query.where('status','==',(searchData.status))
-    */
-    if(searchData.lastRef){
-        const starting = await db.doc("suppliers/"+searchData.lastRef).get()
-        if(!starting.exists)
-            throw Error("Invalid Last Reference")
-        if(searchData.swapped)
-            query = query.startAt(starting)
-        else
-            query = query.startAfter(starting)
-    }
-    query = query.limit(2)
-    const data = await query.get()
-    return data.docs.map((order)=>{return{ id:order.id,...order.data()}})
+        await Promise.all(to_remove_merchandise_snaps.map(async (mer,key: number)=>{
+            const current_mer = mer.data()
+            const curr_order = current_order.orders[key]
+            processremovemerchandise(current_mer,tr,db.doc("products/"+curr_order.product))
+            tr.delete(mer.ref)
+        }))
+        tr.delete(current_order_ref)
+    })
 }
 
-//if new product orders in orders : only accept the details and id otherwise error out 
-//read all changed status data first , determine if it needs to be enabled and update stock accordingly !
 const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | undefined)=>{
     const db = admin.firestore()
     const path = 'suppliers/'+supplierid+"/productorders/"
@@ -86,11 +71,22 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
                 if(!current_order_snap.exists)
                     throw Error("Invalid Id")
                 const current_order : any = current_order_snap.data()
-               // console.warn("This is lel",current_order,to_update,data.orders)
-    
+
+                const to_remove = current_order.orders.filter((ord : any) => data.orders.findIndex((d : any) => d.id === ord.id) === -1)
+                const to_remove_merchandise_snaps = to_remove.length > 0 ? await tr.getAll(...to_remove.map((od : any)=> db.doc('products/'+od.product+"/product_instances/"+od.merchandiseid) )): []
+                const to_update_snaps = to_update.length > 0 ? await tr.getAll(...to_update.map((order: any)=>db.doc('products/'+order.product+"/product_instances/"+order.productorder_details.id))) : []
+
+                // first clean the corresponding products stock then remove the merchandise
+                if(to_remove_merchandise_snaps.length > 0){
+                    await Promise.all(to_remove_merchandise_snaps.map(async (mer,key: number)=>{
+                        const current_mer = mer.data()
+                        const curr_order = to_remove[key]
+                        processremovemerchandise(current_mer,tr,db.doc("products/"+curr_order.product))
+                        tr.delete(mer.ref)
+                    }))
+                }
                 //to make sure you can update the status and the quantities 
                 if(to_update.length > 0){
-                    const to_update_snaps = await tr.getAll(...to_update.map((order: any)=>db.doc('products/'+order.product+"/product_instances/"+order.productorder_details.id)))
                     await Promise.all(to_update_snaps.map(async (dl,key: number)=>{
                         if(!dl.exists)
                             throw Error("Merchandise Not Found")
@@ -128,9 +124,10 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
                 const productorderid = order.id
                 const prodref = db.doc('products/'+order.product)
                 if(!productorderid){
+                    const new_id = uuidv4()
                     const ref = db.collection('products/'+order.product+'/product_instances/').doc()
-                    addmerchandise(tr,prodref,ref,order.productorder_details,order.details.status !== "Completed")
-                    ids.push({merchandiseid: ref.id,id: uuidv4() })
+                    addmerchandise(tr,prodref,ref,order.productorder_details,order.details.status !== "Completed",supplierid,current_order_ref.id,new_id)
+                    ids.push({merchandiseid: ref.id,id: new_id})
                 }else{
                     ids.push({merchandiseid: order.productorder_details.id ,id: productorderid })
                 }
@@ -157,5 +154,6 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
 
 export default {
     GetProductOrderById,
-    AddUpdateProductOrder
+    AddUpdateProductOrder,
+    DeleteProductOrder
 }
