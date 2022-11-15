@@ -18,7 +18,7 @@ const SignedIn = async (req: Express.Request,res: Express.Response,next: Express
         const auth = admin.auth()
         const decoded = await DecodeCookie(req,res)
         req.decodedtoken = decoded
-        console.log("User: ",decoded)
+        //console.log("User: ",decoded)
         if(decoded)
             return next()
         else
