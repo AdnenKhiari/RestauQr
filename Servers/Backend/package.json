@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --delay 1500ms index.ts"
+    "dev": "nodemon --delay 1500ms index.ts && node -r index.ts"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +34,7 @@
     "joi-filelist": "^1.0.0",
     "joi-phone-number": "^5.1.1",
     "moment": "^2.29.4",
+    "newrelic": "^9.7.0",
     "nodemailer": "^6.7.8",
     "uuid": "^9.0.0"
   }
