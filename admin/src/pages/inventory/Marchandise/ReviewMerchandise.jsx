@@ -20,8 +20,7 @@ const schema = joi.object({
     used: unitvalueschema.label("Use"),
     wasted: unitvalueschema.label("Wasted"),    
 })
-const ReviewMerchandise =()=>{
-    const {productid,orderid} = useParams()
+export const ReviewMerchandiseUi =({productid,orderid})=>{
     const {result : productorder,loading,error} = GetMerchandiseById(productid,orderid)
     const {result : product,loading: loadingproduct,error: errorproduct} = GetProductById(productid)
     const {result: allunits,loading: allunitsloading,error: allunitserror} = GetUnits()
@@ -121,6 +120,10 @@ const ReviewMerchandise =()=>{
         </div>
     </motion.div >
     </>
+}
+const ReviewMerchandise =()=>{
+    const {productid,orderid} = useParams()
+    return <ReviewMerchandiseUi productid={productid} orderid={orderid} />
 }
 
 export default ReviewMerchandise

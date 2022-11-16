@@ -73,7 +73,7 @@ const Main = ()=>{
                 <Route path={ROUTES.SUPPLIERS.ADD_SUPPLIER} element={<SUPPLIERS.Add />} />
 
                 <Route path={ROUTES.PRODUCT_ORDERS.ALL} element={<PRODUCT_ORDERS.All />} />
-                <Route path={ROUTES.PRODUCT_ORDERS.REVIEW_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Review />} />
+                <Route path={ROUTES.PRODUCT_ORDERS.REVIEW_PRODUCT_ORDERS_BY_SUPPLIER} element={<PRODUCT_ORDERS.All />} />
                 <Route path={ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Add />} />
                 <Route path={ROUTES.PRODUCT_ORDERS.UPDATE_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Update />} />
 

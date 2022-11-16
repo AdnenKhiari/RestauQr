@@ -25,11 +25,11 @@ import plusimage from "../images/plus.png"
 import trashimg from "../images/trash.png"
 import { useSortBy, useTable } from "react-table"
 import { useMemo } from "react"
-import {AddUpdateProductOrders} from "../lib/ProductOrdersDal"
+import {AddUpdateProductOrders, RemoveProductOrdersById} from "../lib/ProductOrdersDal"
 import uploadimg from "../images/upload.png"
 import { preprocess_order } from "../lib/ProductsDal"
 import { formatFbDate } from "../lib/utils"
-
+import {ReviewMerchandiseUi} from "../pages/inventory/Marchandise/ReviewMerchandise"
 
 const joi  =  fileListExtension(BaseJoi)  
 const orderdetailschema = joi.object({
@@ -51,7 +51,7 @@ const schema = joi.object({
 
 const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
     //const {result: allunits,error: errunits,loading: unitloading} = GetUnits()
-    const {supplierid} = useParams()
+    const {supplierid,orderid} = useParams()
     console.log("Default values for info",defaultVals)
     const formOptions = useForm({
        defaultValues: defaultVals ? {
@@ -67,6 +67,7 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
     })
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
     const productordersmutator = AddUpdateProductOrders(supplierid,!defaultVals)
+    const supplierremover = RemoveProductOrdersById(supplierid,orderid)
     const usenav = useNavigate() 
     console.log(errors)
     const SubmitForm = async (data)=>{
@@ -105,6 +106,14 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
             {errors && <p className="error">{"Make Sure the data is valid !"}</p>}
 
             <div className="validate">
+                {orderid && <button className="make-red" onClick={async (e)=>{
+                    try{
+                        await supplierremover.remove(supplierid,orderid)
+                        usenav(ROUTES.SUPPLIERS.ALL)
+                    }catch(err){
+                        console.log(err)
+                    }
+                }} type="button">Remove</button>}
                 <button type={"reset"}>Reset</button>
                 <button disabled={productordersmutator.loading} type="submit">{defaultVals ? "Update" : "Add"}</button>
             </div>
@@ -113,7 +122,7 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
     </motion.div>
 }
 
-const OrdersTable = ({supplierinfo})=>{
+export const OrdersTable = ({supplierinfo})=>{
     const {watch,register,control,setValue} = useFormContext()
 
     const [detailsPopUpOpen,setDetailsPopUpOpen] = useState(false)
@@ -121,6 +130,9 @@ const OrdersTable = ({supplierinfo})=>{
 
     const [merchandisePopUpOpen,setMerchandisePopUpOpen] = useState(false)
     const [merchandiseDetails,setMerchandiseDetails] = useState(null)
+
+    const [merchandiseReviewPopUpOpen,setMerchandiseReviewPopUpOpen] = useState(false)
+    const [merchandiseReviewDetails,setMerchandiseReviewDetails] = useState(null)
 
     const {append,remove} = useFieldArray({
         name: "orders"
@@ -137,6 +149,11 @@ const OrdersTable = ({supplierinfo})=>{
         setMerchandisePopUpOpen(true)
         setMerchandiseDetails(structuredClone({data,id}))    
         console.log("opened",merchandiseDetails)
+    }
+
+    const openMerchandiseReview = (id,productid)=>{
+        setMerchandiseReviewPopUpOpen(true)
+        setMerchandiseReviewDetails({orderid: id,productid: productid})    
     }
     
     const columns = useMemo(()=>{
@@ -156,7 +173,6 @@ const OrdersTable = ({supplierinfo})=>{
             Header: 'Units',
             accessor: 'units',
             Cell: (val)=> <input  className={"secondary-input "} type="number"  disabled={val.row.original?.productorder_details?.id}  {...register(`orders.${val.row.index}.productorder_details.productQuantity`)} />
-
         },
         {
             Header: 'Price/U',
@@ -185,8 +201,9 @@ const OrdersTable = ({supplierinfo})=>{
                 <button type="button"  disabled={!(val.row.original && val.row.original.product)} onClick={(e)=>{
                     if(!val.row.original?.productorder_details?.id) 
                         openMerchandiseDetails(val.row.original,val.row.index)
-                    else
-                        window.open(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_MERCHANDISE(val.row.original?.product,val.row.original?.productorder_details?.id,"_top"))
+                    else{
+                        openMerchandiseReview(val.row.original.productorder_details.id,val.row.original.product)
+                    }
                     }} >{val.row.original?.productorder_details?.id === undefined ? "Link Merchandise" : "Merchandise Details"}</button>
                 <button type="button"  onClick={(e)=>openOrderDetails(val.row.original,val.row.index)} >Delivery Details</button>
                 <h3><button type="button" onClick={(e)=>remove(val.row.index)} >Remove</button></h3>
@@ -207,6 +224,9 @@ const OrdersTable = ({supplierinfo})=>{
     return <>   
     {orderDetails && <PopupItem open={detailsPopUpOpen} onClose={(e)=>setDetailsPopUpOpen(false)}>
         {(close) => <ProductOrderDetails {...orderDetails} />}
+    </PopupItem>}
+    {merchandiseReviewDetails && <PopupItem open={merchandiseReviewPopUpOpen} onClose={(e)=>setMerchandiseReviewPopUpOpen(false)}>
+        {(close) => <ReviewMerchandiseUi orderid={merchandiseReviewDetails.orderid} productid={merchandiseReviewDetails.productid}  />}
     </PopupItem>}
     {/*id bug in default vals  after usag : unitQuantity + allahou a3lim about the name change stuff */}
     {merchandiseDetails &&merchandiseDetails.data.product  && <PopupItem open={merchandisePopUpOpen} onClose={(e)=>setMerchandisePopUpOpen(false)}>
