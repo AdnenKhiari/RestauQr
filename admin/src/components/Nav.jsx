@@ -62,7 +62,9 @@ const Nav = ()=>{
                     <h2>Suppliers</h2>
                 </li>
                 <Link to={ROUTES.SUPPLIERS.ALL} ><li>Suppliers</li></Link>
+                <Link to={ROUTES.PRODUCT_ORDERS.ALL} ><li>Orders</li></Link>
                 <Link to={ROUTES.SUPPLIERS.ADD_SUPPLIER} ><li>New Supplier</li></Link>
+                
                 <li>
                     <img src={utilisateurimg} alt="users" />
                     <h2>Users</h2>

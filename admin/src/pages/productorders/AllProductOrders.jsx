@@ -1,6 +1,6 @@
-import ProductOrdersTables from "../../components/Tables/SuppliersTables.jsx"
+import ProductOrdersTables from "../../components/Tables/ProductOrdersTable.jsx"
 
 const AllProductOrders = ()=>{
-    return <ProductOrdersTables title="All Suppliers" />
+    return <ProductOrdersTables title="All Orders" />
 }
 export default AllProductOrders

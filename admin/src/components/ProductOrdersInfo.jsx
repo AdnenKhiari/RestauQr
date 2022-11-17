@@ -78,13 +78,13 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
             })
 
             const suborderid  = await productordersmutator.mutate(data)
-            console.log(suborderid)
+            console.log("Success",suborderid)
 
             if(productordersmutator.error)
                 throw productordersmutator.error
               
+            usenav(ROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_BY_ID(supplierid,suborderid),{replace: true})
             usenav(0)
-            
         }catch(err){
             console.error(err)
         }
@@ -92,8 +92,11 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
     return <motion.div variants={FadeIn()} className="secondary-form">
         <FormProvider {...formOptions}>
             <form onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(SubmitForm)}>  
-            <h1>{defaultVals ? "Update Products Orders : " :"Add Products Orders   " } </h1>
-
+            <h1>{defaultVals ? "Update Products Orders : " :"Add Products Orders   " }<button 
+            type="button" 
+            style={{float: "right",color:"white"}}
+            onClick={(e)=>usenav(ROUTES.SUPPLIERS.GET_SUPPLIER(supplierid))}
+            >Supplier </button></h1>
             <div className="input-item">
                 <label htmlFor="expected_delivery_date"><h2>Expected Delivery Date : </h2></label>
                 <input className={"secondary-input " + (errors.expected_delivery_date ? 'input-error' : '')} type="date" id="expected_delivery_date" {...register("expected_delivery_date")} />

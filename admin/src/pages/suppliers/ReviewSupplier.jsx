@@ -9,6 +9,7 @@ import {motion} from "framer-motion"
 import { FadeIn } from "../../animations"
 import {useTable,useSortBy} from "react-table"
 import { getLevel } from "../../lib/utils"
+import ProductOrdersTables from "../../components/Tables/ProductOrdersTable.jsx"
 
 import uploadimg from "../../images/upload.png"
 import checkboximg from "../../images/checkbox.png"
@@ -79,6 +80,8 @@ const ReviewSupplier =()=>{
             </div>    
         </div>
     </motion.div >
+    <ProductOrdersTables title="Orders " parentid={supplierid} />
+            
     </>
 }
 

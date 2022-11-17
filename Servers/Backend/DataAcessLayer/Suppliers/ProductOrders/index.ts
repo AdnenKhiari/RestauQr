@@ -55,6 +55,26 @@ const DeleteProductOrder =  async (supplierid: string,id: string)=>{
     })
 }
 
+const GetProductOrders = async (params : any = {},supplierid : string  | undefined)=>{
+    const db = admin.firestore()
+    const ref = supplierid ?  db.collection("/suppliers/"+supplierid+"/productorders") : db.collectionGroup("productorders") 
+    const query = ref.limit(10)
+    const snaps = await query.get()
+    return snaps.docs.map((snap)=>{
+        const data = snap.data()
+        const all_status : string[] = data.orders.map((ord: any)=>ord.details.status)
+        return {
+            id: snap.id,
+            creation_date: data.creation_date,
+            expected_delivery_date : data.expected_delivery_date,
+            notes : data.notes,
+            productid: data.product_instances,
+            supplierid: snap.ref.parent.parent?.id,
+            status: all_status.every((st)=> st === "Canceled") ? "Canceled" : all_status.every((st)=> st === "Completed") ? "Completed" : all_status.every((st)=> st === "Waiting") ? "Waiting" : "Other"
+        }
+    })
+}
+
 const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | undefined)=>{
     const db = admin.firestore()
     const path = 'suppliers/'+supplierid+"/productorders/"
@@ -131,9 +151,8 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
                 }else{
                     ids.push({merchandiseid: order.productorder_details.id ,id: productorderid })
                 }
-            })   
-    
-            tr.set(current_order_ref,{
+            })  
+            const data_to_add : any = {
                 notes: data.notes,
                 expected_delivery_date: data.expected_delivery_date,
                 orders: ids.map((d,key: number)=>{
@@ -144,7 +163,10 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
                         product: data.orders[key].product 
                     }
                 })
-            }) 
+            } 
+            if(!id)
+                data_to_add.creation_date = new Date()
+            tr.set(current_order_ref,data_to_add,{merge: true}) 
        
     })
 
@@ -155,5 +177,6 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
 export default {
     GetProductOrderById,
     AddUpdateProductOrder,
-    DeleteProductOrder
+    DeleteProductOrder,
+    GetProductOrders
 }

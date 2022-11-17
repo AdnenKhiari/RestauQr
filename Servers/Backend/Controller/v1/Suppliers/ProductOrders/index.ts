@@ -42,9 +42,9 @@ router.get('/:id',async (req,res,next)=>{
         return next(err)
     }
 })
-/*
+
 router.get('/',
-(req,res,next)=>{
+/*(req,res,next)=>{
 
     const {value,error} = (fetchOrdersSchema.validate(req.query))
     if(error)
@@ -52,11 +52,11 @@ router.get('/',
     req.query = value
         return next()
 }
-,async (req,res,next)=>{
+,*/async (req,res,next)=>{
     const search_params = req.query
     console.log(search_params)
     try{
-        const data = await Orders.GetOrders(search_params || {})
+        const data = await ProductOrders.GetProductOrders(search_params || {},req.supplierid)
         return res.send({
             data: data
         })
@@ -64,7 +64,7 @@ router.get('/',
         return next(err)
     }
 })
-*/
+
 router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
     const id: string = req.params.id
     const supplierid = <string>req.supplierid
@@ -80,6 +80,6 @@ router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),async (r
 })
 
 router.get("/",(req,res)=>{
-    return res.send("Hii Invoices")
+    return res.send("Hii Orders")
 })
 export default router
