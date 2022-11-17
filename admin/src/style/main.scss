@@ -38,3 +38,4 @@
 }
 
 @include scrollify(".main",true);
+@include scrollify("textarea",false);
