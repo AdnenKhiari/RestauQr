@@ -8,7 +8,7 @@ const router = Router()
 
 
 
-router.post('/',async (req,res,next)=>{
+router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory:"manage"}),async (req,res,next)=>{
     try{
         const supplierid: string = <string>req.supplierid
         const data = req.body
@@ -18,7 +18,7 @@ router.post('/',async (req,res,next)=>{
         return next(err)
     }
 })
-router.put('/:id',async (req,res,next)=>{
+router.put('/:id',OAuth.HasAccess({inventory:"manage"}),async (req,res,next)=>{
     try{
         const supplierid = <string>req.supplierid
         const id = req.params.id
@@ -30,7 +30,7 @@ router.put('/:id',async (req,res,next)=>{
     }
 })
 
-router.get('/:id',async (req,res,next)=>{
+router.get('/:id',OAuth.HasAccess({inventory:"read"}),async (req,res,next)=>{
     const id: string = req.params.id
     const supplierid = <string>req.supplierid
     try{
@@ -43,7 +43,7 @@ router.get('/:id',async (req,res,next)=>{
     }
 })
 
-router.get('/',
+router.get('/',OAuth.HasAccess({inventory:"read"}),
 /*(req,res,next)=>{
 
     const {value,error} = (fetchOrdersSchema.validate(req.query))
@@ -65,7 +65,7 @@ router.get('/',
     }
 })
 
-router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),async (req,res,next)=>{
+router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const id: string = req.params.id
     const supplierid = <string>req.supplierid
     try{
