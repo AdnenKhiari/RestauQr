@@ -30,19 +30,30 @@ export const AddUpdateUnits = async (data: any)=>{
         const allproducts = allproducts_snaps.docs.map((prd)=>({id:prd.id,...prd.data()}))
         const olddata : any = oldunits_snap.data()
         const oldunits = olddata.allunits
+
         oldunits.forEach((old: any) => {
-            let exists = false
+            let unit_existing: any = null
             if(old.id)
-                exists = newunits.find((u: any)=>u.id === old.id )
-            if(!exists){
+            unit_existing = newunits.find((u: any)=>u.id === old.id )
+            //check if needs to be deleted
+            if(!unit_existing){
                 //to be deleted if no product in using it :
                 const prd : any = allproducts.find((prd: any)=>prd.unit.id === old.id)
                 if(prd)
                     throw Error("Unit Is In Use In product :"+ prd.name +" , Could Not Remove It !")
             }
-        })
+        })   
+
         tr.update(cat_ref,{
-            allunits: newunits
+            backup: oldunits,
+            allunits: newunits.map((nw: any)=>{
+                if(nw.id){
+                    const old = oldunits.find((old: any)=>old.id === nw.id)
+                    if(old)
+                        return old
+                }
+                return nw
+            })
         })
     })
 }
