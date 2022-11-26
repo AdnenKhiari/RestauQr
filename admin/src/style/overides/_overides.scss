@@ -274,14 +274,19 @@ input,button,a,textarea{
             justify-content: center;
             align-items: center;
             align-content: center;
-            * {
-                z-index: 100001;
-            }
-            .react-select-container{
-                z-index: 1000200;
-                *  {
-                    z-index: 1000200;
 
+            .react-select-container{
+                .react-select__control {
+                    z-index: 1000201;
+                    *{
+                        z-index: 1000201;
+                    }
+                }
+                .react-select__menu{
+                    z-index: 1000301;
+                    *{
+                        z-index: 1000301;
+                    }
                 }
             }
             .content{
