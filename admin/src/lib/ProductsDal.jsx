@@ -43,7 +43,7 @@ export const GetMerchandiseById = (productid,orderid)=>{
 
 
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['products','product_instances',{productid: productid,orderid: orderid}],async ()=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['products','product_instances',productid,orderid],async ()=>{
         const res = await axios_inst.get(APIROUTES.PRODUCTS.MERCHANDISE.GET_MERCHANDISE_OF_PRODUCT_BY_ID(productid,orderid))
         return res.data
     },{
@@ -152,7 +152,7 @@ export const RemoveProduct = (productid)=>{
         const res = await refetch()
         if(res.error)
             throw  res.error
-        ql.invalidateQueries(["product",productid])
+        ql.invalidateQueries([productid])
     }   
     return {
         loading: isLoading,
@@ -202,7 +202,7 @@ export const AddUpdateMerchandise = (productid,add)=>{
            // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
 
             const res = await send({id: id,data})
-            client.invalidateQueries([{productid,orderid: data.id},'products','product_instances'])
+            client.invalidateQueries([id])
             console.warn(res)
             return res.data
         }catch(err){
@@ -247,7 +247,7 @@ export const AddUpdateProduct = (add = false)=>{
 
             const res = await send({id: id,data})
             console.warn("Found res",res)
-            client.invalidateQueries([{productid: data.id},'products'])
+            client.invalidateQueries([id])
 
             return res.data.id
         }catch(err){

@@ -47,7 +47,7 @@ export const GetSubOrderById = (orderid,subid)=>{
 
 
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['sub_orders','orders',{orderid: orderid,subid: subid}],async ()=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['sub_orders','orders',orderid,subid],async ()=>{
         const res = await axios_inst.get(APIROUTES.ORDERS.SUB_ORDERS.GET_SUB_ORDER_BY_ID(orderid,subid))
         return res.data
     },{

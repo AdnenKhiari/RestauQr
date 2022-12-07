@@ -100,12 +100,14 @@ export const SendPasswordResetEmail = ()=>{
 
 export const DeleteCurrent = ()=>{
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-user','user'],async ()=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-currrent-user'],async ()=>{
         const res = await axios_inst.delete(APIROUTES.USERS.DELETE_CURRENT)
         return res.data
     },{
         retry: 0,
         enabled: false,
+        cacheTime: 0,
+
         refetchOnWindowFocus: false
     })
     const fetch = async ()=>{
@@ -130,11 +132,12 @@ export const DeleteCurrent = ()=>{
 
 export const RemoveAccount = (id)=>{
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-user','user'],async ()=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['delete-user'],async ()=>{
         const res = await axios_inst.delete(APIROUTES.USERS.REMOVE_USER_BY_ID(id))
         return res.data
     },{
         retry: 0,
+        cacheTime: 0,
         enabled: false,
         refetchOnWindowFocus: false
     })
@@ -253,7 +256,7 @@ export const GetAllProfiles = ()=>{
 }
 export const GetProfile = (id)=>{
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['users',id],async ()=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['user',id],async ()=>{
         const res = await axios_inst.get(APIROUTES.USERS.GET_USER_BY_ID(id))
         return res.data
     },{
@@ -380,16 +383,20 @@ export const SignInUser = ()=>{
 }
 
 export const LogOut = ()=>{
+    const client = Query.useQueryClient()
 
     const {data,isLoading,error,refetch} = Query.useQuery(['logout'],async ()=>{
         const res = await axios_inst.get(APIROUTES.AUTH.LOGOUT)
         return res.data
     },{
-        enabled: false
+        enabled: false,
+        cacheTime: 0,
+
     })
     const logout = async ()=>{
         try{
            await refetch()
+           client.invalidateQueries('current_user')
         }catch(err){
             throw err
         }

@@ -9,18 +9,20 @@ const axios_inst = axios.create({
 
 export const RemoveProductTemplate = (productid)=>{
     const ql = Query.useQueryClient()
-    const {data,isLoading,error,refetch} = Query.useQuery([],async ()=>{
+    const {data,isLoading,error,refetch} = Query.useQuery(['remove-product',productid],async ()=>{
         const res = await axios_inst.delete(APIROUTES.PRODUCTS.TEMPLATES.REMOVE_TEMPLATE(productid))
         return res.data
     },{
         enabled: false,
+        cacheTime: 0,
+
         retry: false
     })
     const mutate = async ()=>{
         const res = await refetch()
         if(res.error)
             throw  res.error
-        ql.invalidateQueries(["product",{id:productid}])
+        ql.invalidateQueries([productid])
     }   
     return {
         loading: isLoading ,
@@ -47,7 +49,7 @@ export const AddUpdateProductTemplate = (productid,add = false)=>{
 
             const res = await send({id: undefined,data})
             console.warn("Found res",res)
-            client.invalidateQueries([{id:productid},'product'])
+            client.invalidateQueries([productid])
             return productid
         }catch(err){
             setError(err)

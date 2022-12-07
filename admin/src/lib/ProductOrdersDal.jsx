@@ -26,7 +26,7 @@ export const AddUpdateProductOrders = (supplierid,add = false)=>{
                 delete data.id
             const res = await send({id: id,data})
             console.warn("Found res",res)   
-            client.invalidateQueries(['product_orders'])
+            client.invalidateQueries([id])
             return res.data.id
         }catch(err){
             setError(err)
@@ -49,18 +49,19 @@ export const AddUpdateProductOrders = (supplierid,add = false)=>{
 
 export const RemoveProductOrdersById = (supplierid,prodid)=>{
     const ql = Query.useQueryClient()
-    const {data,isLoading,error,refetch} = Query.useQuery([],async ()=>{
+    const {data,isLoading,error,refetch} = Query.useQuery(['remove-product-order',supplierid,prodid],async ()=>{
         const res = await axios_inst.delete(APIROUTES.PRODUCT_ORDERS.REMOVE_PRODUCT_ORDERS(supplierid,prodid))
         return res.data
     },{
         enabled: false,
+        cacheTime: 0,
         retry: false
     })
     const mutate = async ()=>{
         const res = await refetch()
         if(res.error)
             throw  res.error
-        ql.invalidateQueries(["product_orders"])
+        ql.invalidateQueries([supplierid,prodid])
     }   
     return {
         loading: isLoading,
@@ -72,7 +73,7 @@ export const RemoveProductOrdersById = (supplierid,prodid)=>{
 export const GetProductOrdersById = (supplierid,id)=>{
 
     const [error,setError] = useState(null)
-    const qr = Query.useQuery(['product_orders'+id],async ()=>{
+    const qr = Query.useQuery(['product_orders',id],async ()=>{
         const res = await axios_inst.get(APIROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_BY_ID(supplierid,id))
         return res.data
     },{
