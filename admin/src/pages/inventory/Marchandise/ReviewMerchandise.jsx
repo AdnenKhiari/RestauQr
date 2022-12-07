@@ -53,7 +53,7 @@ export const ReviewMerchandiseUi =({productid,orderid})=>{
         <div className="data-review-header">
             <h1><span>Name: </span>{productorder.name}</h1>
             <div>
-                {getLevel(user.profile.permissions.tables) >=getLevel("manage") && <><button onClick={(e)=>{
+                {getLevel(user.profile.permissions.inventory) >=getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT_MERCHANDISE(productid,orderid))
                 }}>Update</button>
                 <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT(productid))}>Related Product</button>
@@ -79,7 +79,7 @@ export const ReviewMerchandiseUi =({productid,orderid})=>{
             
             <h2><span>Used:</span> {productorder.used}</h2>
             <h2><span>Wasted:</span> {productorder.wasted}</h2>
-            <form onSubmit={(e)=>e.preventDefault()}>
+            {getLevel(user.profile.permissions.inventory) >=getLevel("manage") && <form onSubmit={(e)=>e.preventDefault()}>
                 <div className="input-item">
                     <div>
                         <label htmlFor="use">Use</label>
@@ -111,10 +111,11 @@ export const ReviewMerchandiseUi =({productid,orderid})=>{
                             data = processData(data)
                             await consume.mutate(data,false)
                             usenav(0)
-                        })} disabled={consume.loading} type="button">Update Locally</button>  
+                        })} disabled={consume.loading} type="button">Update Locally</button> 
 
                 </div>
-            </form>
+            </form>} 
+            
             {errors && errors["wasted"] && <p className="error">{errors["wasted"].message.replaceAll('"',"")}</p>}
             {errors && errors["used"] && <p className="error">{errors["used"].message.replaceAll('"',"")}</p>}
         </div>

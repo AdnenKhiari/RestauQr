@@ -10,29 +10,31 @@ interface permissions  {
     food?:"manage" | "read";
     orders?:"manage" | "read";
     categories?:"manage" | "read";
+    suppliers?:"manage" | "read" |  "none";
+    product_orders?:"manage" | "read" |  "none";
+    units?: "manage" | "read";
 
 }
 
 const SignedIn = async (req: Express.Request,res: Express.Response,next: Express.NextFunction)=>{
     try{
-        const auth = admin.auth()
         const decoded = await DecodeCookie(req,res)
         req.decodedtoken = decoded
-        //console.log("User: ",decoded)
         if(decoded)
             return next()
         else
-            throw Error("Unauthorised")
+            throw Error("Not Signed In")
     }catch(err){
         return next(err)
     }
 }
 const HasAccess = (scopes : permissions) => (req : Express.Request,res : Express.Response,next : Express.NextFunction)=>{
     //console.warn("DECOED IN SCOPE",req.decodedtoken)
+    const current_permissions = req.decodedtoken?.permissions
     Object.keys(scopes).forEach((scope: string)=>{
         console.log("FOUND",scope,req.decodedtoken)
 
-        const result : string = req.decodedtoken[scope]
+        const result : string = current_permissions[scope]
         if(!result || getLevel(result)  <  getLevel(<string>scopes[scope])){
             return next("Unauthorised 403")
         }

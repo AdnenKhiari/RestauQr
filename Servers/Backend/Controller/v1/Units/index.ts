@@ -29,7 +29,7 @@ router.get('/',async (req,res,next)=>{
         return next(err)
     }
 })
-router.put('/',OAuth.SignedIn,OAuth.HasAccess({food: "manage"}),
+router.put('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
     const {value,error} = unitsSchema.validate(req.body)
     if(error)

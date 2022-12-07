@@ -1,6 +1,6 @@
 import {Router} from "express"
 import Inventory from "../../../../../DataAcessLayer/Inventory"
-import joi from "joi"
+import joi, { optional } from "joi"
 import OAuth from "../../../Authorisation"
 
 const router = Router()
@@ -22,14 +22,7 @@ const consumeSchema = joi.object({
     updateGlobally: joi.boolean().default(false).required()
 })
 
-const merchandiseSchema = joi.any() /*joi.object({
-    name: joi.string().required().label('Item Name'),
-    productQuantity: joi.number().min(0).required().label('Item Quantity :'),
-    unitQuantity: joi.number().min(0).required().label('Quantity/U'),
-    unitPrice: joi.number().min(0).required().label('Price/U'),
-    time: joi.date().required().label('Time'),
-    expiresIn: joi.date().required().label('Expires In')
-})*/
+
 router.get('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
     const subid: string = req.params.subid
     const productid: string = <string>req.productid
@@ -65,15 +58,7 @@ router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
     }
 })
 
-router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
-(req,res,next)=>{
-
-    const {value,error} = (merchandiseSchema.validate(req.body))
-    if(error)
-        return next(error)
-    req.body = value
-        return next()
-},async (req,res,next)=>{
+router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const data = req.body
     const productid: string = <string>req.productid
     try{
@@ -86,14 +71,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
     }
 })
 
-router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
-(req,res,next)=>{
-    const {value,error} = (merchandiseSchema.validate(req.body))
-    if(error)
-        return next(error)
-    req.body = value
-        return next()
-},async (req,res,next)=>{
+router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const data = req.body
     const productid: string = <string>req.productid
     const subid = req.params.subid

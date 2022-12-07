@@ -28,8 +28,10 @@ import { useMemo } from "react"
 import {AddUpdateProductOrders, RemoveProductOrdersById} from "../lib/ProductOrdersDal"
 import uploadimg from "../images/upload.png"
 import { preprocess_order } from "../lib/ProductsDal"
-import { formatFbDate } from "../lib/utils"
+import { formatFbDate, getLevel } from "../lib/utils"
 import {ReviewMerchandiseUi} from "../pages/inventory/Marchandise/ReviewMerchandise"
+import { useContext } from "react"
+import { UserContext } from "../contexts"
 
 const joi  =  fileListExtension(BaseJoi)  
 const orderdetailschema = joi.object({
@@ -52,6 +54,7 @@ const schema = joi.object({
 const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
     //const {result: allunits,error: errunits,loading: unitloading} = GetUnits()
     const {supplierid,orderid} = useParams()
+    const user = useContext(UserContext)
     console.log("Default values for info",defaultVals)
     const formOptions = useForm({
        defaultValues: defaultVals ? {
@@ -109,6 +112,7 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
             {errors && <p className="error">{"Make Sure the data is valid !"}</p>}
 
             <div className="validate">
+                {getLevel(user.profile.permissions.inventory) >= getLevel("manage") && <>
                 {orderid && <button className="make-red" onClick={async (e)=>{
                     try{
                         await supplierremover.remove(supplierid,orderid)
@@ -117,8 +121,9 @@ const ProductOrderInfo = ({defaultVals = undefined,supplierinfo})=>{
                         console.log(err)
                     }
                 }} type="button">Remove</button>}
+                <button disabled={productordersmutator.loading} type="submit">{defaultVals ? "Update" : "Add"}</button></>}
                 <button type={"reset"}>Reset</button>
-                <button disabled={productordersmutator.loading} type="submit">{defaultVals ? "Update" : "Add"}</button>
+
             </div>
             </form>
         </FormProvider>

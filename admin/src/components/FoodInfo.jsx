@@ -70,8 +70,6 @@ const schema = joi.object({
     ingredients: ingredientsSchema
 })
 
-const schem = joi.any()
-
 const FoodDetails = ({defaultVals = undefined})=>{
     console.warn(defaultVals)
     const formOptions = useForm({

@@ -48,7 +48,7 @@ export const ReviewProductUi = ({productid})=>{
             <div className="data-review-header">
                 <h1><span>Name: </span>{product.name}</h1>
                 <div>
-                    {getLevel(user.profile.permissions.tables) >= getLevel("manage") && <><button onClick={(e)=>{
+                    {getLevel(user.profile.permissions.inventory) >= getLevel("manage") && <><button onClick={(e)=>{
                         usenav(ROUTES.INVENTORY.GET_UPDATE_PRODUCT(productid))
                     }}>Update</button>
                     <button onClick={(e)=>usenav(ROUTES.INVENTORY.GET_ADD_PRODUCT_MERCHANDISE(productid))}>Add Merchandise</button>
@@ -116,10 +116,11 @@ export const ReviewProductUi = ({productid})=>{
                     {getLevel(user.profile.permissions.tables) >= getLevel("manage") && <><button onClick={(e)=>{
                         usenav(ROUTES.INVENTORY.TEMPLATES.GET_ADD_UPDATE_TEMPLATE(productid))
                     }}>{product.template ? " Update Template" : " New Template" }</button>
-                    </>}
+                   
                     <button style={{display : !product.template ? "none" : "inline-block"}} type="button" onClick={async (e)=>{
                         await removetemplate.remove()
                     }} >Delete</button>
+                     </>}
                 </div>
             </div>
             <div className="data-review-body secondary-form">

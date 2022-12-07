@@ -15,7 +15,9 @@ import PopupItem from "../PopupItem"
     name: joi.string().allow('').required().label("Supplier Name"),
 })
 */
-const schema = joi.any()
+const schema = joi.object({
+    
+})
 const ProductOrdersTable = ({queryConstraints,title,oncl = undefined,parentid})=>{
 
     const [popUpOpen,setPopUpOpen] = useState(false)

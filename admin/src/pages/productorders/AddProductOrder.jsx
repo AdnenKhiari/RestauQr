@@ -10,7 +10,7 @@ import * as ROUTES from "../../ROUTES"
 const AddProductOrder = ()=>{
     const user = useContext(UserContext) 
     const {supplierid} = useParams()
-    if(getLevel(user.profile.permissions.food) < getLevel("manage") )
+    if(getLevel(user.profile.permissions.inventory) < getLevel("manage") )
         return <Navigate to={ROUTES.SUPPLIERS.ALL} />
     const suppinfo = GetSupplierById(supplierid)
     if(suppinfo.error)

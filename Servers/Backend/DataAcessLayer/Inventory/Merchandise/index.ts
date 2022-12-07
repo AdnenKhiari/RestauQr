@@ -1,5 +1,33 @@
 import * as admin from "firebase-admin"
 import { firestore } from "firebase-admin"
+import joi from "joi"
+const merchandiseSchema = (custom_fields : any)=>{
+    const arr : any = {
+        id: joi.string().optional().label('Item Id'),
+        name: joi.string().required().label('Item Name'),
+        productQuantity: joi.number().min(0).required().label('Item Quantity :'),
+        unitQuantity: joi.number().required().label('Quantity/U'),
+        unitPrice: joi.number().min(0).required().label('Price/U'),
+        expiresIn: joi.date().required().label('Expires In'),
+    }
+    custom_fields.forEach((key: any)=>{
+        if(key.type === "short-text")
+            arr[key.name] = joi.string().allow("").required().label(key.label)
+        if(key.type === "long-text")
+            arr[key.name] = joi.string().allow("").required().label(key.label)
+        if(key.type === "decimal")
+            arr[key.name] = joi.number().allow("").required().label(key.label)
+        if(key.type === "date")
+            arr[key.name] = joi.date().allow("").required().label(key.label)
+        if(key.type === "date-time")
+            arr[key.name] =joi.date().allow("").required().label(key.label)
+        if(key.type === "select")
+            arr[key.name] =joi.string().valid(...key.choices,"").required().label(key.label)
+        if(key.type === "list-select")
+            arr[key.name] =joi.array().items(joi.string().valid(...key.choices).optional()).required().label(key.label)
+    })
+    return  joi.object(arr)
+}
 
 const GetMerchandiseById =  async (productid: string,orderid: string)=>{
     const db = admin.firestore()
@@ -133,22 +161,37 @@ const AddUpdateMerchandise = async (productid: string,orderid: string | undefine
     const prodref = db.doc('products/'+productid)
 
 
+
+    
     if(orderid){
         const ref = db.doc('products/'+productid+'/product_instances/'+orderid)
         const productorderid = orderid+""
         await db.runTransaction(async (tr)=>{
+            const value = verify_merchandise(tr,data,prodref)
             await updatemerchandise(tr,prodref,ref,data,undefined)
         })
         return productorderid
     }else{
         const ref = db.collection('products/'+productid+'/product_instances').doc()
         await db.runTransaction(async (tr)=>{
+            const value = verify_merchandise(tr,data,prodref)
             addmerchandise(tr,prodref,ref,data,isdisabled,undefined,undefined,undefined)
         })
         return ref.id 
     }
 }
-
+const verify_merchandise = async (tr: FirebaseFirestore.Transaction,data: any,prodref: FirebaseFirestore.DocumentReference<any>)=>{
+    const product_snap = await tr.get(prodref)
+    if(!product_snap.exists)
+        throw Error("Invalid product Id")
+    const product : any = {...product_snap.data(),id: product_snap.id}
+    const schema = merchandiseSchema(product?.template?.custom_fields)
+    const {value,error}  = schema.validate(data)
+    if(error)
+        throw error
+    console.log(value)
+    return value
+}
 export const addmerchandise = (tr: FirebaseFirestore.Transaction,prodref: FirebaseFirestore.DocumentReference<any>,ref: FirebaseFirestore.DocumentReference<any>,data: any,isdisabled: boolean,supplierid: string | undefined,productorderid: string | undefined,order_id: string | undefined)=>{
     data = {...data,used: 0,wasted: 0}
     //for data update
@@ -182,8 +225,6 @@ export const updatemerchandise = async (tr: FirebaseFirestore.Transaction,prodre
 
     if(!old_ord_data?.disabled && isdisabled)
         throw Error("Invalid Status Change")
-
-
 
     if(!old_ord_data?.disabled && !isdisabled){
         //update the quantities 

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { Navigate, Routes, useNavigate, useParams } from "react-router-dom"
 import {GetSupplierById,RemoveSupplierById} from "../../lib/SuppliersDal"
 import Loading from "../../components/Loading"
 import Error from "../../components/Error"
@@ -19,7 +19,14 @@ import phoneimg from "../../images/phone.png"
 import noimage from "../../images/no-photo.png"
 import addressimg from "../../images/address.png"
 
-const ReviewSupplier =()=>{
+const ReviewSupplier = ()=>{
+    const user = useContext(UserContext)
+    if(getLevel(user.profile.permissions.suppliers) < getLevel("read") )
+        return <Navigate to={ROUTES.ORDERS.ALL} />
+    return <ReviewSupplierUi />
+}
+
+const ReviewSupplierUi =()=>{
     const {supplierid} = useParams()
     const {result : supplier,loading,error} = GetSupplierById(supplierid)
     const supplierremover = RemoveSupplierById(supplierid)
@@ -35,9 +42,9 @@ const ReviewSupplier =()=>{
         <div className="data-review-header">
             <h1><span>{supplier.name}</span></h1>
             <div>
-                {getLevel(user.profile.permissions.food)>=  getLevel("manage") && <>
+                {getLevel(user.profile.permissions.suppliers)>=  getLevel("manage") && <>
                 
-                <button onClick={(e)=>usenav(ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDER_TO_SUPPLIER(supplierid))}>Make an Order</button>
+                {getLevel(user.profile.permissions.inventory) >= getLevel("manage") && <button onClick={(e)=>usenav(ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDER_TO_SUPPLIER(supplierid))}>Make an Order</button>}
 
                 <button onClick={(e)=>{
                     usenav(ROUTES.SUPPLIERS.GET_UPDATE_SUPPLIER(supplier.id))

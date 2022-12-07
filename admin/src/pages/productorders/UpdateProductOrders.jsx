@@ -13,7 +13,7 @@ const UpdateProductOrder = ()=>{
     const user = useContext(UserContext) 
 
     const {supplierid,orderid} = useParams()
-    if(getLevel(user.profile.permissions.food) < getLevel("manage") )
+    if(getLevel(user.profile.permissions.inventory) < getLevel("manage") )
         return <Navigate to={ROUTES.SUPPLIERS.ALL} />
     const productorderinfo = GetProductOrdersById(supplierid,orderid)
     const {result,error,loading} = GetSupplierById(supplierid,true)
