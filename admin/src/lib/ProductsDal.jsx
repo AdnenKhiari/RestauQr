@@ -39,12 +39,12 @@ export const GetProductById = (id)=>{
     }
 }
 
-export const GetProductOrderById = (productid,orderid)=>{
+export const GetMerchandiseById = (productid,orderid)=>{
 
 
     const [error,setError] = useState(null)
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['products','product_orders',{productid: productid,orderid: orderid}],async ()=>{
-        const res = await axios_inst.get(APIROUTES.PRODUCTS.PRODUCT_ORDERS.GET_PRODUCT_ORDER_OF_PRODUCT_BY_ID(productid,orderid))
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['products','product_instances',productid,orderid],async ()=>{
+        const res = await axios_inst.get(APIROUTES.PRODUCTS.MERCHANDISE.GET_MERCHANDISE_OF_PRODUCT_BY_ID(productid,orderid))
         return res.data
     },{
         retry: 0,
@@ -72,11 +72,15 @@ export const GetProductOrderById = (productid,orderid)=>{
         fetch: fetch
     }
 }
-
-export const ConsumeProductOrderItem = (productid,orderid) => {
+export const preprocess_order = (data)=>{
+    if(data.unitQuantity?.value)
+        data.unitQuantity = data.unitQuantity.value * (data.unitQuantity.unit?.subunit ? data.unitQuantity.unit?.subunit.ratio : 1 )
+    return data
+} 
+export const ConsumeMerchandiseItem = (productid,orderid) => {
     const [error,setError] = useState(null)
     const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (data)=>{
-        const res =  await axios_inst.post(APIROUTES.PRODUCTS.PRODUCT_ORDERS.CONSUME_PRODUCT_ORDER(productid,orderid),data)
+        const res =  await axios_inst.post(APIROUTES.PRODUCTS.MERCHANDISE.CONSUME_MERCHANDISE(productid,orderid),data)
       return res.data
     },{
         retry: 0
@@ -148,7 +152,7 @@ export const RemoveProduct = (productid)=>{
         const res = await refetch()
         if(res.error)
             throw  res.error
-        ql.invalidateQueries(["product",productid])
+        ql.invalidateQueries([productid])
     }   
     return {
         loading: isLoading,
@@ -157,9 +161,9 @@ export const RemoveProduct = (productid)=>{
     }
 }
 
-export const RemoveProductOrder = (productid,orderid)=>{
-    const {data,isLoading,error,refetch} = Query.useQuery(['product','product_orders',{productid,orderid}],async ()=>{
-        const res = await axios_inst.delete(APIROUTES.PRODUCTS.PRODUCT_ORDERS.REMOVE_PRODUCT_ORDER(productid,orderid))
+export const RemoveMerchandise = (productid,orderid)=>{
+    const {data,isLoading,error,refetch} = Query.useQuery(['product','product_instances',{productid,orderid}],async ()=>{
+        const res = await axios_inst.delete(APIROUTES.PRODUCTS.MERCHANDISE.REMOVE_MERCHANDISE(productid,orderid))
         return res.data
     },{
         enabled: false,
@@ -178,13 +182,13 @@ export const RemoveProductOrder = (productid,orderid)=>{
         remove: mutate
     }
 }
-export const AddUpdateProductOrder = (productid,add)=>{
+export const AddUpdateMerchandise = (productid,add)=>{
 
     const [error,setError] = useState(null)
     const client = Query.useQueryClient()
     const {data:result,isLoading,error: query_err,mutateAsync: send} = Query.useMutation(async (all)=>{
        //console.warn(all)
-        const res = add ?  await axios_inst.post(APIROUTES.PRODUCTS.PRODUCT_ORDERS.ADD_PRODUCT_ORDER(productid),all.data) : await axios_inst.put(APIROUTES.PRODUCTS.PRODUCT_ORDERS.UPDATE_PRODUCT_ORDER(productid,all.id),all.data)
+        const res = add ?  await axios_inst.post(APIROUTES.PRODUCTS.MERCHANDISE.ADD_MERCHANDISE(productid),all.data) : await axios_inst.put(APIROUTES.PRODUCTS.MERCHANDISE.UPDATE_MERCHANDISE(productid,all.id),all.data)
       return res.data
     },{
         retry: 0
@@ -198,7 +202,7 @@ export const AddUpdateProductOrder = (productid,add)=>{
            // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
 
             const res = await send({id: id,data})
-            client.invalidateQueries([{productid,orderid: data.id},'products','product_orders'])
+            client.invalidateQueries([id])
             console.warn(res)
             return res.data
         }catch(err){
@@ -243,7 +247,7 @@ export const AddUpdateProduct = (add = false)=>{
 
             const res = await send({id: id,data})
             console.warn("Found res",res)
-            client.invalidateQueries([{productid: data.id},'products'])
+            client.invalidateQueries([id])
 
             return res.data.id
         }catch(err){

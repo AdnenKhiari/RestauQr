@@ -1,11 +1,19 @@
 import e, { Router } from "express"
 import * as admin from "firebase-admin"
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
-import { clearCookie, DecodeCookie, IssueCookie, validateEmailOobCode, validatePasswordOobCode } from "../../../utils/auth"
+import { clearCookie, DecodeCookie, IssueCookie, updateClaims, validateEmailOobCode, validatePasswordOobCode } from "../../../utils/auth"
 import Users from "../../../DataAcessLayer/Users"
 import OAuth from "../Authorisation"
 import mailtransport from "../../../utils/transportmail"
 import joi from "joi"
+import {
+	ReasonPhrases,
+	StatusCodes,
+	getReasonPhrase,
+	getStatusCode,
+} from 'http-status-codes';
+import { HTTPError, ValidationError } from "../../../lib/Error"
+
 const router = Router()
 
 const schemaPasswordSchema  = joi.object({
@@ -27,7 +35,7 @@ const tokenSchema = joi.object({
 router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
     const {value,error} = createProfileSchema.validate(req.body)
     if(error)
-        return next(error)
+        return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -37,33 +45,37 @@ router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
         if(decoded){
             req.user = await Users.GetUserByIdIfExists(decoded.uid)
             if(req.user)
-                throw Error("Already Exists !")
+                throw new HTTPError("Session Already Exists",undefined,StatusCodes.BAD_REQUEST)
             if(!decoded.email_verified){
-                throw Error("Account Not Verified !")
+                throw new HTTPError("Account Not Verified",undefined,StatusCodes.BAD_REQUEST)
             }
         }else{
-            throw Error("Not Authorised")
+            return res.redirect("/auth/signin")
         }
         return next()
     }catch(err){
         return next(err)
     }
 },async (req,res,next)=>{
-    const data = req.body
+    const data : any = req.body
     const auth = admin.auth()
     console.log(data)
     try{
-        const decodedtoken = req.decodedtoken
+        const decodedtoken : any = req.decodedtoken
         data.permissions = {
             "food":"read",
             "categories":"read",
             "tables":"read",
             "orders":"read",
-            "inventory":"read",
-            "users": "manage"
+            "inventory":"none",
+            "users": "none",
+            "suppliers": "none",
+            "units": "none"
         }
         const id = await Users.AddUpdateUser(decodedtoken.uid,data)
-        await auth.setCustomUserClaims(decodedtoken.uid,data.permissions)
+        await updateClaims(id,{
+            permissions: data.permissions
+        })
         clearCookie(res)
         return res.send(id)
     }catch(err){
@@ -74,7 +86,7 @@ router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
 router.post('/signin',(req,res,next)=>{
     const {value,error} = tokenSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },
@@ -94,6 +106,19 @@ async (req,res,next)=>{
     const auth = admin.auth()
     try{
         const decodedtoken = await auth.verifyIdToken(tokenid)
+        //validate user state otheriwse revoke token and refuse the login
+        const user = await Users.GetUserById(decodedtoken.uid)
+        const user_permissions = user.profile?.permissions
+        if(Object.keys(user_permissions).some((key)=>{
+            return (!decodedtoken.permissions[key] || decodedtoken.permissions[key] !== user_permissions[key])
+        })){
+            await updateClaims(decodedtoken.uid,{
+                permissions: user_permissions
+            })
+            //throw Error("User Data Not Coherent with session information")
+            clearCookie(res)
+            return res.redirect("../logout")
+        }
         await IssueCookie(tokenid,res)
         return res.send("Ok")
     }catch(err){
@@ -104,7 +129,7 @@ async (req,res,next)=>{
 router.post("/verifyPasswordCode",(req,res,next)=>{
     const {value,error} = schemaPasswordSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -121,13 +146,14 @@ router.post("/verifyPasswordCode",(req,res,next)=>{
 router.post("/verifyEmailCode",(req,res,next)=>{
     const {value,error} = validateOobcodeSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
     try{
         const auth = admin.auth()
         const {oobCode}  = req.body
+        console.log(req.decodedtoken)
         const validation = await validateEmailOobCode(oobCode)
         await Users.VerifyUserById(req.decodedtoken.uid)
         clearCookie(res)
@@ -141,7 +167,7 @@ router.post("/sendRecoverPassword",(req,res,next)=>{
     console.log(req.body,"RESET PASSWORD")
     const {value,error} = validateEmailSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -170,7 +196,7 @@ router.post("/sendRecoverPassword",(req,res,next)=>{
 router.post("/sendValidateEmail",OAuth.SignedIn,(req,res,next)=>{
     const {value,error} = validateEmailSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{

@@ -2,6 +2,7 @@ import {Router} from "express"
 import  Food from "../../../DataAcessLayer/Food"
 import joi from "joi"
 import OAuth from "../Authorisation"
+import { ValidationError } from "../../../lib/Error"
 const router = Router()
 
 const  FetchFoodSchema = joi.object({
@@ -64,7 +65,7 @@ router.get('/:id',async (req,res,next)=>{
 router.get('/',(req,res,next)=>{
     const {value,error} = FetchFoodSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -86,7 +87,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({food:"manage"}),
 
     const {value,error} = (Foodschema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 }
@@ -107,7 +108,7 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({food:"manage"}),
 (req,res,next)=>{
     const {value,error} = (Foodschema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },

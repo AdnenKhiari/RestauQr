@@ -93,6 +93,7 @@ export const DeleteTableById =  (id)=>{
     },{
         retry: 0,
         enabled: false,
+        cacheTime: 0,
         refetchOnWindowFocus: false
     })
     const fetch = async ()=>{

@@ -70,8 +70,6 @@ const schema = joi.object({
     ingredients: ingredientsSchema
 })
 
-const schem = joi.any()
-
 const FoodDetails = ({defaultVals = undefined})=>{
     console.warn(defaultVals)
     const formOptions = useForm({
@@ -345,7 +343,7 @@ const SelectionTable = ({root,popActive,popLabel})=>{
         <ProductsTables title={""} 
         oncl={(row)=> mutateProduct === "add" ? addProduct(row) : modifyProduct(row,mutateProduct)} />
         </>}
-     <div className="products-table">
+     <div className="secondary-table">
 
         <div className="products-list-header">
             <h2>Products : </h2>

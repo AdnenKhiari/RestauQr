@@ -5,6 +5,7 @@
         width: 30px;
         object-fit: cover;        
         transition: all 100ms ease;   
+        cursor: pointer;
     }
     img:hover{
         transform: scale(1.1);

@@ -26,7 +26,7 @@ export const AddUpdateSupplier = (add = false)=>{
                 delete data.id
             const res = await send({id: id,data})
             console.warn("Found res",res)   
-            client.invalidateQueries(['suppliers'])
+            client.invalidateQueries([id])
             return res.data.id
         }catch(err){
             setError(err)
@@ -49,18 +49,19 @@ export const AddUpdateSupplier = (add = false)=>{
 
 export const RemoveSupplierById = (supplierid)=>{
     const ql = Query.useQueryClient()
-    const {data,isLoading,error,refetch} = Query.useQuery([],async ()=>{
+    const {data,isLoading,error,refetch} = Query.useQuery(['remove-supplier',supplierid],async ()=>{
         const res = await axios_inst.delete(APIROUTES.SUPPLIERS.REMOVE_SUPPLIER(supplierid))
         return res.data
     },{
         enabled: false,
+        cacheTime: 0,
         retry: false
     })
     const mutate = async ()=>{
         const res = await refetch()
         if(res.error)
             throw  res.error
-        ql.invalidateQueries(["suppliers"])
+        ql.invalidateQueries([supplierid])
     }   
     return {
         loading: isLoading,
@@ -72,7 +73,7 @@ export const RemoveSupplierById = (supplierid)=>{
 export const GetSupplierById = (id)=>{
 
     const [error,setError] = useState(null)
-    const qr = Query.useQuery(['suppliers'+id],async ()=>{
+    const qr = Query.useQuery(['suppliers',id],async ()=>{
         const res = await axios_inst.get(APIROUTES.SUPPLIERS.GET_SUPPLIER_BY_ID(id))
         return res.data
     },{

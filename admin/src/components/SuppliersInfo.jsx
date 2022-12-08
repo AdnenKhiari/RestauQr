@@ -6,6 +6,7 @@ import * as ROUTES from "../ROUTES"
 import DropDown from "react-dropdown"
 import{joiResolver} from "@hookform/resolvers/joi"
 import { fileListExtension } from 'joi-filelist';
+import UploadFile from "../lib/UploadFile"
 
 import BaseJoi from "joi"
 import Loading from "./Loading"
@@ -54,6 +55,8 @@ const SuppliersInfo = ({defaultVals = undefined})=>{
         } : undefined,
         resolver: joiResolver(schema)
     })
+    const uploader = UploadFile()
+
     const {handleSubmit,register,setValue,watch,reset,formState : {errors}} = formOptions
     const suppliermutator = AddUpdateSupplier(!defaultVals)
     const usenav = useNavigate() 
@@ -64,7 +67,14 @@ const SuppliersInfo = ({defaultVals = undefined})=>{
 
         try{
             console.log("D",data)   
-            data.logo = ""
+            if( typeof(data.logo) !== 'string'){
+                //file upload
+                if(data.logo.length !==1)
+                    return
+                
+                const url = await uploader.upload(new Blob(data.logo),data.logo[0].type)
+                data.logo = url
+             }
             const suppid  = await suppliermutator.mutate(data)
             console.log(suppid)
 

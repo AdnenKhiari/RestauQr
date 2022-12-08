@@ -6,7 +6,7 @@ import { getLevel } from "../../lib/utils"
 import * as ROUTES from "../../ROUTES"
 const AddSupplier = ()=>{
     const user = useContext(UserContext) 
-    if(getLevel(user.profile.permissions.food) < getLevel("manage") )
+    if(getLevel(user.profile.permissions.suppliers) < getLevel("manage") )
         return <Navigate to={ROUTES.SUPPLIERS.ALL} />
     return <SuppliersInfo />
 }

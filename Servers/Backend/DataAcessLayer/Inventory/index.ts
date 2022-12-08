@@ -1,7 +1,7 @@
 import Products from "./Products";
-import ProductOrders from "./ProductOrders";
+import Merchandise from "./Merchandise";
 
 export default {
     Products,
-    ProductOrders
+    Merchandise
 }

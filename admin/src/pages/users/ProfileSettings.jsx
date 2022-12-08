@@ -25,6 +25,7 @@ const Permissions = ({permissions,disabled = false})=>{
             {permissions  && Object.keys(permissions).map((key,index)=><li key={100+index} className="permission-name">
                 <p className="current-perm">{key} {<span> : {permissions[key]}</span> }</p>
                 <ul className="permissions">
+                    
                 {permissions[key] && <li>
                     {/*<label htmlFor={key}><img  className={watch("permissions."+key) ? 'make-img-blue' : undefined} src={radioimg} alt="" />{key}</label>*/}
                     { !disabled  && (<>
@@ -42,13 +43,13 @@ const Permissions = ({permissions,disabled = false})=>{
                             Read
                         </label>
                     </div>
-                    <div className="permission-choice">
+                    {!["categories","tables","food","orders","units"].find(k => k === key)  &&<div className="permission-choice">
                         <input disabled={disabled} value="none" type="radio" id={key+".none"} { ...register("permissions."+key)} />
                         <label htmlFor={key+".none"}>
                         <img className={watch("permissions."+key) ==="none" ? 'make-img-blue' : undefined} src={radioimg} alt="" />
                             None
                         </label>
-                    </div>
+                    </div>}
                     </>
                     )}
                     </li> 

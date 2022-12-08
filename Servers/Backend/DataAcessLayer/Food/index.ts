@@ -1,11 +1,12 @@
 import * as admin from "firebase-admin"
+import { DataError } from "../../lib/Error"
 const GetFoodById =  async (id: string)=>{
     const db = admin.firestore()
     const ref = db.doc("food/"+id)
     
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid Id")
+    throw new DataError("Invalid Food Id",{foodid: id})
 
     return {id: ref.id,...res.data()}
 }

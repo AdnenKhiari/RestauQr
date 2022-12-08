@@ -1,11 +1,12 @@
 import {Router} from "express"
 import Inventory from "../../../../../DataAcessLayer/Inventory"
-import joi from "joi"
+import joi, { optional } from "joi"
 import OAuth from "../../../Authorisation"
+import { ValidationError } from "../../../../../lib/Error"
 
 const router = Router()
 
-const fetchProductOrdersSchema  = joi.object({
+const fetchMerchandiseSchema  = joi.object({
     name: joi.string().allow('').optional().label("Item Name"),
     higherexpiresIn: joi.date().allow('').optional().label('Expires In : min'),
     lowerexpiresIn: joi.date().allow('').optional().label('Expires In : max'),
@@ -22,19 +23,12 @@ const consumeSchema = joi.object({
     updateGlobally: joi.boolean().default(false).required()
 })
 
-const productOrderSchema = joi.object({
-    name: joi.string().required().label('Item Name'),
-    productQuantity: joi.number().min(0).required().label('Item Quantity :'),
-    unitQuantity: joi.number().min(0).required().label('Quantity/U'),
-    unitPrice: joi.number().min(0).required().label('Price/U'),
-    time: joi.date().required().label('Time'),
-    expiresIn: joi.date().required().label('Expires In')
-})
+
 router.get('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),async (req,res,next)=>{
     const subid: string = req.params.subid
     const productid: string = <string>req.productid
     try{
-        const data = await Inventory.ProductOrders.GetProductOrderById(productid,subid)
+        const data = await Inventory.Merchandise.GetMerchandiseById(productid,subid)
         return res.send({
             data: data
         })
@@ -45,9 +39,9 @@ router.get('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),async (
 router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 
-    const {value,error} = (fetchProductOrdersSchema.validate(req.query))
+    const {value,error} = (fetchMerchandiseSchema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -56,7 +50,7 @@ router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
     const productid: string = <string>req.productid
     console.log(search_params)
     try{
-        const data = await Inventory.ProductOrders.GetProductOrders(search_params || {},productid)
+        const data = await Inventory.Merchandise.GetMerchandise(search_params || {},productid)
         return res.send({
             data: data
         })
@@ -65,19 +59,11 @@ router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
     }
 })
 
-router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
-(req,res,next)=>{
-
-    const {value,error} = (productOrderSchema.validate(req.body))
-    if(error)
-        return next(error)
-    req.body = value
-        return next()
-},async (req,res,next)=>{
+router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const data = req.body
     const productid: string = <string>req.productid
     try{
-        const result = await Inventory.ProductOrders.AddUpdateProductOrders(productid,undefined,data)
+        const result = await Inventory.Merchandise.AddUpdateMerchandise(productid,undefined,data)
         return res.send({
             data: result
         })
@@ -86,20 +72,12 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
     }
 })
 
-router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
-(req,res,next)=>{
-
-    const {value,error} = (productOrderSchema.validate(req.body))
-    if(error)
-        return next(error)
-    req.body = value
-        return next()
-},async (req,res,next)=>{
+router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async (req,res,next)=>{
     const data = req.body
     const productid: string = <string>req.productid
     const subid = req.params.subid
     try{
-        const result = await Inventory.ProductOrders.AddUpdateProductOrders(productid,subid,data)
+        const result = await Inventory.Merchandise.AddUpdateMerchandise(productid,subid,data)
         return res.send({
             data: result
         })
@@ -112,7 +90,7 @@ router.post('/consume/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage
 
     const {value,error} = (consumeSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -121,7 +99,7 @@ router.post('/consume/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage
 
     const data : {used:number,wasted:number,updateGlobally : boolean} = req.body
     try{
-        const result = await Inventory.ProductOrders.ConsumeProductOrder(productid,subid,data)
+        const result = await Inventory.Merchandise.ConsumeMerchandise(productid,subid,data)
         return res.send({
             data: result
         })
@@ -135,7 +113,7 @@ router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async
     const productid: string = <string>req.productid
 
     try{
-        const data = await Inventory.ProductOrders.DeleteProductOrder(productid,id)
+        const data = await Inventory.Merchandise.DeleteMerchandise(productid,id)
         return res.send({
             data: {
                 toremove: data
@@ -148,6 +126,6 @@ router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),async
 })
     
 router.get("/",(req,res)=>{
-    return res.send("Hii Products")
+    return res.send("Hii Merchandise")
 })
 export default router

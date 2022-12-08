@@ -19,6 +19,8 @@
         }
     }
     span{
+        text-transform: capitalize;
+
         color:Secondary(1);
         font-weight: bold;
         font-family: $base_font;
