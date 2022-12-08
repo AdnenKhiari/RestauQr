@@ -1,116 +1,111 @@
-import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,documentId, FieldPath, getDocs} from "firebase/firestore"
-
+import {getFirestore,onSnapshot,collection,query,where,limit,startAfter,orderBy,documentId, FieldPath} from "firebase/firestore"
+import UnitShow from "../Custom/UnitShow"
 import * as ROUTES from "../../ROUTES"
 import { useNavigate } from "react-router-dom"
 import PaginatedUniversalTable from "../UniversalTable/PaginatedUniversalTable"
 import joi from "joi"
-import { formatFbDate } from "../../lib/utils"
 import * as APIROUTES from "../../APIROUTES"
+import { formatFbDate } from "../../lib/utils"
+import { useState } from "react"
+import PopupItem from "../PopupItem"
 
-const schema  = joi.object({
-    name: joi.string().allow('').required().label("Item Name"),
-    higherexpiresIn: joi.date().allow('').required().label('Expires In : min'),
-    lowerexpiresIn: joi.date().allow('').required().label('Expires In : max'),
-    highertime: joi.date().allow('').required().label('Purshase Time : min'),
-    lowertime: joi.date().allow('').required().label('Purshase Time : max')
+/*const schema  = joi.object({
+    address: joi.number().allow('').required().label("Address"),
+    phoneNumber: joi.number().allow('').required().label("Phone Number"),
+    name: joi.string().allow('').required().label("Supplier Name"),
 })
+*/
+const schema = joi.object({
+    
+})
+const ProductOrdersTable = ({queryConstraints,title,oncl = undefined,parentid})=>{
 
-const ProductOrdersTable = ({queryConstraints,title,parentid})=>{
+    const [popUpOpen,setPopUpOpen] = useState(false)
+    const [popUpDetails,setPopUpDetails] = useState(null)
+
 
     const page_lim = 10
-    const path = (parentid ? 'products/' + parentid+'/'  : '') + 'product_orders' 
-    const rows = [      
+
+    const rows = [
     {
-        Header: 'Item Name',
-        accessor: 'name'
-    },
-    {
-        Header: 'Product Quantity',
-        accessor: 'productQuantity'
-    },
-    {
-        Header: 'Purshase Time',
-        accessor: 'time',
+        Header: 'Creation Date',
+        accessor: 'creation_date',
         Cell : ({value})=> formatFbDate(value,true)
     },
     {
-        Header: 'Expires In',
-        accessor: 'expiresIn',
+        Header: 'Delivery Date',
+        accessor: 'expected_delivery_date',
         Cell : ({value})=> formatFbDate(value,true)
     },
     {
-        Header: 'Used',
-        accessor: 'used'
-    },
-    {
-        Header: 'Wasted',
-        accessor: 'wasted'
-    },]
-    //const rows = ['Item Name','Item Quantity','Unit Quantity','Used','Purshase Time','Expires In']
+        Header: 'Notes',
+        accessor: 'notes',
+        Cell: ({value}) => <p style={{height: "100%",fontWeight: "inherit"}} onClick={(e)=>{
+            e.stopPropagation()
+            setPopUpOpen(true)
+            setPopUpDetails({notes: value})
+        }}>{value.slice(0,150) + (value.length > 40 ? "..." : "")}</p> 
+    }]
+
     const customOptions = {
         submit :  (data)=>{
             console.log(data)
         },
         structure: [
         {
-            type: "text",
-            name: 'name',
-            label: 'Item Name'
+            type: "datetime-local",
+            name: 'expected_delivery_date',
+            label: 'Delivery Date'
         },
         {
-            type: "date",
-            name: 'higherexpiresIn',
-            label: 'Expires In : min'
+            type: "datetime-local",
+            name: 'creation_date',
+            label: 'Creation Date'
         },
-        {
-            type: "date",
-            name: 'lowerexpiresIn',
-            label: 'Expires In : max'
-        },
-        {
-            type: "date",
-            name: 'highertime',
-            label: 'Purshase Time : min'
-        },
-        {
-            type: "date",
-            name: 'lowertime',
-            label: 'Purshase Time : max'
-        }
         ]
+
     }
 
     const onDataQueried = (col)=>{
         let res = []
         if(col.length > 0){
-            const alldata = col.map((item)=>{
-                return {...item,id: item.id,product_id: parentid ? parentid : item.product_ref}
+            res = col.map((item)=>{
+                return {...item,id: item.id}
             })
-            res = alldata
         }
         return res
     }
 
-    console.log(APIROUTES.PRODUCTS.GET_PRODUCTS,"URL")
+    const defaultCl = (row)=>usenav(ROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_BY_ID(row.supplierid,row.id))
+
 
     const usenav = useNavigate()
-    return <PaginatedUniversalTable 
-    colname={path}
-    pagname="time" 
+    return <>
+    <PopupItem open={popUpOpen} onClose={(e)=>setPopUpOpen(false)} >
+        {(close) => <div className="data-review">
+            <div className="data-review-header">
+                <h1>Notes :</h1>
+            </div>
+            <div className="data-review-body">
+                <p>{popUpDetails?.notes}</p>
+            </div>
+        </div>}
+    </PopupItem>
+    <PaginatedUniversalTable 
     rows={rows}  
     title={title} 
-    custom_key="lastProductRef"
-    custom_val="product_ref"
-    cs_query={parentid ? APIROUTES.PRODUCTS.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_OF_PRODUCT(parentid) :  APIROUTES.PRODUCTS.PRODUCT_ORDERS.GET_PRODUCT_ORDERS}
+    group={true}
+    cs_query={parentid ? APIROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS_OF_SUPPLIER(parentid) : APIROUTES.PRODUCT_ORDERS.GET_PRODUCT_ORDERS} 
     onDataQueried={onDataQueried} 
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   
-    subscribe={false} 
-    group={!parentid}
     schema={schema}
+    custom_key="lastorderRef"
+    custom_val="supplier_ref"
     queryConstraints={queryConstraints}
-    oncl = {(row)=>usenav(ROUTES.INVENTORY.GET_REVIEW_PRODUCT_ORDER(row.product_id,row.id))}
-    page_lim= {page_lim}        />
+    oncl={oncl ? oncl : defaultCl}
+    page_lim= {page_lim}   
+    colors={(table_data)=> "suborder_status " + table_data.status.toLowerCase()}
+    /></>
 }
 export default ProductOrdersTable
-

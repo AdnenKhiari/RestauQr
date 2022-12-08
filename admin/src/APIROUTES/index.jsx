@@ -60,7 +60,14 @@ export const UNITS = {
     GET_UNITS: baseurl+"units/",
     UPDATE_UNITS: baseurl+"units/"
 }
-
+export const PRODUCT_ORDERS = {
+    GET_PRODUCT_ORDERS_OF_SUPPLIER : (id)=>baseurl + "suppliers/"+id+"/product_orders/",
+    GET_PRODUCT_ORDERS : baseurl + "suppliers/product_orders/",
+    UPDATE_PRODUCT_ORDERS:(id,prodid)=>baseurl+"suppliers/"+id+"/product_orders/"+prodid,
+    ADD_PRODUCT_ORDERS :  (id)=>baseurl + "suppliers/"+id+"/product_orders",
+    GET_PRODUCT_ORDERS_BY_ID : (id,prodid)=>baseurl+"/suppliers/"+id+"/product_orders/"+prodid,
+    REMOVE_PRODUCT_ORDERS: (id,prodid)=>baseurl+"/suppliers/"+id+"/product_orders/"+prodid,
+}
 export const PRODUCTS = {
     GET_PRODUCTS: baseurl+"products/",
     GET_PRODUCT_BY_ID : (id)=> baseurl+"products/"+id,
@@ -68,14 +75,18 @@ export const PRODUCTS = {
     UPDATE_PRODUCT: (id)=> baseurl+"products/"+id,
     REMOVE_PRODUCT: (id)=> baseurl+"products/"+id,
     CONSUME_PRODUCT: (id)=> baseurl+"products/consume/"+id,
-
-    PRODUCT_ORDERS : {
-        GET_PRODUCT_ORDER_OF_PRODUCT_BY_ID: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
-        GET_PRODUCT_ORDERS: baseurl+"products/product_orders",
-        GET_PRODUCT_ORDERS_OF_PRODUCT : (productid)=> baseurl+"products/"+productid+"/product_orders",
-        ADD_PRODUCT_ORDER:(productid)=>  baseurl+"products/" + productid  + "/product_orders",
-        UPDATE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
-        REMOVE_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/" + subid,
-        CONSUME_PRODUCT_ORDER: (productid,subid)=>  baseurl+"products/" + productid  + "/product_orders/consume/" + subid,
+    TEMPLATES: {
+        ADD_TEMPLATE: (id)=> baseurl+"products/"+id+"/template/",
+        UPDATE_TEMPLATE: (id,tempid)=> baseurl+"products/"+id+"/template/",
+        REMOVE_TEMPLATE: (id)=> baseurl+"products/"+id+"/template/",
+    },
+    MERCHANDISE : { 
+        GET_MERCHANDISE_OF_PRODUCT_BY_ID: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/" + subid,
+        GET_MERCHANDISE: baseurl+"products/merchandise",
+        GET_MERCHANDISE_OF_PRODUCT : (productid)=> baseurl+"products/"+productid+"/merchandise",
+        ADD_MERCHANDISE:(productid)=>  baseurl+"products/" + productid  + "/merchandise",
+        UPDATE_MERCHANDISE: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/" + subid,
+        REMOVE_MERCHANDISE: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/" + subid,
+        CONSUME_MERCHANDISE: (productid,subid)=>  baseurl+"products/" + productid  + "/merchandise/consume/" + subid,
     }
 }

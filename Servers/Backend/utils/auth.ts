@@ -16,9 +16,18 @@ export const IssueCookie = async (tokenid: string,res: Express.Response)=>{
 }
 
 export const clearCookie = (res: Express.Response)=>{
-    res.clearCookie('restau-admin-sess',cookieOpt)
+    return res.clearCookie('restau-admin-sess',cookieOpt)
 }
-
+export const updateClaims = async (id: string,data: any)=>{
+    const user = await admin.auth().getUser(id)
+    const curent_claims = user.customClaims
+    await admin.auth().setCustomUserClaims(id,{
+        ...curent_claims,
+        ...data
+    })
+    await admin.auth().revokeRefreshTokens(id)
+    return user
+}
 export const DecodeCookie = async (req: Express.Request,res: Express.Response)=>{
     const auth = admin.auth()
     if(!req.cookies)

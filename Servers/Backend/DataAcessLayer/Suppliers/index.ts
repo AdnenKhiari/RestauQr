@@ -1,12 +1,13 @@
 import * as admin from "firebase-admin"
 import moment from "moment"
+import { DataError } from "../../lib/Error"
 const GetSupplierById =  async (id: string)=>{
     const db = admin.firestore()
     const ref = db.doc("suppliers/"+id)
     
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid Id")
+    throw new DataError("Supplier Not Found",{supplierid: id})
 
     return {id: ref.id,...res.data()}
 }
@@ -33,7 +34,7 @@ const GetSuppliers =  async (searchData: any)=>{
     if(searchData.lastRef){
         const starting = await db.doc("suppliers/"+searchData.lastRef).get()
         if(!starting.exists)
-            throw Error("Invalid Last Reference")
+        throw new DataError("Invalid Reference",searchData)
         if(searchData.swapped)
             query = query.startAt(starting)
         else

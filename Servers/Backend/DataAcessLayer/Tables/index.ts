@@ -1,12 +1,13 @@
 import * as admin from "firebase-admin"
 import moment from "moment"
+import { DataError } from "../../lib/Error"
 const GetTableById =  async (id: string)=>{
     const db = admin.firestore()
     const ref = db.doc("tables/"+id)
     
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid table Id")
+    throw new DataError("Table Not Found",{tableid: id})
 
     return {id: ref.id,...res.data()}
 }
@@ -36,7 +37,7 @@ const GetTables =  async (searchData: any)=>{
     if(searchData.lastRef){
         const starting = await db.doc("tables/"+searchData.lastRef).get()
         if(!starting.exists)
-            throw Error("Invalid Last Reference")
+        throw new DataError("Invalid Reference",searchData)
         if(searchData.swapped)
             query = query.startAt(starting)
         else

@@ -1,11 +1,12 @@
 @mixin scrollify($item,$hide: false) {
   #{$item}::-webkit-scrollbar-button {
-    height: if($hide,0px,65px) ;
+    height: if($hide,0px,min(15%,65px)) ;
   }
     /* width */
   #{$item}::-webkit-scrollbar {   
 
     width: if($hide,0px,10px) ;
+
   }
   
   /* Track */

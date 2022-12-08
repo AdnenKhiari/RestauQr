@@ -2,8 +2,9 @@ import  { Router } from "express"
 import Users from "../../../DataAcessLayer/Users"
 import OAuth from "../Authorisation"
 import * as admin from "firebase-admin"
-import { clearCookie } from "../../../utils/auth"
+import { clearCookie, updateClaims } from "../../../utils/auth"
 import joi from "joi"
+import { ValidationError } from "../../../lib/Error"
 const router = Router()
 
 const userUpdateSchema  = joi.object({
@@ -12,12 +13,13 @@ const userUpdateSchema  = joi.object({
     name: joi.string().required(),
     permissions: joi.object({
         users: joi.allow('manage','read','none'),
-        tables: joi.allow('manage','read','none'),
+        tables: joi.allow('manage','read'),
         inventory: joi.allow('manage','read','none'),
-        food: joi.allow('manage','read','none'),
-        orders: joi.allow('manage','read','none'),
-        categories: joi.allow('manage','read','none')
-
+        food: joi.allow('manage','read'),
+        orders: joi.allow('manage','read'),
+        categories: joi.allow('manage','read'),
+        suppliers: joi.allow('manage','read','none'),
+        units: joi.allow('manage','read'),
     }).required()
 })
 
@@ -84,14 +86,14 @@ router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "manage"}),async (re
 router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "manage"}),(req,res,next)=>{
     const {value,error} = userUpdateSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
     try{
         const {id} = req.params
         const body = req.body
-        const auth = admin
+
         if(body.email){
             await Users.UpdateEmail(id,body.email)
             body.email = undefined
@@ -103,7 +105,9 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "manage"}),(req,res,nex
         await Users.UpdateUserInfo(id,{permissions: body.permissions,name: body.name})
 
         if(body.permissions){
-            await admin.auth().setCustomUserClaims(id,body.permissions)
+            updateClaims(id,{
+                permissions: body.permissions
+            })
             clearCookie(res)
         }
 

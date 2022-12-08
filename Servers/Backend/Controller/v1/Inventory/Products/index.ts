@@ -1,14 +1,14 @@
 import {Router} from "express"
 import Inventory from "../../../../DataAcessLayer/Inventory"
 import { Request } from "express"
-import ProductOrders from "./ProductOrders"
+import Merchandise from "./Merchandise"
+import ProductTemplates from "./productTemplates"
 import joi from "joi"
 import OAuth from "../../Authorisation"
+import { ValidationError } from "../../../../lib/Error"
 const router = Router()
 
-
-
-const fetchProductOrderschema  = joi.object({
+const fetchMerchandisechema  = joi.object({
     name: joi.string().allow('').optional().label("Item Name"),
     higherexpiresIn: joi.date().allow('').optional().label('Expires In : min'),
     lowerexpiresIn: joi.date().allow('').optional().label('Expires In : max'),
@@ -45,6 +45,10 @@ const ProductSchema =joi.object({
     name: joi.string().required().label('Product Name'),
     sellingUnitPrice: joi.number().min(0).required().label('Price/U:'),
     unitQuantity: joi.number().min(0).required().label('Quantity/U'),
+    customUnits: joi.array().items(joi.object({
+        name: joi.string().required(),
+        ratio: joi.number().required()
+    }).optional()).label("Custom Units"),
     unit : joi.object({
         id: joi.string().optional(),
         name: joi.string().required().label("Unit Name"),
@@ -55,12 +59,12 @@ const ProductSchema =joi.object({
     }).required()
 })
 
-router.get('/product_orders',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
+router.get('/merchandise',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 (req,res,next)=>{
 
-    const {value,error} = (fetchProductOrderschema.validate(req.query))
+    const {value,error} = (fetchMerchandisechema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 },
@@ -68,7 +72,7 @@ async (req,res,next)=>{
     try{
         const search_params = req.query
         console.log(search_params)
-        const data = await Inventory.ProductOrders.GetProductOrders(search_params,undefined)
+        const data = await Inventory.Merchandise.GetMerchandise(search_params,undefined)
         return res.send({
             data: data
         })
@@ -94,7 +98,7 @@ router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 
     const {value,error} = (fetchProductschema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -116,7 +120,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 
     const {value,error} = (ProductSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -137,7 +141,7 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 
     const {value,error} = (ProductSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -170,7 +174,7 @@ router.post('/consume/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"})
 
     const {value,error} = (consumeSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -186,11 +190,15 @@ router.post('/consume/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"})
     }
 })
 
-router.use('/:productid/product_orders',(req: Request,res,next)=>{
+router.use('/:productid/merchandise',(req: Request,res,next)=>{
     req.productid = <string>req.params.productid
-    return ProductOrders(req,res,next)
+    return Merchandise(req,res,next)
 })
 
+router.use('/:productid/template',(req: Request,res,next)=>{
+    req.productid = <string>req.params.productid
+    return ProductTemplates(req,res,next)
+})
 
 router.get("/",(req,res)=>{
     return res.send("Hii Products")

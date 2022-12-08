@@ -27,7 +27,7 @@ export const AddUpdateFood = (add = false)=>{
            // console.log("im ",add ? "adding" : "updaing"," dis",data,id)
 
             const result  = await send({id: id,data})
-            client.invalidateQueries(['food',id])
+            client.invalidateQueries([id])
             return result.data && result.data.id
         }catch(err){
             setError(err)
@@ -57,6 +57,7 @@ export const DeleteFoodById =  (foodid)=>{
     },{
         retry: 0,
         enabled: false,
+        cacheTime: 0,
         refetchOnWindowFocus: false
     })
     const fetch = async ()=>{
@@ -83,7 +84,7 @@ export const GetFoodById = (id,forceUpdate = false)=>{
 
     const [error,setError] = useState(null)
     const client = Query.useQueryClient()
-    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['food',`food:${id}`],async ()=>{
+    const {data,isLoading,error: quer_err,refetch} = Query.useQuery(['food',id],async ()=>{
         const res = await axios_inst.get(APIROUTES.FOOD.GET_FOOD_BY_ID(id))
         return res.data
     },{
@@ -118,7 +119,7 @@ export const GetByCategories = (categories)=>{
 
     const [error,setError] = useState(null)
     console.warn(categories)
-    const {data,isLoading,error: quer_err} = Query.useQuery(['food'],async ()=>{
+    const {data,isLoading,error: quer_err} = Query.useQuery(['food',categories],async ()=>{
         const res = await axios_inst.get(APIROUTES.FOOD.GET_FOODS,{
             params: {
                 categories: categories

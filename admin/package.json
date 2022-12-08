@@ -27,11 +27,13 @@
     "react-dropdown": "^1.10.0",
     "react-hook-form": "^7.33.1",
     "react-router-dom": "^6.3.0",
+    "react-script-tag": "^1.1.2",
     "react-scripts": "5.0.1",
     "react-select": "^5.4.0",
     "react-table": "^7.8.0",
     "react-to-print": "^2.14.7",
     "react-virtualized-auto-sizer": "^1.0.6",
+    "reactjs-popup": "^2.0.5",
     "sass": "^1.53.0",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4"

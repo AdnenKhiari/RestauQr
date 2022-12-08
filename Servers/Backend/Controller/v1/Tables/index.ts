@@ -2,6 +2,7 @@ import {Router} from "express"
 import  Tables from "../../../DataAcessLayer/Tables"
 import joi from "joi"
 import OAuth from "../Authorisation"
+import { ValidationError } from "../../../lib/Error"
 const router = Router()
 
 router.get('/:id',async (req,res,next)=>{
@@ -32,7 +33,7 @@ router.get('/',
     })
     const {value,error} = (schema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -59,7 +60,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({tables: "manage"}),
     })
     const {value,error} = (schema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 }
@@ -88,7 +89,7 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({tables: "manage"}),
     })
     const {value,error} = (schema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 }

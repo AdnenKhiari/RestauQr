@@ -7,6 +7,7 @@ import USERS from "./users"
 import TABLES from "./Tables"
 import INVENTORY from "./inventory"
 import SUPPLIERS from "./suppliers"
+import PRODUCT_ORDERS from "./productorders"
 
 import { useContext } from "react"
 import { UserContext } from "../contexts"
@@ -61,18 +62,22 @@ const Main = ()=>{
                 <Route path={ROUTES.INVENTORY.ADD_PRODUCT} element={<INVENTORY.AddProduct />} />
                 <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT} element={<INVENTORY.UpdateProduct />} />
 
-
-                <Route path={ROUTES.INVENTORY.ALL_ORDERS} element={<INVENTORY.Orders.AllOrders />} />
-                <Route path={ROUTES.INVENTORY.REVIEW_PRODUCT_ORDER} element={<INVENTORY.Orders.ReviewProductOrder />} />
-                <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT_ORDER} element={<INVENTORY.Orders.UpdateProductOrder />} />
-                <Route path={ROUTES.INVENTORY.ADD_PRODUCT_ORDER} element={<INVENTORY.Orders.AddProductOrder />} />
+                <Route path={ROUTES.INVENTORY.ALL_MERCHANDISE} element={<INVENTORY.Marchandise.AllMerchandise />} />
+                <Route path={ROUTES.INVENTORY.REVIEW_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.ReviewMerchandise />} />
+                <Route path={ROUTES.INVENTORY.UPDATE_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.UpdateMerchandise />} />
+                <Route path={ROUTES.INVENTORY.ADD_PRODUCT_MERCHANDISE} element={<INVENTORY.Marchandise.AddMerchandise />} />
 
                 <Route path={ROUTES.SUPPLIERS.ALL} element={<SUPPLIERS.All />} />
                 <Route path={ROUTES.SUPPLIERS.REVIEW_SUPPLIER} element={<SUPPLIERS.Review />} />
                 <Route path={ROUTES.SUPPLIERS.UPDATE_SUPPLIER} element={<SUPPLIERS.Update />} />
                 <Route path={ROUTES.SUPPLIERS.ADD_SUPPLIER} element={<SUPPLIERS.Add />} />
 
+                <Route path={ROUTES.PRODUCT_ORDERS.ALL} element={<PRODUCT_ORDERS.All />} />
+                <Route path={ROUTES.PRODUCT_ORDERS.REVIEW_PRODUCT_ORDERS_BY_SUPPLIER} element={<PRODUCT_ORDERS.All />} />
+                <Route path={ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Add />} />
+                <Route path={ROUTES.PRODUCT_ORDERS.UPDATE_PRODUCT_ORDERS} element={<PRODUCT_ORDERS.Update />} />
 
+                <Route path={ROUTES.INVENTORY.TEMPLATES.ADD_UPDATE_TEMPLATE} element={<INVENTORY.TEMPLATES.AddUpdate />} />
 
             </Routes>
             </AnimatePresence >

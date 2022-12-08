@@ -12,7 +12,7 @@ import { motion } from "framer-motion"
 import * as Query from "@tanstack/react-query"
 import axios from "axios"
 
-const PaginatedUniversalTable = ({queryConstraints = {},custom_key,custom_val,cs_query,group=false,title,colors,onDataSubmit,schema,structure,rows,onDataQueried,oncl,subscribe = false,page_lim= 10})=>{
+const PaginatedUniversalTable = ({queryConstraints = {},custom_key,custom_val,cs_query,group=false,title,colors,onDataSubmit,schema,structure,rows,onDataQueried,oncl,page_lim= 10})=>{
     //for the table of orders
     const [table_data,setTable_Data] = useState([])
     const [table_data_ref,setTable_Data_Ref] = useState([])

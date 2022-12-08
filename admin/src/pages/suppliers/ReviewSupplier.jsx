@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { Navigate, Routes, useNavigate, useParams } from "react-router-dom"
 import {GetSupplierById,RemoveSupplierById} from "../../lib/SuppliersDal"
 import Loading from "../../components/Loading"
 import Error from "../../components/Error"
@@ -9,6 +9,7 @@ import {motion} from "framer-motion"
 import { FadeIn } from "../../animations"
 import {useTable,useSortBy} from "react-table"
 import { getLevel } from "../../lib/utils"
+import ProductOrdersTables from "../../components/Tables/ProductOrdersTable.jsx"
 
 import uploadimg from "../../images/upload.png"
 import checkboximg from "../../images/checkbox.png"
@@ -18,7 +19,14 @@ import phoneimg from "../../images/phone.png"
 import noimage from "../../images/no-photo.png"
 import addressimg from "../../images/address.png"
 
-const ReviewSupplier =()=>{
+const ReviewSupplier = ()=>{
+    const user = useContext(UserContext)
+    if(getLevel(user.profile.permissions.suppliers) < getLevel("read") )
+        return <Navigate to={ROUTES.ORDERS.ALL} />
+    return <ReviewSupplierUi />
+}
+
+const ReviewSupplierUi =()=>{
     const {supplierid} = useParams()
     const {result : supplier,loading,error} = GetSupplierById(supplierid)
     const supplierremover = RemoveSupplierById(supplierid)
@@ -34,7 +42,11 @@ const ReviewSupplier =()=>{
         <div className="data-review-header">
             <h1><span>{supplier.name}</span></h1>
             <div>
-                {getLevel(user.profile.permissions.food)>=  getLevel("manage") && <><button onClick={(e)=>{
+                {getLevel(user.profile.permissions.suppliers)>=  getLevel("manage") && <>
+                
+                {getLevel(user.profile.permissions.inventory) >= getLevel("manage") && <button onClick={(e)=>usenav(ROUTES.PRODUCT_ORDERS.ADD_PRODUCT_ORDER_TO_SUPPLIER(supplierid))}>Make an Order</button>}
+
+                <button onClick={(e)=>{
                     usenav(ROUTES.SUPPLIERS.GET_UPDATE_SUPPLIER(supplier.id))
                 }}>Update</button>
                 <button onClick={async (e)=>{
@@ -52,7 +64,7 @@ const ReviewSupplier =()=>{
             <h2><span>Email:</span>  </h2>
             <h2>{supplier.email}</h2>            
             {supplier.website && <><h2><span>Website:</span></h2>
-            <h2><a target="_blank" href={supplier.website}>{supplier.website}</a></h2></>}
+            <h2><a target="_blank" rel="noreferrer" href={supplier.website}>{supplier.website}</a></h2></>}
             <h2><span>Phone Numbers:</span></h2>
             <div className="ticket-container column">
                 {supplier.phonenumbers && supplier.phonenumbers.map((sup,key)=><h2 key={key} >
@@ -75,6 +87,8 @@ const ReviewSupplier =()=>{
             </div>    
         </div>
     </motion.div >
+    <ProductOrdersTables title="Orders " parentid={supplierid} />
+            
     </>
 }
 

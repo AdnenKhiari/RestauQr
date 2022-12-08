@@ -95,7 +95,6 @@ const customOptions = {
     cs_query={APIROUTES.ORDERS.SUB_ORDERS.GET_SUB_ORDERS}
     onDataSubmit={customOptions.submit} 
     structure={customOptions.structure}   
-    subscribe={true} 
     group={true}
     schema={schema}
     queryConstraints={queryConstraints}

@@ -3,6 +3,11 @@
     h1{
         margin: 15px;
     }
+    .split-two{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
     form{
         background-color: Bright(1);
         padding: 15px;
@@ -15,10 +20,12 @@
             justify-content: flex-start;
             align-items: center ;
             align-content: center;
+            margin: 5px 0px;
             label{
                 font-size: $h2size;
                 color: Secondary(1);
                 margin: 5px;
+                text-transform: capitalize;
             }
             button{
                 color: Bright(1);
@@ -171,6 +178,9 @@
                 min-width: 150px;
                 margin: 20px 5px;
                 color: Bright(1);
+            }
+            .make-red{
+                background-color: Error(1);
             }
             justify-content: flex-end;
         }

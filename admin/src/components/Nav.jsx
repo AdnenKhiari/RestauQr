@@ -50,19 +50,23 @@ const Nav = ()=>{
                 
                 <Link to={ROUTES.TABLES.ALL} ><li>All Tables</li></Link>
                 {getLevel(user.profile.permissions.tables) >= getLevel("manage") &&  <Link to={ROUTES.TABLES.ADD} ><li>New Table</li></Link>}
-                <li>
+                {getLevel(user.profile.permissions.inventory) > getLevel("none") &&  <><li>
                     <img src={inventaireimg} alt="inventory" />
                     <h2>Inventory</h2>
                 </li>
                 <Link to={ROUTES.INVENTORY.ALL} ><li>All Products</li></Link>
-                <Link to={ROUTES.INVENTORY.ADD_PRODUCT} ><li>New Product</li></Link>
-                <Link to={ROUTES.INVENTORY.ALL_ORDERS} ><li>All Product Orders</li></Link>
-                <li>
+                {getLevel(user.profile.permissions.inventory) >= getLevel("manage") && <Link to={ROUTES.INVENTORY.ADD_PRODUCT} ><li>New Product</li></Link>}
+                <Link to={ROUTES.INVENTORY.ALL_MERCHANDISE} ><li>Merchandise</li></Link></>}
+                {getLevel(user.profile.permissions.suppliers) > getLevel("none") &&  <><li>
                     <img src={optionsimg} alt="suppliers" />
                     <h2>Suppliers</h2>
                 </li>
                 <Link to={ROUTES.SUPPLIERS.ALL} ><li>Suppliers</li></Link>
-                <Link to={ROUTES.SUPPLIERS.ADD_SUPPLIER} ><li>New Supplier</li></Link>
+                </>}
+                {getLevel(user.profile.permissions.inventory) >= getLevel("read") && <Link to={ROUTES.PRODUCT_ORDERS.ALL} ><li>Orders</li></Link>}
+                {getLevel(user.profile.permissions.suppliers) >= getLevel("manage") && <Link to={ROUTES.SUPPLIERS.ADD_SUPPLIER} ><li>New Supplier</li></Link>}
+                
+                
                 <li>
                     <img src={utilisateurimg} alt="users" />
                     <h2>Users</h2>

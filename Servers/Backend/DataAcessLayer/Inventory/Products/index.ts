@@ -1,12 +1,13 @@
 import * as admin from "firebase-admin"
 import moment from "moment"
+import { DataError } from "../../../lib/Error"
 const GetProductById =  async (id: string)=>{
     const db = admin.firestore()
     const ref = db.doc("products/"+id)
     
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid Product Id")
+        throw new DataError("Product Not Found",{productid: id})
 
     return {id: ref.id,...res.data()}
 }
@@ -41,7 +42,7 @@ const ConsumeProductItem = async (productid: string,data : {used:number,wasted: 
         const snap = await tr.get(prodref)
         const cur = snap.data()
         if(data.used + data.wasted > cur?.stockQuantity ){
-            throw Error("Invalid Query,Exceeded maximum capacity")
+            throw new DataError("Exceeded Maximum capacity",{productid: productid})
         }
         tr.update(prodref,{
             stockQuantity: admin.firestore.FieldValue.increment(-(data.used + data.wasted))
@@ -51,7 +52,7 @@ const ConsumeProductItem = async (productid: string,data : {used:number,wasted: 
 const DeleteProduct =  async (productid: string)=>{
     const db = admin.firestore()
     const product_ref = db.doc('products/'+productid)
-    const orders_ref = db.collection('products/'+productid+"/product_orders")
+    const orders_ref = db.collection('products/'+productid+"/product_instances")
     const food_ref = db.collection('food')
 
     let allfood = await food_ref.get();
@@ -59,7 +60,7 @@ const DeleteProduct =  async (productid: string)=>{
     allfood.forEach((item)=>{
         const food = item.data()
         if(!verifyId(food.ingredients,productid))
-            throw Error("Product In Use In Food "+food.title)
+            throw new DataError("Product In Use In Food "+food.title,{productid: productid,foodid: food.id})
     })
 
     const alldocs = await orders_ref.get()
@@ -113,7 +114,7 @@ const GetProducts = async (searchData: any)=>{
     if(searchData.lastRef){
         const starting = await db.doc("products/"+searchData.lastRef).get()
         if(!starting.exists)
-            throw Error("Invalid Last Reference")
+            throw new DataError("Invalid Reference",searchData)
         if(searchData.swapped)
             query = query.startAt(starting)
         else
