@@ -13,6 +13,8 @@ import { FadeIn } from "../../animations"
 import {motion} from "framer-motion"
 import { getLevel } from "../../lib/utils"
 
+import trashimg from "../../images/trash.png"
+
 const schema = joi.object({
     categories: joi.array().items(joi.string().trim())
 })
@@ -30,7 +32,7 @@ const FoodCategories = ()=>{
 const CategoriesForm = ({cats})=>{
 
     const {mutate,loading : mutateLoading,error : mutateError} = UpdateCategories()
-
+    console.warn("Found as categoies",cats)
     const formOptions = useForm({
         defaultValues: {categories: cats},
         shouldUnregister: false,
@@ -47,16 +49,16 @@ const CategoriesForm = ({cats})=>{
         console.log(data)
         await mutate(data.categories)
     }
-
+    const catswatch = watch('categories')
     return <motion.form variants={FadeIn()} onReset={(e)=>{e.preventDefault();reset()}} onSubmit={handleSubmit(submit)} className="food-categories-container">
     <div className="food-categories-header">
         <h1>Categories</h1>
        {getLevel(user.profile.permissions.categories)  >= getLevel("manage") &&  <button onClick={(e)=>append('')}>New Category</button>}    
     </div>
     <div className="food-categories-body">
-        {watch('categories').map((item,index)=><p className={errors.categories && errors.categories[index] ?  "input-error": undefined} key={index}>
+        {catswatch && catswatch.map((item,index)=><p className={errors.categories && errors.categories[index] ?  "input-error": undefined} key={index}>
             <input disabled={getLevel(user.profile.permissions.categories)  < getLevel("manage")} placeholder="Category..."  type="text" {...register(`categories.${index}`)} />  
-           {getLevel(user.profile.permissions.categories) >= getLevel( "manage") && <img src="/trash.png" alt="trahs" onClick={(e)=>remove(index)}/>} 
+           {getLevel(user.profile.permissions.categories) >= getLevel( "manage") && <img src={trashimg} alt="trahs" onClick={(e)=>remove(index)}/>} 
             </p>)}
     </div>
     {getLevel(user.profile.permissions.categories) >= getLevel("manage") && <div className="submit-container">   

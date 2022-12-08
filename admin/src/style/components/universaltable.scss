@@ -73,6 +73,7 @@
         thead{
             text-align: left;
             tr{
+                z-index: 5;
                 .header-tag{
                     display: flex;
                     justify-content: flex-start;
@@ -112,7 +113,11 @@
                 transition: all 100ms ease-in;
                 width: 100%;
             }
+            tr.suborder_status.completed{
+                font-weight: bold;
 
+                background-color: Green($table_transparency);   
+            }
             tr.waiting{
                 font-weight: bold;
                 background-color: Secondary($table_transparency);   

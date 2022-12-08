@@ -1,3 +1,4 @@
+const ignored = self.__WB_MANIFEST;
 
 console.log("Exists")
 // Give the service worker access to Firebase Messaging.
@@ -24,7 +25,7 @@ const ShowFoodStatusUpdate = (data)=>{
   const notificationTitle = 'Status Update';
   const notificationOptions = {
     body: 'Your Order is now ' + data.status,
-    icon: '/menu.png'
+    icon: "/menu.png"
     };
   console.log('reg',self.registration)
   const not = new Notification(notificationTitle,notificationOptions);

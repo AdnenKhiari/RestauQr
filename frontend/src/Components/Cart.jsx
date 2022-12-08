@@ -4,6 +4,9 @@ import { useNavigate} from "react-router-dom"
 import * as ROUTES from "../Routes/UI"
 import { getReducedCart, RemoveFromCart } from "../Lib/util"
 
+import menuimg from "../images/menu.png"
+import closeimg from "../images/close.png"
+
 const Cart = ()=>{
     
     const [order,setOrder] = useContext(OrderContext)
@@ -13,7 +16,7 @@ const Cart = ()=>{
 
     return <div className="cart-container">
         <div>
-        <img className={"cart-img" + (active ? ' cart-img-active' : '')} src="/menu.png" alt="" onClick={(e)=>setActive(!active)} />
+        <img className={"cart-img" + (active ? ' cart-img-active' : '')} src={menuimg}alt="" onClick={(e)=>setActive(!active)} />
         <div className={"cart-content" + (active ? '' : ' cart-content-hide')}>
         <h2>Commandes</h2>  
             <div className="cart-item-container">
@@ -26,7 +29,7 @@ const Cart = ()=>{
                     <p>Quantity: {item.count}</p>
                     <p>Order Num: {subkey+1}</p>
                 </div>
-                <img src="/close.png" alt="remove" className="rm-item-cart" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid)} />
+                <img src={closeimg} alt="remove" className="rm-item-cart" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid)} />
             </div>) )}
             </div>
             <button onClick={(e)=>{usenav(ROUTES.CART_DETAILS);setActive(false)}} >Commandes</button>

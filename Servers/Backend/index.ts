@@ -31,9 +31,9 @@ app.use(cookieparser())
 //Init firbase admin    
 InitFirebase()
 
-app.use("/v1",V1)
+app.use("/api/v1",V1)
 
-app.get("/",(req,res)=>{
+app.get("/api/",(req,res)=>{
     return res.send("Hii")
 })
 

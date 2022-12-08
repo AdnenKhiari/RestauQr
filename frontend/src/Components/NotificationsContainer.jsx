@@ -3,6 +3,8 @@ import Popup from "reactjs-popup"
 import { GetToken } from "../Lib/PushNotifications"
 import { NotificationsContext, OrderContext } from "./Contexts"
 
+import radioimg from "../images/radio.png"
+
 const NotificationsContainer = ()=>{
     const [notifications,setNotifications] = useContext(NotificationsContext)
 
@@ -27,7 +29,7 @@ const NotifUi = ({data,index})=>{
     const [notifications,setNotifications] = useContext(NotificationsContext)
     return <div className="notification-item"> 
         {data.type === "food-status" && <FoodStatusNotif data={data} />}
-        <img src="/radio.png" onClick={(e)=>{
+        <img src={radioimg} onClick={(e)=>{
             notifications.splice(index,1)
             setNotifications([...notifications])
         }} alt="closed" />

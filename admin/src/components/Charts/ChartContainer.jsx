@@ -3,6 +3,9 @@ import {useForm} from "react-hook-form"
 import {joiResolver} from "@hookform/resolvers/joi"
 import joi from "joi"
 
+import checkboximg from "../../images/checkbox.png"
+import searchimg from "../../images/search.png"
+
 const ChartContainer = ({children,schema,animate,xTitle,yTitle,title,customOptions})=>{
     const { register, handleSubmit, watch } = useForm({
         shouldUnregister: false,
@@ -16,11 +19,11 @@ const ChartContainer = ({children,schema,animate,xTitle,yTitle,title,customOptio
             <div  className="options-container" >
                 {customOptions && customOptions.structure && customOptions.structure.map((option,index)=><div key={index+100} className="option-item">
                     <label htmlFor={option.name}>{option.label}
-                    {option.type === 'checkbox' && <img className={option.type === 'checkbox' ? (watch(option.name) ?"selected-box make-img-blue" : "selected-box " ) : undefined  } src="/checkbox.png" alt="checkbox" />}
+                    {option.type === 'checkbox' && <img className={option.type === 'checkbox' ? (watch(option.name) ?"selected-box make-img-blue" : "selected-box " ) : undefined  } src={checkboximg} alt="checkbox" />}
                     </label>
                     <input id={option.name} type={option.type} {...register(option.name)} />
                 </div> ) }
-                {customOptions && customOptions.structure && <button onClick={handleSubmit(customOptions.submit)} type="submit"><img src="/search.png" alt="search" /></button >}
+                {customOptions && customOptions.structure && <button onClick={handleSubmit(customOptions.submit)} type="submit"><img src={searchimg} alt="search" /></button >}
             </div>        
         </div>
         <div className="chart-container">

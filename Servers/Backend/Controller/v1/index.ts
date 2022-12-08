@@ -9,8 +9,12 @@ import Auth from "./Authentication"
 import Users from "./Users"
 import Categories from "./Categories"
 import Payments from "./Payments"
+import Units from "./Units"
+import Suppliers from "./Suppliers"
 
 import PushNotifications from "./PushNotification"
+import { nextTick } from "process"
+import { BaseError } from "../../lib/Error"
 const router = Router()
 
 router.use("/food",Food)
@@ -19,8 +23,25 @@ router.use("/orders",Orders)
 router.use("/products",Products)
 router.use("/auth",Auth)
 router.use("/categories",Categories)
+router.use("/units",Units)
+router.use("/suppliers",Suppliers)
 router.use("/users",Users)
 router.use("/payments",Payments)
 
+
 router.use("/pushnot",PushNotifications)
+
+if(process.env.NODE_ENV !== "production"){
+    const error_out = ()=>{
+        throw new BaseError("Custom Error Thrown in purpose")
+    }
+    router.get("/error",async (req,res,next)=>{
+        try{
+            error_out()
+        }catch(err){
+            return next(err)
+        }
+        return res.send("mrigel")
+    })
+}
 export default router

@@ -11,6 +11,15 @@ import {motion} from "framer-motion"
 import * as ROUTES from "../../ROUTES"
 import {formatFbDate, getLevel, getOptionsList} from "../../lib/utils"
 import { useRef } from "react"
+
+
+import checkedimg from "../../images/checked.png"
+import cancelimg from "../../images/cancel.png"
+import timeleftimg from "../../images/time-left.png"
+import scheduleimg from "../../images/schedule.png"
+import tablerondeimg from "../../images/table-ronde.png"
+import remiseimg from "../../images/remise.png"
+
 const SubReviewOrder = ()=>
 {
     const {orderid,subid} = useParams()
@@ -38,13 +47,13 @@ export const SubReviewOrderUi = ({orderid,order})=>{
 
     const getImg = (status)=>{
         if(status === 'accomplished')
-            return "/checked.png"
+            return {checkedimg}
         else if(status === 'canceled'){
-            return "/cancel.png"
+            return {cancelimg}
         }else if(status === 'waiting'){
-            return "/time-left.png"
+            return {timeleftimg}
         }else{
-            return "/schedule.png"
+            return {scheduleimg}
         }
     }
     const usenav = useNavigate()
@@ -72,8 +81,8 @@ export const SubReviewOrderUi = ({orderid,order})=>{
          }}>Save</button>}
         </div> </h1>
        <div className="order-meta">
-            <div><img src="/table-ronde.png" alt="" /><h2>#{order.tableid}</h2></div> 
-            <div><img src="/remise.png" alt="" /><h2>{order && order.price}$</h2></div>
+            <div><img src={tablerondeimg} alt="" /><h2>#{order.tableid}</h2></div> 
+            <div><img src={remiseimg} alt="" /><h2>{order && order.price}$</h2></div>
             <div onClick={(e)=> getLevel(user.profile.permissions.orders) >= getLevel("manage") && changeStatus() } className={states[stateidx].toLowerCase()}><img src={getImg(states[stateidx].toLowerCase())}
             alt="" /><h2>{states[stateidx].toLowerCase()}</h2></div>
        </div>

@@ -10,6 +10,11 @@ import { FadeIn } from "../../animations"
 import {useTable,useSortBy} from "react-table"
 import { getLevel } from "../../lib/utils"
 
+import uploadimg from "../../images/upload.png"
+import checkboximg from "../../images/checkbox.png"
+import radiobuttonimg from "../../images/radio-button.png"
+import radioimg from "../../images/radio.png"
+
 const ReviewFood =()=>{
     const {foodid} = useParams()
     const {result : food,loading,error} = GetFoodById(foodid)
@@ -135,7 +140,7 @@ const IngredientsTable = ({products,path,price})=>{
         {
             Header: 'Quantity/U',
             accessor: 'unitQuantity',
-            Cell: ({value,row})=> value+""+row.original.unit
+            Cell: ({value,row})=> value+""+row.original.unit.name
         },
         {
             Header: 'Price/U',
@@ -154,7 +159,7 @@ const IngredientsTable = ({products,path,price})=>{
     const usenav = useNavigate()
     const tb = useTable({columns: columns,data: products},useSortBy)
 
-    return <div className="products-table">
+    return <div className="secondary-table">
         <h2><span>{path}</span></h2>
         <table {...tb.getTableProps()}>
             <thead>
@@ -162,7 +167,7 @@ const IngredientsTable = ({products,path,price})=>{
                     {HeaderGroup.headers.map((col)=><th  {...col.getHeaderProps(col.getSortByToggleProps())}>
                         <div className="header-tag">
                             {col.render("Header")}
-                            {col.isSortedDesc !== undefined && (col.isSortedDesc ? <img style={{transform: "rotate(180deg)"}} src="/upload.png" alt="uparrow" /> : <img  src="/upload.png" alt="uparrow" />) }
+                            {col.isSortedDesc !== undefined && (col.isSortedDesc ? <img style={{transform: "rotate(180deg)"}} src={uploadimg} alt="uparrow" /> : <img  src={uploadimg} alt="uparrow" />) }
                         </div>
                     </th>)}
                 </tr>)}
@@ -183,11 +188,11 @@ const IngredientsTable = ({products,path,price})=>{
 }
 const Option = ({opt})=>{
     if(opt.type === 'check'){
-        return <p style={{paddingLeft: opt.padding}} className="option-item"> <img className="make-img-blue" src="/checkbox.png" alt="" />{opt.msg} : {opt.price}$</p>
+        return <p style={{paddingLeft: opt.padding}} className="option-item"> <img className="make-img-blue" src={checkboximg} alt="" />{opt.msg} : {opt.price}$</p>
     }else{
        return <>   
-        {opt.choices && <p style={{paddingLeft: opt.padding}} className="option-item"><img className="make-img-blue" src="/radio-button.png" alt="" />{opt.msg} </p>}
-        {!opt.choices && <p style={{paddingLeft: opt.padding}} className="option-item" > <img className="make-img-blue" src="/radio.png" alt="" />{opt.msg} : {opt.price}$</p>}
+        {opt.choices && <p style={{paddingLeft: opt.padding}} className="option-item"><img className="make-img-blue" src={radiobuttonimg} alt="" />{opt.msg} </p>}
+        {!opt.choices && <p style={{paddingLeft: opt.padding}} className="option-item" > <img className="make-img-blue" src={radioimg} alt="" />{opt.msg} : {opt.price}$</p>}
         </>
     }
 }

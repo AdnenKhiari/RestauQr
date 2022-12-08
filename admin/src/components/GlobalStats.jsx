@@ -6,6 +6,12 @@ import { useEffect, useState } from "react"
 import BarChart from "./Charts/Bar"
 import TimeSeriesOrders from "./TImeSeriesOrders"
 
+
+import growthgraphimg from "../images/growth-graph.png"
+import moneybagimg from "../images/money-bag.png"
+import refundimg from "../images/refund.png"
+import orderdeliveryimg from "../images/order-delivery.png"
+
 const GlobalStats = ()=>{
     const [rawdata,setRawData] = useState([{
         id: 106,
@@ -92,7 +98,7 @@ const DescNumbers = ({data})=>{
     
     return <div className="card-container">
         <div className="card-item">
-            <img src="/growth-graph.png" alt="total income" />
+            <img src={growthgraphimg} alt="total income" />
             <div className="info">
                 <h2>Total Income</h2>
                 <p>{data.total || 0}$</p>
@@ -100,7 +106,7 @@ const DescNumbers = ({data})=>{
         </div>
 
         <div className="card-item make-green">
-            <img src="/money-bag.png" alt="successful" />
+            <img src={moneybagimg} alt="successful" />
             <div className="info">
                 <h2>Success</h2>
                 <p>{data.success || 0}</p>
@@ -108,7 +114,7 @@ const DescNumbers = ({data})=>{
         </div>
 
         <div className="card-item make-warning">
-            <img src="/order-delivery.png" alt="orders" />
+            <img src={orderdeliveryimg} alt="orders" />
             <div className="info">
                 <h2>Orders</h2>
                 <p>{data.orders || 0}</p>
@@ -116,7 +122,7 @@ const DescNumbers = ({data})=>{
         </div>
 
         <div className="card-item make-red">
-            <img src="/refund.png" alt="canceled" />
+            <img src={refundimg} alt="canceled" />
             <div className="info">
                 <h2>Canceled</h2>
                 <p>{data.canceled || 0}</p>

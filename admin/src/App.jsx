@@ -27,7 +27,16 @@ import {BrowserRouter} from  "react-router-dom"
 import {QueryClientProvider,QueryClient} from  "@tanstack/react-query"
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools"
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions : {
+    queries: {
+      networkMode: "always"
+    },
+    mutations: {
+      networkMode: "always"
+    }
+  }
+})
 console.log(queryClient)
 function App() {
   const app = initializeApp(firebaseConfig)

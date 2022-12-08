@@ -1,5 +1,6 @@
 import Express from "express"
 import * as admin from "firebase-admin"
+import { DataError } from "../../lib/Error"
 
 const GetAllUsers = async ()=>{
     const db = admin.firestore()
@@ -12,7 +13,7 @@ const GetUserById = async (id: string)=>{
     const user_doc = db.doc("users/"+id)
     const user = await user_doc.get()
     if(!user.exists)
-        throw Error("User Do Not Exists")
+        throw new DataError("User Not Found",{userid: id})
     const user_auth = await admin.auth().getUser(id)
     return {id: user.id,emailVerified : user_auth.emailVerified,email: user_auth.email,profile: user.data()}
 }
@@ -31,7 +32,7 @@ const RemoveUser = async (id: string)=>{
    
     const user = await user_doc.get()
     if(!user.exists)
-        throw Error("User Do Not Exists")
+        throw new DataError("User Not Found",{userid: id})
     await user_doc.delete({exists: true})
     await auth.deleteUser(id)
 }

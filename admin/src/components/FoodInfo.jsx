@@ -16,6 +16,17 @@ import { useEffect, useMemo, useState } from "react"
 import ProductsTables from "./Tables/ProductsTable"
 
 
+import addimage from "../images/addimage.png"
+import nextimg from "../images/next.png"
+import backimg from "../images/back.png"
+import checkboximg from "../images/checkbox.png"
+import trashimg from "../images/trash.png"
+import plusimg from "../images/plus.png"
+import radioimg from "../images/radio.png"
+import radiobuttonimg from "../images/radio-button.png"
+import recipebookimg from "../images/recipe-book.png"
+
+
 const productSchema = joi.object({
     id: joi.string().optional() ,
     name : joi.string().required().label("Name"),
@@ -58,8 +69,6 @@ const schema = joi.object({
     price: joi.number().min(0).required().label('Food Price'),
     ingredients: ingredientsSchema
 })
-
-const schem = joi.any()
 
 const FoodDetails = ({defaultVals = undefined})=>{
     console.warn(defaultVals)
@@ -118,7 +127,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
             <input  placeholder="Name" className={"secondary-input " + (errors.title ? 'input-error' : '')} type="text" id="title" {...register('title')} />
         </div>
         <label htmlFor='img'>
-            <img className={"secondary-img " + (errors.img ? 'input-error' : '')} src={(watch('img') && (typeof(watch('img')) === 'string' ? watch('img') :  URL.createObjectURL(new Blob(watch('img'))) )   ) || "/addimage.png" }  alt="" />
+            <img className={"secondary-img " + (errors.img ? 'input-error' : '')} src={(watch('img') && (typeof(watch('img')) === 'string' ? watch('img') :  URL.createObjectURL(new Blob(watch('img'))) )   ) || addimage }  alt="" />
         </label>
         <input className={"secondary-input "} type="file" id='img' {...register("img")} />
         <label htmlFor="description"><h2>Description : </h2></label>
@@ -133,8 +142,8 @@ const FoodDetails = ({defaultVals = undefined})=>{
             name="category" 
             value={watch('category')} 
             onChange={(d)=>setValue('category',d.value)} 
-            arrowOpen={<img alt="open" src="/next.png" />}
-            arrowClosed={<img alt="open" src="/back.png" />}
+            arrowOpen={<img alt="open" src={nextimg} />}
+            arrowClosed={<img alt="open" src={backimg} />}
             />
         </div>      
         
@@ -221,13 +230,13 @@ const arrFields = watch(path)
         { arrFields && arrFields.map((opt,index)=>{
             if(opt.type === 'check')
                 return watch(`${path}.${index}`) && <div key={index} className="check-item">
-                    <img className="make-img-blue" src="/checkbox.png" alt="Option" />
+                    <img className="make-img-blue" src={checkboximg} alt="Option" />
                     <input value={watch(`${path}.${index}.msg`)} placeholder="Message..." className="secondary-input" type="text" {...register(`${path}.${index}.msg`)} />
                     <input value={watch(`${path}.${index}.price`)} placeholder="0" className="secondary-input"  type="number" {...register(`${path}.${index}.price`)} />
-                    <img  className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
+                    <img  className="remove-img make-img-error" src={trashimg} alt="Option" onClick={(e)=>{
                         remove(index)
                     }} />
-                    <img className="add-img make-img-blue " src="/recipe-book.png" alt="Ingredients" onClick={(e)=>{
+                    <img className="add-img make-img-blue " src={recipebookimg} alt="Ingredients" onClick={(e)=>{
                         pushActive(`.options.${index}.ingredients`)
                         pushLabel(watch(`${path}.${index}.msg`))
                     }} />
@@ -247,25 +256,25 @@ const MultipleChoiceItem = ({root,idx,removeItem,pushLabel,pushActive})=>{
     const items  = watch(path+".choices")
     return <div className="select-item">
         <div className="select-header">
-            <img className="make-img-blue" src="/radio-button.png" alt="Option" />
+            <img className="make-img-blue" src={radiobuttonimg} alt="Option" />
                 <input  placeholder="Message..." className="secondary-input"  type="text" {...register(`${path}.msg`)} />
-                <img className="add-img make-img-green" src="/plus.png" alt="Add Choice" onClick={(e)=>{
+                <img className="add-img make-img-green" src={plusimg} alt="Add Choice" onClick={(e)=>{
                 append({msg: '',price: '',ingredients: {options: [],products: []} })
                 }} />
-                <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
+                <img className="remove-img make-img-error" src={trashimg} alt="Option" onClick={(e)=>{
                     removeItem(idx)
                 }} />
         </div>
 
         <div className="choices">
             { items && items.map((choice,index)=><div className="choice-item"  key={index}>
-                <img className="make-img-blue" src="/radio.png" alt="radio" />
+                <img className="make-img-blue" src={radioimg} alt="radio" />
                 <input placeholder="Message..." className="secondary-input"  type="text" {...register(`${path}.choices.${index}.msg`)} />
                 <input placeholder="0" className="secondary-input"  type="number" {...register(`${path}.choices.${index}.price`)} />
-                <img className="remove-img make-img-error" src="/trash.png" alt="Option" onClick={(e)=>{
+                <img className="remove-img make-img-error" src={trashimg} alt="Option" onClick={(e)=>{
                         remove(index)
                 }} />
-                <img className="add-img make-img-blue " src="/recipe-book.png" alt="Ingredients" onClick={(e)=>{
+                <img className="add-img make-img-blue " src={recipebookimg} alt="Ingredients" onClick={(e)=>{
                     pushActive(`.options.${idx}.choices.${index}.ingredients`)
                     pushLabel(watch(`${path}.choices.${index}.msg`))
                 }} />
@@ -327,9 +336,14 @@ const SelectionTable = ({root,popActive,popLabel})=>{
 
     return <>{mutateProduct !== null && 
         <>
-        <ProductsTables title={<button type="button" style={{color: "white"}} onClick={(e)=>setMutateProduct(null)}>Cancel</button>} oncl={(row)=> mutateProduct === "add" ? addProduct(row) : modifyProduct(row,mutateProduct)} />
+        <button 
+        type="button" 
+        style={{color: "white",marginLeft: "40px"}} 
+        onClick={(e)=>setMutateProduct(null)}>Cancel Select !</button>
+        <ProductsTables title={""} 
+        oncl={(row)=> mutateProduct === "add" ? addProduct(row) : modifyProduct(row,mutateProduct)} />
         </>}
-     <div className="products-table">
+     <div className="secondary-table">
 
         <div className="products-list-header">
             <h2>Products : </h2>

@@ -12,6 +12,14 @@ import * as ROUTES from "../../ROUTES"
 import SubOrderTable from "../../components/Tables/SubOrderTable"
 import {where} from "firebase/firestore"
 import { getLevel } from "../../lib/utils"
+
+
+import papermoneyimg from "../../images/paper-money.png"
+import paidimg from "../../images/paid.png"
+import cancelimg from "../../images/cancel.png"
+import tablerondeimg from "../../images/table-ronde.png"
+import resmiseimg from "../../images/remise.png"
+
 const ReviewOrder = ()=>
 {
     const {orderid} = useParams()
@@ -29,11 +37,11 @@ const ReviewOrder = ()=>
 
     const getImg = (status)=>{
         if(status === 'unpaid')
-            return "/paper-money.png"
+            return {papermoneyimg}
         else if(status === 'paid'){
-            return "/paid.png"
+            return {paidimg}
         }else if(status === 'canceled'){
-            return "/cancel.png"
+            return {cancelimg}
         }
     }
     const usenav = useNavigate()
@@ -58,8 +66,8 @@ const ReviewOrder = ()=>
         }}>Save</button>}</h1>
 
        <div className="order-meta">
-            <div><img src="/table-ronde.png" alt="" /><h2>#{order.tableid}</h2></div> 
-            <div><img src="/remise.png" alt="" /><h2>{order && order.price}$</h2></div>
+            <div><img src={tablerondeimg} alt="" /><h2>#{order.tableid}</h2></div> 
+            <div><img src={resmiseimg} alt="" /><h2>{order && order.price}$</h2></div>
             <div onClick={(e)=> getLevel(user.profile.permissions.orders)  >= getLevel("manage") && changeStatus() } className={(states[stateidx] && states[stateidx].toLowerCase()) === "unpaid" ? 'waiting' : (states[stateidx] && states[stateidx].toLowerCase()) === 'canceled' ? 'canceled' : 'accomplished'}><img src={getImg(states[stateidx].toLowerCase())}
             alt="" /><h2>{states[stateidx].toLowerCase()}</h2></div>
        </div>

@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin"
 import moment from "moment"
+import { DataError } from "../../lib/Error"
 
 
 
@@ -29,16 +30,16 @@ const RemoveClientSubOrder = async (orderid: string,subid: string)=>{
         const sub_ref = db.doc('orders/'+orderid+"/sub_orders/"+subid)
         const sub_snap = await tr.get(sub_ref)
         const order_snap = await tr.get(order_ref)
-
-        if(!sub_snap.exists)
-            throw Error("Could not retrieve sub order information")
         if(!order_snap.exists)
-            throw Error("Could not retrieve order information")
+            throw new DataError("Order Not Found",{subid: subid,orderid: orderid})
+        if(!sub_snap.exists)
+            throw new DataError("SubOrder Not Found",{subid: subid,orderid: orderid})
+
         const current_data = sub_snap.data()
         const status = current_data?.status
         const oldprice = current_data?.price
         if(status !== "waiting")
-            throw Error("Request Already Processing / processed , Cannot Delete")
+            throw new DataError("Request Already Processing / processed , Cannot Delete",{subid: subid,orderid: orderid})
         tr.delete(sub_ref)
 
         const order = order_snap.data()
@@ -93,7 +94,7 @@ const AddUpdateClientSubOrder = async (order: any,cartitem: any) => {
                 sub_doc = db.doc('orders/'+order_doc.id+"/sub_orders/"+cartitem.id)
                 const old = await tr.get(sub_doc)
                 if(!old.exists)
-                    throw Error('Invalid Error Id')
+                    throw new DataError("Invalid SubOrder Id",{subid: sub_doc.id})
                 const old_pr = old.data()
                 const oldprice = old_pr?.price
 
@@ -108,7 +109,7 @@ const AddUpdateClientSubOrder = async (order: any,cartitem: any) => {
                         foodcount: admin.firestore.FieldValue.increment(-old_pr?.food.reduce((init: 0,fd: any)=>fd.count + init,0) + cartitem.food.reduce((init:number,fd: any)=>fd.count + init,0))
                     })
                 }else{
-                    throw Error("Command Already Processed, You Cannot Cancel Now !")
+                    throw new DataError("Order Completed , Cannor Remove Data",{subid: sub_doc.id})
                 }
                 sub_id = sub_doc.id
             }
@@ -121,7 +122,7 @@ const GetOrderById =  async (id: string)=>{
     
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid order Id")
+    throw new DataError("Order Not Found",{orderid: id})
     return {id: ref.id,...res.data()}
 }
 const GetSubOrderById =  async (orderid: string,subid :string)=>{
@@ -129,7 +130,7 @@ const GetSubOrderById =  async (orderid: string,subid :string)=>{
     const ref = db.doc(`orders/${orderid}/sub_orders/${subid}`)
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid Sub order Id")
+        throw new DataError("SubOrder Not Found",{orderid: orderid,subid: subid})
     return {id: ref.id,...res.data()}
 }
 
@@ -139,7 +140,7 @@ const DeleteOrderById =  async (id: string)=>{
     const sub_ref = db.collection("orders/"+id+"/sub_orders")
     const sub_content = await sub_ref.get()
     if(sub_content.docs.some((dt)=>dt.data().status !== 'waiting'))
-        throw Error("You Have An order that has been / is currently being processed")
+        throw new DataError("Some SubOrders Are still processing / processed",{orderid: id})
     await db.runTransaction(async (tr)=>{
         const ref = db.doc("orders/"+id)
         sub_content.docs.forEach((element)=>{
@@ -157,13 +158,13 @@ const DeleteSubOrderById =  async (orderid: string,subid: string)=>{
     await db.runTransaction(async tr=>{
         const order_snap = await order_ref.get()
         if(!order_snap.exists)
-            throw Error("Order Do Not Exists") 
+        throw new DataError("Order Not Found",{orderid: orderid,subid: subid})
         const order : any= {id: order_snap.id,...order_snap.data()}
         const sub_snap = await tr.get(ref)
         if(!sub_snap.exists)
-            throw Error("Sub Orders Do Not Exists")
+        throw new DataError("SubOrder Not Found",{orderid: orderid,subid: subid})
         if(sub_snap.data()?.status !== 'waiting')
-            throw Error("Order Is currently being processed or has been processed")
+            throw new DataError("Order Is currently being processed or has been processed",{orderid: orderid,subid: subid})
         tr.delete(ref)
         const old_sub = sub_snap.data()
         if(order?.price > old_sub?.price){
@@ -195,7 +196,7 @@ const GetOrders =  async (searchData: any)=>{
     if(searchData.lastRef){
         const starting = await db.doc("orders/"+searchData.lastRef).get()
         if(!starting.exists)
-            throw Error("Invalid Last Reference")
+        throw new DataError("Invalid Reference",searchData)
         if(searchData.swapped)
             query = query.startAt(starting)
         else
@@ -224,7 +225,7 @@ const GetSubOrders =  async (orderid: string | undefined,searchData: any)=>{
     if(searchData.lastRef){
         const starting = await db.doc(orderid ? path+"/"+searchData.lastRef : "orders/"+searchData.lastOrderRef+"/sub_orders/"+searchData.lastRef ).get()
         if(!starting.exists)
-            throw Error("Invalid Last Reference")
+        throw new DataError("Invalid Reference",searchData)
         if(searchData.swapped)
             query = query.startAt(starting)
         else
@@ -243,14 +244,13 @@ const UpdateOrder = async (orderid:string,data: any)=>{
     console.log(all_data.docs.map((val)=>val.data()))
 
     if(data.status === 'paid' && (all_data.docs.length !== 0 && all_data.docs.map((item)=>item.data()).some(item=>item.status !== "accomplished" && item.status !== 'canceled')))
-        throw Error("Please Validate Sub Orders First")
+        throw new DataError("SubOrders Are Not Valiated Correctly",{orderid: orderid})
 
     await db.runTransaction(async tr=>{
         const current_order_ref = db.doc('orders/'+orderid)
         const pr = await current_order_ref.get()
         if(!pr.exists)
-                throw Error('Order Not Found')
-            const pr_dt = pr.data()
+        throw new DataError("Order Not Found",{orderid: orderid})
 
         tr.update(current_order_ref,{
             status: data.status
@@ -306,7 +306,7 @@ const UpdateSubOrder = async (orderid: string,subid: string,data: any)=>{
     const current_reference = db.doc('orders/'+orderid+'/sub_orders/'+subid)
     const current_order_r = await current_reference.get()
     if(!current_order_r.exists)
-        throw Error("Invalid ORder ID")
+        throw new DataError("Order Not Found",{orderid: orderid,subid: subid})
 
     const current_order : any = {id : current_order_r.id,...current_order_r.data()}
 
@@ -316,7 +316,7 @@ const UpdateSubOrder = async (orderid: string,subid: string,data: any)=>{
     const cur_ord = db.doc('orders/'+orderid)
     const order_snap = await cur_ord.get()
     if(!order_snap)
-        throw Error("Invalid Order Snapshot")
+        throw new DataError("Order Not Found",{orderid: orderid,subid: subid})
     const order : any = {id: order_snap.id,...order_snap.data()}
 
     //For Update the sub order

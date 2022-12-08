@@ -7,6 +7,9 @@ import { getReducedCart, RemoveFromCart } from "../Lib/util"
 import AddUpdateCart from "../Lib/AddUpdateCart"
 import RemoveOrder from "../Lib/RemoveOrder"
 
+
+import closeimg from "../images/close.png"
+
 const CartDetails = ()=>{
     const [order,setOrder] = useContext(OrderContext)
     return <div className="suborder-details">
@@ -79,7 +82,7 @@ const CartItem = ({item,ordernum})=>{
     const usenav = useNavigate()
     return <div className="cart-details-item" >
         <div>
-            <img src="/close.png" onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid,ordernum)} className="rm-item-cart" alt="" />
+            <img src={closeimg} onClick={(e)=>RemoveFromCart(order,setOrder,item.cartid,ordernum)} className="rm-item-cart" alt="" />
             <h2>{item.title}</h2>
         </div>
         <div>

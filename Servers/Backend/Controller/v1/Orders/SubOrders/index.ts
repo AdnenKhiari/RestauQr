@@ -3,6 +3,7 @@ import Orders from "../../../../DataAcessLayer/Orders"
 import joi from "joi"
 import OAuth from "../../Authorisation"
 import {sendNotificationToOrder} from "../../../../DataAcessLayer/PushNotification"
+import { ValidationError } from "../../../../lib/Error"
 
 const router = Router()
 const subordersInfoSchema = joi.object({
@@ -36,7 +37,7 @@ router.get('/',
 (req,res,next)=>{
     const {value,error} = (fetchSubOrders.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -57,7 +58,7 @@ router.get('/',
 router.put('/:subid',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),(req,res,next)=>{
     const {value,error} = (subordersInfoSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
