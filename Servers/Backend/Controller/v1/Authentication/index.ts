@@ -6,6 +6,14 @@ import Users from "../../../DataAcessLayer/Users"
 import OAuth from "../Authorisation"
 import mailtransport from "../../../utils/transportmail"
 import joi from "joi"
+import {
+	ReasonPhrases,
+	StatusCodes,
+	getReasonPhrase,
+	getStatusCode,
+} from 'http-status-codes';
+import { HTTPError, ValidationError } from "../../../lib/Error"
+
 const router = Router()
 
 const schemaPasswordSchema  = joi.object({
@@ -27,7 +35,7 @@ const tokenSchema = joi.object({
 router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
     const {value,error} = createProfileSchema.validate(req.body)
     if(error)
-        return next(error)
+        return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -37,12 +45,12 @@ router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
         if(decoded){
             req.user = await Users.GetUserByIdIfExists(decoded.uid)
             if(req.user)
-                throw Error("Already Exists !")
+                throw new HTTPError("Session Already Exists",undefined,StatusCodes.BAD_REQUEST)
             if(!decoded.email_verified){
-                throw Error("Account Not Verified !")
+                throw new HTTPError("Account Not Verified",undefined,StatusCodes.BAD_REQUEST)
             }
         }else{
-            throw Error("Not Authorised")
+            return res.redirect("/auth/signin")
         }
         return next()
     }catch(err){
@@ -60,7 +68,7 @@ router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
             "tables":"read",
             "orders":"read",
             "inventory":"none",
-            "users": "manage",
+            "users": "none",
             "suppliers": "none",
             "units": "none"
         }
@@ -78,7 +86,7 @@ router.post('/createProfile',OAuth.SignedIn,(req,res,next)=>{
 router.post('/signin',(req,res,next)=>{
     const {value,error} = tokenSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },
@@ -121,7 +129,7 @@ async (req,res,next)=>{
 router.post("/verifyPasswordCode",(req,res,next)=>{
     const {value,error} = schemaPasswordSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -138,7 +146,7 @@ router.post("/verifyPasswordCode",(req,res,next)=>{
 router.post("/verifyEmailCode",(req,res,next)=>{
     const {value,error} = validateOobcodeSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -159,7 +167,7 @@ router.post("/sendRecoverPassword",(req,res,next)=>{
     console.log(req.body,"RESET PASSWORD")
     const {value,error} = validateEmailSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -188,7 +196,7 @@ router.post("/sendRecoverPassword",(req,res,next)=>{
 router.post("/sendValidateEmail",OAuth.SignedIn,(req,res,next)=>{
     const {value,error} = validateEmailSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{

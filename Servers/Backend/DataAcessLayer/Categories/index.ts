@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin"
+import { DataError } from "../../lib/Error"
 
 
 export const GetCategories = async ()=>{
@@ -6,7 +7,7 @@ export const GetCategories = async ()=>{
     const cat_ref = db.doc("utils/menu")
     const cat_snap = await cat_ref.get()
     if(!cat_snap.exists){
-        throw Error("Document Not Exists")
+        throw new DataError("Categories not found",undefined)
     }
     return {id: cat_snap.id,...cat_snap.data()}
 }

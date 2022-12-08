@@ -7,6 +7,7 @@ import ProductOrdersDAL from "../../../DataAcessLayer/Suppliers/ProductOrders"
 import Basejoi from "joi"
 import {fileListExtension} from "joi-filelist"
 import OAuth from "../Authorisation"
+import { ValidationError } from "../../../lib/Error"
 const router = Router()
 const joi =  fileListExtension(Basejoi)
 
@@ -34,7 +35,7 @@ router.get('/product_orders',/*(req,res,next)=>{
 
     const {value,error} = (fetchSuppliersSchema.validate(req.query))
     if(error)
-        return next(error)
+        return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -66,7 +67,7 @@ router.get('/',(req,res,next)=>{
 
     const {value,error} = (fetchSuppliersSchema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -86,7 +87,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({food:"manage"}),
 (req,res,next)=>{
     const {value,error} = (SuppliersSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 }
@@ -107,7 +108,7 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({food:"manage"}),
 (req,res,next)=>{
     const {value,error} = (SuppliersSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },

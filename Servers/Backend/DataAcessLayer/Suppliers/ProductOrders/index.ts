@@ -3,6 +3,7 @@ import moment from "moment"
 import { addmerchandise, processremovemerchandise, updatemerchandise } from "../../Inventory/Merchandise"
 import Orders from "../../Orders"
 import { v4 as uuidv4 } from 'uuid';
+import { DataError } from "../../../lib/Error";
 
 
 const GetProductOrderById =  async (supplierid:string,id: string)=>{
@@ -11,7 +12,7 @@ const GetProductOrderById =  async (supplierid:string,id: string)=>{
     const ref = db.doc(path)
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid Id")
+    throw new DataError("Supplier Not Found",{supplierid: id,productorder_id: id})
     const productorders : any = {id: ref.id,...res.data()} 
     const allorders = productorders.orders.length > 0 ? await db.getAll(...productorders.orders.map((order: any,key: number)=>{
         return db.doc('products/'+order.product+'/product_instances/'+order.merchandiseid)
@@ -24,8 +25,8 @@ const GetProductOrderById =  async (supplierid:string,id: string)=>{
         orders: allorders.map((doc,key: number)=>{
             const ord_data : any= doc.data()
             if(!doc.exists)
-                throw Error("Invalid document")
-        return  {
+                throw new DataError("ProductOrder Not Found",{supplierid: id,productorder_id: id,ord_data: doc.id})
+            return  {
             productorder_details: {id: doc.id,name : ord_data.name,unitPrice : ord_data.unitPrice,productQuantity : ord_data.productQuantity },
             details: productorders.orders[key].details,
             product: productorders.orders[key].product,
@@ -41,7 +42,7 @@ const DeleteProductOrder =  async (supplierid: string,id: string)=>{
     await db.runTransaction(async tr=>{
         const current_order_snap = await tr.get(current_order_ref)
         if(!current_order_snap.exists)
-            throw Error("Invalid Id")
+        throw new DataError("ProductOrder Not Found",{supplierid: id,productorder_id: id})
         const current_order : any = current_order_snap.data()
         const to_remove_merchandise_snaps = current_order.orders.length > 0 ? await tr.getAll(...current_order.orders.map((od : any)=> db.doc('products/'+od.product+"/product_instances/"+od.merchandiseid) )): []
 
@@ -89,7 +90,7 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
             if(id){
                 const current_order_snap = await tr.get(current_order_ref)
                 if(!current_order_snap.exists)
-                    throw Error("Invalid Id")
+                throw new DataError("ProductOrder Not Found",{supplierid: id,productorder_id: id})
                 const current_order : any = current_order_snap.data()
 
                 const to_remove = current_order.orders.filter((ord : any) => data.orders.findIndex((d : any) => d.id === ord.id) === -1)
@@ -109,7 +110,7 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
                 if(to_update.length > 0){
                     await Promise.all(to_update_snaps.map(async (dl,key: number)=>{
                         if(!dl.exists)
-                            throw Error("Merchandise Not Found")
+                        throw new DataError("Merchandise Not Found",{supplierid: id,productorder_id:id,merchandise_id: dl.id})
                         //merchandise instance
                         const current_mechandise : any = dl.data()
                         const futur_productorder = to_update[key]
@@ -118,7 +119,7 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
     
                         if(!(current_productorder.details.status === "Completed" && futur_productorder.details.status === "Completed")){
                             if((current_productorder.details.status === "Completed" && futur_productorder.details.status !== "Completed")){
-                                throw Error("Invalid Status Changes")
+                                throw new DataError("Cannot Swap Status",{productorder_id: current_productorder.id})
                             }
                             if((current_productorder.details.status === "Waiting" && futur_productorder.details.status === "Completed")){
                                 const new_quantity = current_mechandise.unitQuantity * current_mechandise.productQuantity
@@ -133,7 +134,7 @@ const AddUpdateProductOrder = async (data: any,supplierid: string,id: string | u
                                     disabled: false
                                 })       
                             }else if(current_productorder.details.status === "Canceled" && futur_productorder.details.status !== "Canceled" ){
-                                throw Error("Invalid Status Change")
+                                throw new DataError("Cannot Swap Status",{productorder_id: current_productorder.id})
                             }
                         }
                     })) 

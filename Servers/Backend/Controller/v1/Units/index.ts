@@ -3,6 +3,7 @@ import  Tables from "../../../DataAcessLayer/Tables"
 import joi from "joi"
 import OAuth from "../Authorisation"
 import Units from "../../../DataAcessLayer/Units"
+import { ValidationError } from "../../../lib/Error"
 
 const router = Router()
 
@@ -33,7 +34,7 @@ router.put('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
     const {value,error} = unitsSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },

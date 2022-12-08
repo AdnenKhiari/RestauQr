@@ -13,6 +13,7 @@ import Suppliers from "./Suppliers"
 
 import PushNotifications from "./PushNotification"
 import { nextTick } from "process"
+import { BaseError } from "../../lib/Error"
 const router = Router()
 
 router.use("/food",Food)
@@ -29,7 +30,7 @@ router.use("/pushnot",PushNotifications)
 
 if(process.env.NODE_ENV !== "production"){
     const error_out = ()=>{
-        throw Error("Custom Error Thrown in purpose")
+        throw new BaseError("Custom Error Thrown in purpose")
     }
     router.get("/error",async (req,res,next)=>{
         try{

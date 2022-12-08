@@ -2,6 +2,7 @@ import {Router} from "express"
 import ProductTemplates from "../../../../../DataAcessLayer/Inventory/Products/productTemplates"
 import joi from "joi"
 import OAuth from "../../../Authorisation"
+import { ValidationError } from "../../../../../lib/Error"
 const router = Router()
 
 
@@ -27,7 +28,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
     const {value,error} = (TemplateSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -48,7 +49,7 @@ router.put('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 (req,res,next)=>{
     const {value,error} = (TemplateSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{

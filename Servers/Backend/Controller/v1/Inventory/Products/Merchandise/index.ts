@@ -2,6 +2,7 @@ import {Router} from "express"
 import Inventory from "../../../../../DataAcessLayer/Inventory"
 import joi, { optional } from "joi"
 import OAuth from "../../../Authorisation"
+import { ValidationError } from "../../../../../lib/Error"
 
 const router = Router()
 
@@ -40,7 +41,7 @@ router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 
     const {value,error} = (fetchMerchandiseSchema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -89,7 +90,7 @@ router.post('/consume/:subid',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage
 
     const {value,error} = (consumeSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{

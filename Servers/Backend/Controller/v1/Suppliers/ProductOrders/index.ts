@@ -4,6 +4,7 @@ import { Request } from "express"
 import BaseJoi from "joi"
 import OAuth from "../../Authorisation"
 import { fileListExtension } from "joi-filelist"
+import { ValidationError } from "../../../../lib/Error"
 
 const router = Router()
 
@@ -28,7 +29,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory:"manage"}),
 (req,res,next)=>{
     const {value,error} = (schema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -45,7 +46,7 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory:"manage"}),
 (req,res,next)=>{
     const {value,error} = (schema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -78,7 +79,7 @@ router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory:"read"}),
 
     const {value,error} = (fetchOrdersSchema.validate(req.query))
     if(error)
-        return next(error)
+        return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }

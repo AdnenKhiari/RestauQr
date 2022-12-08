@@ -1,6 +1,8 @@
 import Express from "express"
 import { DecodeCookie, getLevel } from "../../../utils/auth"
 import * as admin from"firebase-admin"
+import { StatusCodes } from "http-status-codes";
+import { HTTPError } from "../../../lib/Error";
 
 interface permissions  {
     [index: string]: string | undefined;
@@ -23,7 +25,7 @@ const SignedIn = async (req: Express.Request,res: Express.Response,next: Express
         if(decoded)
             return next()
         else
-            throw Error("Not Signed In")
+            throw new HTTPError("Need to Sign In First",undefined,StatusCodes.UNAUTHORIZED)
     }catch(err){
         return next(err)
     }
@@ -36,7 +38,9 @@ const HasAccess = (scopes : permissions) => (req : Express.Request,res : Express
 
         const result : string = current_permissions[scope]
         if(!result || getLevel(result)  <  getLevel(<string>scopes[scope])){
-            return next("Unauthorised 403")
+            return next(
+                new HTTPError("Need higher privileges",undefined,StatusCodes.FORBIDDEN)
+            )
         }
     })
     return next()

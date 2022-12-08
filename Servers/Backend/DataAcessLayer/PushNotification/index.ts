@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin"
+import { DataError } from "../../lib/Error"
 
 export const AddTokenToTable = async (token: string,orderid: string)=>{
     const db = admin.firestore()
@@ -15,7 +16,7 @@ export const sendNotificationToOrder = async (data: any,orderid: string)=>{
     const order_ref = db.doc("orders/"+orderid)
     const order_snap = await order_ref.get()
     if(!order_snap.exists)
-        throw Error("Invalid Order Id")
+        throw new DataError("Order Not Found",{orderid: orderid})
     const order : any = {id: order_snap.id ,...order_snap.data()}
     const tokens = order.tokens
     const msgs = await messaging.sendMulticast({data : data,tokens: tokens})

@@ -4,6 +4,7 @@ import SubOrders from "./SubOrders"
 import { Request } from "express"
 import joi from "joi"
 import OAuth from "../Authorisation"
+import { ValidationError } from "../../../lib/Error"
 
 const router = Router()
 
@@ -36,7 +37,7 @@ router.get("/clientOrder/:tableid",
 
     const {value,error} = (joi.object({tableid: joi.number().required()}).validate(req.params))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.params = value
         return next()
 },async (req,res,next)=>{
@@ -98,7 +99,7 @@ router.get('/suborders',
 
     const {value,error} = (fetchSubOrdersSchema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 },
@@ -131,7 +132,7 @@ router.get('/',
 
     const {value,error} = (fetchOrdersSchema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -152,7 +153,7 @@ router.put('/:orderid',OAuth.SignedIn,OAuth.HasAccess({orders: "manage"}),
 (req,res,next)=>{
     const {value,error} = (orderSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{

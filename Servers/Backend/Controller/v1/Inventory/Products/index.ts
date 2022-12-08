@@ -5,6 +5,7 @@ import Merchandise from "./Merchandise"
 import ProductTemplates from "./productTemplates"
 import joi from "joi"
 import OAuth from "../../Authorisation"
+import { ValidationError } from "../../../../lib/Error"
 const router = Router()
 
 const fetchMerchandisechema  = joi.object({
@@ -63,7 +64,7 @@ router.get('/merchandise',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 
     const {value,error} = (fetchMerchandisechema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 },
@@ -97,7 +98,7 @@ router.get('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "read"}),
 
     const {value,error} = (fetchProductschema.validate(req.query))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.query = value
         return next()
 }
@@ -119,7 +120,7 @@ router.post('/',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 
     const {value,error} = (ProductSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -140,7 +141,7 @@ router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"}),
 
     const {value,error} = (ProductSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
@@ -173,7 +174,7 @@ router.post('/consume/:id',OAuth.SignedIn,OAuth.HasAccess({inventory: "manage"})
 
     const {value,error} = (consumeSchema.validate(req.body))
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{

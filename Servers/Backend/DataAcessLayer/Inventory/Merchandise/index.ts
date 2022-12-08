@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin"
 import { firestore } from "firebase-admin"
 import joi from "joi"
+import { DataError, ValidationError } from "../../../lib/Error"
 const merchandiseSchema = (custom_fields : any)=>{
     const arr : any = {
         id: joi.string().optional().label('Item Id'),
@@ -35,7 +36,7 @@ const GetMerchandiseById =  async (productid: string,orderid: string)=>{
     
     const res = await ref.get()
     if(!res.exists)
-        throw Error("Invalid ProductOrder Id")
+        throw new DataError("Invalid product order  Id",{productid: productid,orderid: orderid})
 
     return {id: ref.id,...res.data()}
 }
@@ -47,14 +48,14 @@ const DeleteMerchandise = async (productid: string,orderid: string)=>{
     db.runTransaction(async (tr)=>{
         const snap = await tr.get(ref)
         if(!snap.exists)
-            throw Error("Invalid Product Order Id")
+            throw new DataError("Product Error Do Not Exists",{orderid:orderid,productid: productid})
         const data = snap.data()
 
         if(data?.productorder_id && data?.supplier_id  && data?.order_id){
             const productorder_ref = db.doc(`/suppliers/${data?.supplier_id}/productorders/${data?.productorder_id}`)
             const productorder_snap = await tr.get(productorder_ref)
             if(!productorder_snap.exists)
-                throw Error("Product Order Do Not Exists")
+                throw new DataError("Product Error Do Not Exists",{supplier_id: data?.supplier_id,productorder_id: data?.productorder_id})
             const productorder_data  = productorder_snap.data()      
             const to_remove = productorder_data?.orders.findIndex((pd: any) => pd.id === data.order_id)
             if(to_remove !== -1)
@@ -86,16 +87,16 @@ const ConsumeMerchandise= async (productid: string,orderid: string,data: {wasted
     await db.runTransaction(async (tr)=>{
         const snap = await tr.get(docref)
         if(!snap.exists){
-            throw Error("Invalid IDs")
+            throw new DataError("Merchandise Do Not Exists",{productid:productid,orderid: orderid})
         }
         const cur = snap.data()
         if(cur?.disabled)
-            throw Error("Item Disabled !")
+            throw new DataError("Item Disabled",{productid:productid,orderid: orderid})
         if(cur?.used + data.used < 0 || cur?.wasted + data?.wasted < 0){
-            throw Error("Invalid Query,the wasted and used total ammounts cannot be negative")
+            throw new DataError("The wasted and used total ammounts cannot be negative",{productid:productid,orderid: orderid})
         }
         if(cur?.used + data.used + cur?.wasted + data.wasted  > cur?.productQuantity * cur?.unitQuantity){
-            throw Error("Invalid Query,Exceeded maximum capacity")
+            throw new DataError("Exceeded maximum capacity",{productid:productid,orderid: orderid})
         }
         tr.update(docref,{
             used: admin.firestore.FieldValue.increment(data.used),
@@ -141,7 +142,7 @@ const GetMerchandise = async (searchData: any,productid: string | undefined)=>{
     if(searchData.lastRef){
         const starting = await db.doc(productid ? path+"/"+searchData.lastRef : "products/"+searchData.lastProductRef+"/product_instances/"+searchData.lastRef).get()
         if(!starting.exists)
-            throw Error("Invalid Last Reference")
+            throw new DataError("Invalid Reference",searchData)
         if(searchData.swapped)
             query = query.startAt(starting)
         else
@@ -183,12 +184,12 @@ const AddUpdateMerchandise = async (productid: string,orderid: string | undefine
 const verify_merchandise = async (tr: FirebaseFirestore.Transaction,data: any,prodref: FirebaseFirestore.DocumentReference<any>)=>{
     const product_snap = await tr.get(prodref)
     if(!product_snap.exists)
-        throw Error("Invalid product Id")
+    throw new DataError("Product Not Found",{productid: prodref.id})
     const product : any = {...product_snap.data(),id: product_snap.id}
     const schema = merchandiseSchema(product?.template?.custom_fields)
     const {value,error}  = schema.validate(data)
     if(error)
-        throw error
+        throw new ValidationError(error.message,error.details,error.stack)
     console.log(value)
     return value
 }
@@ -212,19 +213,19 @@ export const updatemerchandise = async (tr: FirebaseFirestore.Transaction,prodre
         data.disabled = isdisabled
     const old_prod = (await tr.get(prodref))
     if(!old_prod.exists)
-        throw Error("Invalid Product Id")
+        throw new DataError("Product Not Found",{productid: prodref.id,orderid: prodref.id})
     const old_prod_data = old_prod.data()
 
     const old_ord = (await tr.get(ref))
     if(!old_ord.exists)
-        throw Error("Invalid Order Id")
+        throw new DataError("Order Not Found",{productid: prodref.id,orderid: prodref.id})
     const old_ord_data = old_ord.data()
 
     if(isdisabled === undefined)
         isdisabled = old_ord_data?.disabled
 
     if(!old_ord_data?.disabled && isdisabled)
-        throw Error("Invalid Status Change")
+        throw new DataError("Cannot Swap Status",{productid: prodref.id,orderid: prodref.id})
 
     if(!old_ord_data?.disabled && !isdisabled){
         //update the quantities 
@@ -232,7 +233,7 @@ export const updatemerchandise = async (tr: FirebaseFirestore.Transaction,prodre
         const old_quantity = old_ord_data?.unitQuantity * old_ord_data?.productQuantity
         const diff = new_quantity - old_quantity
         if(-diff > old_prod_data?.stockQuantity )
-            throw Error("Exceeded maximum Capacity")
+            throw new DataError("Exceeded Maximum Capacity",{productid: prodref.id,orderid: prodref.id})
         tr.update(prodref,{
             stockQuantity: admin.firestore.FieldValue.increment(diff)
         })

@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin"
 import { v4 as uuidv4 } from 'uuid';
+import { DataError } from "../../lib/Error";
 
 
 export const GetUnits = async ()=>{
@@ -7,7 +8,7 @@ export const GetUnits = async ()=>{
     const cat_ref = db.doc("utils/units")
     const cat_snap = await cat_ref.get()
     if(!cat_snap.exists){
-        throw Error("Document Not Exists")
+        throw new DataError("Units Not Found",undefined)
     }
     return {id: cat_snap.id,...cat_snap.data()}
 }
@@ -24,7 +25,7 @@ export const AddUpdateUnits = async (data: any)=>{
     await db.runTransaction(async (tr)=>{
         const oldunits_snap = await tr.get(cat_ref)
         if(!oldunits_snap.exists)
-            throw Error("Units document is not available")
+            throw new DataError("Units Not Found",undefined)
 
         const allproducts_snaps = await tr.get(product_ref)
         const allproducts = allproducts_snaps.docs.map((prd)=>({id:prd.id,...prd.data()}))
@@ -40,7 +41,9 @@ export const AddUpdateUnits = async (data: any)=>{
                 //to be deleted if no product in using it :
                 const prd : any = allproducts.find((prd: any)=>prd.unit.id === old.id)
                 if(prd)
-                    throw Error("Unit Is In Use In product :"+ prd.name +" , Could Not Remove It !")
+                    throw new DataError("Unit Is In Use In product :"+ prd.name +" , Could Not Remove It !",{
+                        productid: prd.id
+                    })
             }
         })   
 

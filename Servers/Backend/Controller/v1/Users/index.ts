@@ -4,6 +4,7 @@ import OAuth from "../Authorisation"
 import * as admin from "firebase-admin"
 import { clearCookie, updateClaims } from "../../../utils/auth"
 import joi from "joi"
+import { ValidationError } from "../../../lib/Error"
 const router = Router()
 
 const userUpdateSchema  = joi.object({
@@ -85,7 +86,7 @@ router.delete('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "manage"}),async (re
 router.put('/:id',OAuth.SignedIn,OAuth.HasAccess({users: "manage"}),(req,res,next)=>{
     const {value,error} = userUpdateSchema.validate(req.body)
     if(error)
-        return next(error)
+    return next(new ValidationError(error.message,error.details,error.stack))
     req.body = value
         return next()
 },async (req,res,next)=>{
