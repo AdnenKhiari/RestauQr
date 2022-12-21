@@ -31,9 +31,10 @@ router.get("/clientsecret",async (req,res,next)=>{
 })
 
 
-router.post("/webhooks",(req,res,next)=>{
+router.post("/webhooks",bodyParser.raw({type: "*/*"}),(req,res,next)=>{
   //verify event is coming from stripe
   try{
+    //need to verify status code response in error
     const sig : any= req.headers['stripe-signature'];
     const event = stripe.webhooks.constructEvent(<Buffer>req.rawBody,sig,<string>process.env.STRIPE_WEBHOOK_SECRET)
     req.body = event
@@ -44,12 +45,28 @@ router.post("/webhooks",(req,res,next)=>{
 },(req,res)=>{
   const event = req.body
   const data =   event && event.data ? event.data.object : undefined;
-  console.log("Made It",event)
+  //console.log("Stripe Event Made It",event)
+  console.log("Stripe Event Made It")
   switch(event.type){
     case 'payment_intent.succeeded':
       //addStripePaymentToPayments()
       //ConfirmPayment()
-      console.log(data)
+      console.log("Succeded",data)
+    break;
+    case 'payment_intent.canceled':
+      //addStripePaymentToPayments()
+      //ConfirmPayment()
+      console.log("canceled",data)
+    break;
+    case 'payment_intent.payment_failed':
+      //addStripePaymentToPayments()
+      //ConfirmPayment()
+      console.log("payment_failed",data)
+    break;
+    case 'payment_intent.processing':
+      //addStripePaymentToPayments()
+      //ConfirmPayment()
+      console.log("prcoessing",data)
     break;
     default:
       console.log(event.type," Not Taken Into Account")
