@@ -25,13 +25,34 @@ import plusimg from "../images/plus.png"
 import radioimg from "../images/radio.png"
 import radiobuttonimg from "../images/radio-button.png"
 import recipebookimg from "../images/recipe-book.png"
+import UnitShow from "./Custom/UnitShow"
+import UnitValue from "./Custom/UnitValue"
+import { GetUnits } from "../lib/Units"
 
+let formatCurrency = new Intl.NumberFormat(undefined, {
+	style: 'currency',
+	currency: 'USD'
+});
 
 const productSchema = joi.object({
     id: joi.string().optional() ,
     name : joi.string().required().label("Name"),
-    quantity : joi.number().required().label("Quantity"),
-    unit: joi.string(),
+    quantity : joi.object({
+        value: joi.number(),
+        unit: joi.any()
+    }).required().label("Quantity"),
+    unit: joi.object({
+        id: joi.string(),
+        name: joi.string(),
+        subunit: joi.object({
+            name: joi.string(),
+            ratio: joi.number()
+        }).optional()
+    }),
+    customUnits: joi.array().items(joi.object({
+        name: joi.string(),
+        ratio:  joi.number()
+    })).optional(),
 //    price: joi.optional().number().label("Price"),
     sellingUnitPrice: joi.number(),
     unitQuantity: joi.number()
@@ -71,9 +92,29 @@ const schema = joi.object({
 })
 
 const FoodDetails = ({defaultVals = undefined})=>{
-    console.warn(defaultVals)
+
+    const process_default = (food)=>{
+        food.products = food.products.map((ing)=>{
+            ing.quantity = {
+                value: ing.quantity / (ing.unit.subunit?.ratio || 1) ,
+                unit: ing.unit
+            }
+            return ing
+        })
+        food.options.forEach(opt => {
+            if(opt.type==="check")
+                opt.ingredients = process_default(opt.ingredients)
+            else{
+                opt.choices.forEach((sub)=>{
+                    sub.ingredients = process_default(sub.ingredients)
+                })
+            }
+        });
+        return food
+    }
+
     const formOptions = useForm({
-        defaultValues: defaultVals || {
+        defaultValues: {...defaultVals,ingredients: process_default(defaultVals.ingredients)} || {
             title: '',
             img: null,
             description: '',
@@ -87,10 +128,29 @@ const FoodDetails = ({defaultVals = undefined})=>{
     const food_uploader = AddUpdateFood(!defaultVals)
     const usenav = useNavigate() 
     const {result : categories,loading: categoriesLoading,error : errorCategories} = GetCategories()
-    console.log(watch())
+    const {result: allunits,unitsLoading,errorUnits} = GetUnits()
+    //console.log(watch())
     const SubmitForm = async (data)=>{
-        
+
         try{
+            console.log("Before processing data",data)
+            const updateQuantity = (food) =>{
+                food.products = food.products.map((ing)=>{
+                    ing.quantity = ing.quantity.value * (ing.unit?.subunit?.ratio || 1)
+                    return ing
+                })
+                food.options.forEach(opt => {
+                    if(opt.type==="check")
+                        opt.ingredients = updateQuantity(opt.ingredients)
+                    else{
+                        opt.choices.forEach((sub)=>{
+                            sub.ingredients = updateQuantity(sub.ingredients)
+                        })
+                    }
+                });
+                return food
+            }
+            data.ingredients = updateQuantity(data.ingredients)
             console.log(data)
         if( typeof(data.img) !== 'string'){
             //file upload
@@ -114,11 +174,15 @@ const FoodDetails = ({defaultVals = undefined})=>{
         }
     }
     console.log(errors)
-    if(categoriesLoading)
+    if(categoriesLoading || unitsLoading)
         return <Loading />
-    if(errorCategories)
-        return <Error error={errorCategories} msg={"Could Not Retrieve the categories"} />
-    return <motion.div variants={FadeIn()} className="secondary-form">
+    if(errorCategories || errorUnits)
+        return <>
+        {errorCategories && <Error error={errorCategories} msg={"Could Not Retrieve the categories"} />}
+        {errorUnits && <Error error={errorUnits} msg={"Could Not Retrieve the Units"} />}
+        </>
+
+      return <motion.div variants={FadeIn()} className="secondary-form">
         <h1>{defaultVals ? "Update Food : " + defaultVals.id :"Add Food" } </h1>
         <FormProvider {...formOptions}>
         <form onReset={(e)=>{e.preventDefault();reset()}}  onSubmit={handleSubmit(SubmitForm)}>
@@ -147,7 +211,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
             />
         </div>      
         
-        <Ingredients />
+        <Ingredients allunits={allunits} defaultVals={defaultVals} />
 
         {errors["title"] && <p className="error">{errors["title"].message.replaceAll('"','') }</p>}
         {errors["description"] && <p className="error">{errors["description"].message.replaceAll('"','') }</p>}
@@ -165,7 +229,7 @@ const FoodDetails = ({defaultVals = undefined})=>{
         </FormProvider>
     </motion.div>
 }
-const Ingredients = ()=>{
+const Ingredients = ({allunits,defaultVals})=>{
     const [active,setActive] = useState(["ingredients"])
     const [labels,setLabels] = useState(["Base"])
 
@@ -194,10 +258,9 @@ const Ingredients = ()=>{
         setLabels([...labels])
     }
 
-
     return  <div className="ingredients-details">
         <h1 style={{margin: "15px 0px"}}>Ingredients : <small>{labels && labels.join('/')}</small></h1>
-        <SelectionTable popLabel={popLabel} popActive={popActive} root={active} />  
+        <SelectionTable defaultVals={defaultVals} allunits={allunits} popLabel={popLabel} popActive={popActive} root={active} />  
         <Options pushLabel={pushLabel} pushActive = {pushActive} root={active}/>
     </div>
 }
@@ -284,7 +347,7 @@ const MultipleChoiceItem = ({root,idx,removeItem,pushLabel,pushActive})=>{
         </div>
 }
 
-const SelectionTable = ({root,popActive,popLabel})=>{
+const SelectionTable = ({allunits,defaultVals,root,popActive,popLabel})=>{
     let path = root.join('')+'.products'
     const {register,setValue,watch,control} = useFormContext()
     const ufa = useFieldArray({
@@ -294,7 +357,8 @@ const SelectionTable = ({root,popActive,popLabel})=>{
     const { fields, append, update, remove, swap, move, insert } = ufa
 
     const [mutateProduct,setMutateProduct] = useState(null)
-
+    const arr = watch(path)
+    console.log(arr)
     const columns = useMemo(()=>{
         return [{
             Header: 'Name',
@@ -303,7 +367,11 @@ const SelectionTable = ({root,popActive,popLabel})=>{
         {
             Header: 'Quantity/U',
             accessor: 'unitQuantity',
-            Cell: ({value,row})=> value+""+row.original.unit
+            Cell: ({value,row})=> {
+                const prod_unit = row.original.unit
+                const val = value
+                return <UnitShow unitval={{value: value,unit: row.original.unit}}  />
+            }
         },
         {
             Header: 'Price/U',
@@ -311,25 +379,44 @@ const SelectionTable = ({root,popActive,popLabel})=>{
         },
         {
             Header: 'Quantity',
-            accessor: 'quantity'
+            accessor: 'quantity',
+            Cell: ({value,row})=>{
+                const product = row.original
+                return <UnitValue  inputcustomprops={{className:"secondary-input" ,id:"unitQuantity"}}
+                type="number"  
+                register={register}  
+                          name={`${path}.${row.id}.quantity`}
+                          control={control}     
+                          customunits={product.customUnits ? [{...product.unit,customUnits: product.customUnits }] : undefined}
+                          defaultValue={{value:  defaultVals ? defaultVals.quantity?.value : 0,units: product.unit}} 
+                          units={allunits.filter((un)=>un.id === product.unit.id)} />  /*                return <input 
+                step={"any"}  
+
+                className="secondary-input" 
+                type="number" 
+                {...register(`${path}.${row.id}.quantity`)} />*/
+            }
         },{
             Header: 'Price',
-            accessor: 'price'
+            accessor: 'price',
+            Cell : ({value,row})=>{
+                console.log(row)
+                return <b>{formatCurrency.format(row.original.sellingUnitPrice * 1.0 * (row.original.quantity.value * (row.original.quantity.unit?.subunit?.ratio || 1) ) / row.original.unitQuantity || 0)}</b> 
+            }
         }]
-    },[])
-    const arr = watch(path)
-    console.log(arr)
+    },[allunits,register,control,path])
+
     const tb = useTable({data: arr  || [],columns: columns})
 
     const addProduct = (prod,index)=>{
         if(!arr.find(item=>item.id === prod.id))
-            append({name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
+            append({name: prod.name,customUnits: prod.customUnits,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: 0,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
         setMutateProduct(null)
     }
 
     const modifyProduct = (prod,index)=>{
         if(!arr.find(item=>item.id === prod.id))
-            update(index,{name: prod.name,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: prod.unitQuantity,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
+            update(index,{name: prod.name,customUnits: prod.customUnits,unit: prod.unit,unitQuantity:prod.unitQuantity,quantity: 0,sellingUnitPrice: prod.sellingUnitPrice,id: prod.id})
         setMutateProduct(null)
     }
 
@@ -365,17 +452,8 @@ const SelectionTable = ({root,popActive,popLabel})=>{
                     tb.prepareRow(row)
                     return <tr {...row.getRowProps()}>{
                         row.cells.map((cell)=><td {...cell.getCellProps()}>
-                            {cell.column.Header === "Quantity" ? ( 
-                                <input 
-                                step={"any"}  
-                                className="secondary-input" 
-                                type="number" 
-                                {...register(`${path}.${rowidx}.quantity`)} />
-                            ) : cell.column.Header === "Price" ? (
-                               <b>{row.original.sellingUnitPrice * 1.0 * row.original.quantity / row.original.unitQuantity}</b> 
-                            ) : (
-                                cell.render("Cell") 
-                            )
+                            {
+                                cell.render("Cell")
                             }
                             </td>)
                     }
@@ -385,9 +463,9 @@ const SelectionTable = ({root,popActive,popLabel})=>{
                     </td>
                     </tr>
                 })}
-                <tr><td></td><td></td><td></td><td></td><td><h2> Total: {watch(path) ? watch(path).reduce((prev,fd)=>{
-                    return prev +   fd.sellingUnitPrice * 1.0 * fd.quantity / fd.unitQuantity
-                },0) : 0} </h2></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td><h2> Total: {formatCurrency.format(watch(path) ? watch(path).reduce((prev,fd)=>{
+                    return prev +   fd.sellingUnitPrice * 1.0 * (fd.quantity.value * (fd.quantity.unit?.subunit?.ratio || 1) || 0  )  / fd.unitQuantity
+                },0) : 0)} </h2></td><td></td></tr>
             </tbody>
         </table>
 

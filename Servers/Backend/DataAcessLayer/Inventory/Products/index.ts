@@ -133,6 +133,9 @@ const updateFoodProducts = (cur: any,data: any,productid :any)=>{
                     prod.name = data.name
                     prod.sellingUnitPrice = data.sellingUnitPrice
                     prod.unit = data.unit
+                    if(prod.customUnits || data.customUnits){
+                        prod.customUnits = data.customUnits
+                    }
                     prod.unitQuantity = data.unitQuantity
                 }
             })

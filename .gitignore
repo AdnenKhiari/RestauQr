@@ -5,3 +5,4 @@ firestore.indexes.json
 firestore.rules
 storage.rules
 /Builds
+/stripe_test

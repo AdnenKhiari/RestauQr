@@ -8,7 +8,7 @@ const UnitValue = (props)=>{
     </div>
 }
 export const unitvalueschema = joi.object({
-    value: joi.number().required(),
+    value: joi.number().precision(3).strict().required(),
     unit: joi.any()
 })
 export default UnitValue

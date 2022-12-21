@@ -13,7 +13,18 @@ const productSchema = joi.object({
     id: joi.string().optional() ,
     name : joi.string().required().label("Name"),
     quantity : joi.number().required().label("Quantity"),
-    unit: joi.string(),
+    unit: joi.object({
+        id: joi.string(),
+        name: joi.string(),
+        subunit: joi.object({
+            name: joi.string(),
+            ratio: joi.number()
+        }).optional()
+    }),
+    customUnits: joi.array().items(joi.object({
+        name: joi.string(),
+        ratio:  joi.number()
+    })).optional(),
     sellingUnitPrice: joi.number(),
     unitQuantity: joi.number()
 }).optional()

@@ -69,7 +69,7 @@ export const ReviewMerchandiseUi =({productid,orderid})=>{
             </div>
         </div>
         <div className="data-review-body secondary-form">
-            <h2><span>Expires In :</span> {formatFbDate(productorder.expiresIn,true)} : {moment(productorder.expiresIn._seconds*1000 + productorder.expiresIn._nanoseconds / 1000).fromNow()}</h2>
+            <h2><span>Expires In :</span> {formatFbDate(productorder.expiresIn,true)} : {moment(productorder.expiresIn).fromNow()}</h2>
             <h2><span>Price/U:</span> {productorder.unitPrice} Millime</h2>
             <h2><span>Quantity/U:</span> <UnitShow customunits={product.customUnits} unitval={{value: productorder.unitQuantity,unit: product.unit}} /></h2>  
             <h2><span>Purshase Quantity:</span> {productorder.productQuantity}</h2>

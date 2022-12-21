@@ -14,7 +14,12 @@ import uploadimg from "../../images/upload.png"
 import checkboximg from "../../images/checkbox.png"
 import radiobuttonimg from "../../images/radio-button.png"
 import radioimg from "../../images/radio.png"
+import UnitShow from "../../components/Custom/UnitShow"
 
+let formatCurrency = new Intl.NumberFormat(undefined, {
+	style: 'currency',
+	currency: 'USD'
+}); 
 const ReviewFood =()=>{
     const {foodid} = useParams()
     const {result : food,loading,error} = GetFoodById(foodid)
@@ -29,7 +34,7 @@ const ReviewFood =()=>{
     {/*<h1 className="data-review-id">#{foodid}</h1>*/}
     <motion.div variants={FadeIn()} className="data-review">
         <div className="data-review-header">
-            <h1><span>{food.title}</span> : {food.price}$</h1>
+            <h1><span>{food.title}</span> : {formatCurrency.format(food.price)}</h1>
             <div>
                 {getLevel(user.profile.permissions.food)>=  getLevel("manage") && <><button onClick={(e)=>{
                     usenav(ROUTES.FOOD.GET_UPDATE(food.id))
@@ -49,7 +54,7 @@ const ReviewFood =()=>{
             <h2><span>Description:</span>  </h2>
             <h2>{food.description}</h2>
             <h2><span>Category:</span> {food.category}</h2>
-            <h2><span>Base Price:</span> {food.price}$</h2>
+            <h2><span>Base Price:</span> {formatCurrency.format(food.price)}</h2>
             <h2><span>Ingredients:</span></h2>
             <Ingredients foodopt={food} />
 
@@ -103,7 +108,7 @@ const Ingredients = ({foodopt})=>{
                 name: name.join('/'),
                 price: ing.price,
                 values: ing.ingredients.products.map((product)=>{
-                    product.price = (product.quantity * 1.0 * product.sellingUnitPrice / product.unitQuantity) +"$"
+                    product.price = formatCurrency.format(product.quantity * 1.0 * product.sellingUnitPrice / product.unitQuantity) 
                     return product
                 })
             })
@@ -140,16 +145,25 @@ const IngredientsTable = ({products,path,price})=>{
         {
             Header: 'Quantity/U',
             accessor: 'unitQuantity',
-            Cell: ({value,row})=> value+""+row.original.unit.name
+            Cell: ({value,row})=> {
+                const prod_unit = row.original.unit
+                const val = value
+                return <UnitShow  customunits={row.original.customUnits} unitval={{value: value,unit: row.original.unit}}  />
+            }        
         },
         {
             Header: 'Price/U',
             accessor: 'sellingUnitPrice',
-            Cell: ({value})=>value +"$"
+            Cell: ({value})=>formatCurrency.format(value) 
         },
         {
             Header: 'Quantity',
-            accessor: 'quantity'
+            accessor: 'quantity',
+            Cell: ({value,row})=> {
+                const prod_unit = row.original.unit
+                const val = value
+                return <UnitShow customunits={row.original.customUnits} unitval={{value: value,unit: row.original.unit}}  />
+            }  
         },{
             Header: 'Price',
             accessor: 'price'
@@ -188,11 +202,11 @@ const IngredientsTable = ({products,path,price})=>{
 }
 const Option = ({opt})=>{
     if(opt.type === 'check'){
-        return <p style={{paddingLeft: opt.padding}} className="option-item"> <img className="make-img-blue" src={checkboximg} alt="" />{opt.msg} : {opt.price}$</p>
+        return <p style={{paddingLeft: opt.padding}} className="option-item"> <img className="make-img-blue" src={checkboximg} alt="" />{opt.msg} : {formatCurrency.format(opt.price)}</p>
     }else{
        return <>   
         {opt.choices && <p style={{paddingLeft: opt.padding}} className="option-item"><img className="make-img-blue" src={radiobuttonimg} alt="" />{opt.msg} </p>}
-        {!opt.choices && <p style={{paddingLeft: opt.padding}} className="option-item" > <img className="make-img-blue" src={radioimg} alt="" />{opt.msg} : {opt.price}$</p>}
+        {!opt.choices && <p style={{paddingLeft: opt.padding}} className="option-item" > <img className="make-img-blue" src={radioimg} alt="" />{opt.msg} : {formatCurrency.format(opt.price)}</p>}
         </>
     }
 }
